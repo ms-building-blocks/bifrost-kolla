@@ -6,7 +6,6 @@
 # to virbr0 in roles, can be overridden here.
 network_interface: "br-mgmt"
 
-
 # ironic_db_password ironic user password for rabbit
 ironic_db_password: aSecretPassword473z
 # mysql_username: Default mysql admin username

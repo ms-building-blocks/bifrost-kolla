@@ -1,0 +1,16 @@
+{% for pod in pods|sort(attribute='name') %}
+{% if pod.name == pod_name %}
+{
+{% set node_id = [0] %}
+{% for server_name in pod.nodes | sort  %}
+{% set srv = servers[server_name] %}
+host node{{ node_id[0] }}
+    HostName {{ pod.networks.admin.network.split('.')[0:-1]|join('.') }}.1{{ node_id[0] }}
+
+{% if node_id.append(node_id.pop() + 1) %}{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+host node*
+    User root
+    StrictHostKeyChecking=false

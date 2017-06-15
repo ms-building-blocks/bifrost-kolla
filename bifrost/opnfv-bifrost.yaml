@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/pods.yaml"
+    - "vars/servers.yaml"
+    - "vars/bifrost.yaml"
+  tasks:
+    - name: Clean old bifrost
+      file:
+        path: "{{ bifrost_path }}"
+        state: absent
+      become: true
+    - name: clone bifrost
+      git:
+        repo: "{{ bifrost_url }}"
+        dest: "{{ bifrost_path }}"
+      become: true
+    - name: Remove pre-existing leases file
+      file: path=/var/lib/misc/dnsmasq.leases state=absent
+      become: true
+    - name: prepare inventory
+      template:
+        src: "templates/inventory.json.j2"
+        dest: "{{ ansible_env.HOME }}/pod_inventory.json"
+    - name: prepare ssh config file
+      template:
+        src: "templates/ssh_config.j2"
+        dest: "{{ ansible_env.HOME }}/.ssh/config"
+    - name: copy bifrost target vars
+      copy:
+        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/target"
+        src: "files/target"
+      become: true
+    - name: run bifrost install
+      command: "ansible-playbook -vvvv -i inventory/target install.yaml"
+      args:
+        chdir: "{{ bifrost_path }}/playbooks/"

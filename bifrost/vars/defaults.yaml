@@ -1,0 +1,5 @@
+pod_name: pod1
+ipmi_username: "Administrator"
+ipmi_password: "opnfv2017"
+bifrost_url: https://github.com/openstack/bifrost.git
+bifrost_path: /opt/bifrost

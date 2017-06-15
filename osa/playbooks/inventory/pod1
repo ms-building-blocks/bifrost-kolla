@@ -1,0 +1,16 @@
+[xcimaster]
+xcimaster  ansible_connection=pod1.opnfv.fr
+
+[controller]
+controller00 ansible_ssh_host=node2.pod1.opnfv.fr
+controller01 ansible_ssh_host=node3.pod1.opnfv.fr
+controller02 ansible_ssh_host=node4.pod1.opnfv.fr
+
+[compute]
+compute00 ansible_ssh_host=node0.pod1.opnfv.fr
+compute01 ansible_ssh_host=node1.pod1.opnfv.fr
+
+[pod1:children]
+xcimaster
+controller
+compute

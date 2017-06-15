@@ -1,0 +1,155 @@
+pods:
+    - name: pod1
+      description: OPNFV économe
+      nodes:
+          server02: [ compute ]
+          server03: [ compute ]
+          server04: [ controller ]
+          server09: [ controller ]
+          server11: [ controller ]
+      contacts:
+          - david.blaisonneau@orange.com
+          - bertrand.lelamer@orange.com
+      end_of_life: 2017.12.31
+      network_mapping: pods-osa
+      networks:
+          admin:
+              vlan: pod1_admin
+              network: 10.1.0.0
+              mask: 24
+          public_infra:
+              vlan: pod1_public_infra
+              network: 10.1.1.0
+              mask: 24
+          public_vm:
+              vlan: pod1_public_vm
+              network: 10.1.2.0
+              mask: 24
+          vm:
+              vlan: pod1_vm
+              network: 10.1.3.0
+              mask: 24
+          unused:
+              vlan: pod1_unused
+              network: 10.1.4.0
+              mask: 24
+      nat:
+        public_ip: 161.105.253.101
+        port_nat:
+            22: 10.1.0.4:22
+            443: 10.0.1.4:443
+    - name: pod2
+      description: OPNFV performance
+      nodes:
+          server05: [ controller ]
+          server06: [ compute ]
+          server07: [ compute ]
+          server08: [ controller ]
+          server21: [ controller ]
+      contacts:
+          - david.blaisonneau@orange.com
+          - bertrand.lelamer@orange.com
+      end_of_life: 2017.12.31
+      network_mapping: pods
+      networks:
+          admin:
+              vlan: pod2_admin
+              network: 10.2.0.0
+              mask: 24
+          public_infra:
+              vlan: pod2_public_infra
+              network: 10.2.1.0
+              mask: 24
+          public_vm:
+              vlan: pod2_public_vm
+              network: 10.2.2.0
+              mask: 24
+          vm:
+              vlan: pod2_vm
+              network: 10.2.3.0
+              mask: 24
+          unused:
+              vlan: pod2_unused
+              network: 10.2.4.0
+              mask: 24
+      nat:
+        public_ip: 161.105.253.102
+        port_nat:
+            22: 10.2.0.4:22
+            443: 10.0.1.4:443
+    - name: pod3
+      description: OPNFV Moon
+      nodes:
+          server17: []
+      contacts:
+          - david.blaisonneau@orange.com
+          - bertrand.lelamer@orange.com
+          - ruan.he@orange.com
+      end_of_life: 2017.12.31
+      network_mapping: pods
+      networks:
+          admin:
+              vlan: pod3_admin
+              network: 10.3.0.0
+              mask: 24
+          public_infra:
+              vlan: pod3_public_infra
+              network: 10.3.1.0
+              mask: 24
+          public_vm:
+              vlan: pod3_public_vm
+              network: 10.3.2.0
+              mask: 24
+          vm:
+              vlan: pod3_vm
+              network: 10.3.3.0
+              mask: 24
+          unused:
+              vlan: pod3_unused
+              network: 10.3.4.0
+              mask: 24
+      nat:
+        public_ip: 161.105.253.103
+        port_nat:
+            22: 10.3.0.4:22
+            443: 10.0.1.4:443
+    - name: pod4
+      description: Test ansible
+      nodes:
+          server09: []
+          server11: []
+          server02: []
+          server03: []
+          server04: []
+          server07: []
+      contacts:
+          - david.blaisonneau@orange.com
+          - bertrand.lelamer@orange.com
+      end_of_life: 2017.12.31
+      network_mapping: pods
+      networks:
+          admin:
+              vlan: pod3_admin
+              network: 10.4.0.0
+              mask: 24
+          public_infra:
+              vlan: pod3_public_infra
+              network: 10.4.1.0
+              mask: 24
+          public_vm:
+              vlan: pod3_public_vm
+              network: 10.4.2.0
+              mask: 24
+          vm:
+              vlan: pod3_vm
+              network: 10.4.3.0
+              mask: 24
+          unused:
+              vlan: pod3_unused
+              network: 10.4.4.0
+              mask: 24
+      nat:
+        public_ip: 161.105.253.104
+        port_nat:
+            22: 10.4.0.4:22
+            443: 10.0.1.4:443
