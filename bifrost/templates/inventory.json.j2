@@ -1,8 +1,7 @@
-{% for pod in pods|sort(attribute='name') %}
-{% if pod.name == pod_name %}
 {
 {% set node_id = [0] %}
 {% for server_name in pod.nodes | sort  %}
+{% if item is not defined or item == server_name %}
 {% set srv = servers[server_name] %}
     "{{ server_name }}": {
         "name": "{{ server_name }}",
@@ -28,7 +27,6 @@
         }
     }{{ "," if not loop.last else '' }}
 {% if node_id.append(node_id.pop() + 1) %}{% endif %}
-{% endfor %}
-}
 {% endif %}
 {% endfor %}
+}

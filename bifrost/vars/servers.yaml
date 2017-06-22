@@ -37,11 +37,11 @@ servers:
         enable: true
         interfaces:
             - sw: xe-0/0/21
-              mac: 94:57:a5:52:63:b0
+              mac: 1c:98:ec:16:ae:38
             - sw: xe-0/0/22
-              mac: 94:57:a5:52:63:b1
+              mac: 1c:98:ec:16:ae:39
             - sw: xe-0/0/23
-              mac: 94:57:a5:52:63:b2
+              mac: 1c:98:ec:16:ae:3a
         ipmi: 10.0.0.13
     server04:
         description: HP DL360 gen 9

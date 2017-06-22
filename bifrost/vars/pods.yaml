@@ -1,5 +1,5 @@
 pods:
-    - name: pod1
+    pod1:
       description: OPNFV économe
       nodes:
           server02: [ compute ]
@@ -16,6 +16,7 @@ pods:
           admin:
               vlan: pod1_admin
               network: 10.1.0.0
+              gateway: 10.1.0.1
               mask: 24
           public_infra:
               vlan: pod1_public_infra
@@ -38,7 +39,7 @@ pods:
         port_nat:
             22: 10.1.0.4:22
             443: 10.0.1.4:443
-    - name: pod2
+    pod2:
       description: OPNFV performance
       nodes:
           server05: [ controller ]
@@ -77,7 +78,7 @@ pods:
         port_nat:
             22: 10.2.0.4:22
             443: 10.0.1.4:443
-    - name: pod3
+    pod3:
       description: OPNFV Moon
       nodes:
           server17: []
@@ -113,7 +114,7 @@ pods:
         port_nat:
             22: 10.3.0.4:22
             443: 10.0.1.4:443
-    - name: pod4
+    pod4:
       description: Test ansible
       nodes:
           server09: []

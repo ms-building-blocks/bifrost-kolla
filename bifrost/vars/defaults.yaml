@@ -1,5 +1,22 @@
+# Pod name, corresponding to pods.yaml config file
 pod_name: pod1
+pod: "{{ pods[pod_name] }}"
+
+# IPMI config
 ipmi_username: "Administrator"
 ipmi_password: "opnfv2017"
+
+# Bifrost git params
 bifrost_url: https://github.com/openstack/bifrost.git
-bifrost_path: /opt/bifrost
+bifrost_path: "/{{ lookup('env', 'HOME') }}/bifrost"
+bifrost_branch: "stable/ocata"
+
+# Ironic drivers list
+ironic_drivers_list: agent_ipmitool,agent_ucs,pxe_ipmitool
+
+# Management bridge name
+network_interface: brMgmt
+network_interface_: "{{ network_interface | regex_replace('-', '_') }}"
+
+# Ironic DB password
+ironic_db_password: aSecretPassword473z
