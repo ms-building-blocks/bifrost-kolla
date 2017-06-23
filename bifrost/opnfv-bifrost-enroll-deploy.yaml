@@ -9,14 +9,6 @@
     ##
     # Prepare inventory and config files
     ##
-    - name: copy bifrost target vars
-      template:
-        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/target"
-        src: "templates/target.j2"
-    - name: copy bifrost baremetal vars
-      template:
-        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/baremetal"
-        src: "templates/baremetal.j2"
     - name: set bifrost inventory
       template:
         src: "templates/bifrost_inventory.json.j2"
@@ -52,18 +44,18 @@
     ##
     # Enroll
     ##
-    - name: Enroll nodes
-      shell: ansible-playbook -vvvv -i inventory/bifrost_inventory.py enroll-dynamic.yaml
-      args:
-        chdir: "{{ bifrost_path }}/playbooks/"
-      environment:
-        BIFROST_INVENTORY_SOURCE: "{{ ansible_env.HOME }}/bifrost_inventory.json"
-    ##
-    # Deploy
-    ##
-    - name: Install bifrost
-      shell: ansible-playbook -vvvv -i inventory/target install.yaml deploy-dynamic.yaml
-      args:
-        chdir: "{{ bifrost_path }}/playbooks/"
-      environment:
-        BIFROST_INVENTORY_SOURCE: "{{ ansible_env.HOME }}/bifrost_inventory.json"
+#    - name: Enroll nodes
+#      shell: ansible-playbook -vvvv -i inventory/bifrost_inventory.py enroll-dynamic.yaml
+#      args:
+#        chdir: "{{ bifrost_path }}/playbooks/"
+#      environment:
+#        BIFROST_INVENTORY_SOURCE: "{{ ansible_env.HOME }}/bifrost_inventory.json"
+#    ##
+#    # Deploy
+#    ##
+#    - name: Deploy bifrost
+#      shell: ansible-playbook -vvvv -i inventory/target install.yaml deploy-dynamic.yaml
+#      args:
+#        chdir: "{{ bifrost_path }}/playbooks/"
+#      environment:
+#        BIFROST_INVENTORY_SOURCE: "{{ ansible_env.HOME }}/bifrost_inventory.json"

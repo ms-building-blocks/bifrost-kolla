@@ -33,6 +33,17 @@
       file: path=/var/lib/misc/dnsmasq.leases state=absent
       become: true
     ##
+    # Prepare inventory and config files
+    ##
+    - name: copy bifrost target vars
+      template:
+        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/target"
+        src: "templates/target.j2"
+    - name: copy bifrost baremetal vars
+      template:
+        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/baremetal"
+        src: "templates/baremetal.j2"
+    ##
     # Install Bifrost
     ##
     - name: Install bifrost requirements
