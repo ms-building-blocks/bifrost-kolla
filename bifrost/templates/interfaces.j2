@@ -16,7 +16,7 @@ iface {{ intf }} inet manual
 {% endif %}
 
 auto {{ bridge }}
-iface {{ bridge }} inet static
+iface {{ bridge }} inet {% static if bridge != 'br-vlan' else 'manual' %}
     bridge_stp off
     bridge_waitport 0
     bridge_fd 0
