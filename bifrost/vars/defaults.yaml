@@ -16,7 +16,22 @@ ironic_drivers_list: agent_ipmitool,agent_ucs,pxe_ipmitool
 
 # Management bridge name
 network_interface: brMgmt
-network_interface_: "{{ network_interface | regex_replace('-', '_') }}"
 
 # Ironic DB password
 ironic_db_password: aSecretPassword473z
+
+# network profiles
+network_profiles:
+    controller:
+        - br-mgmt
+    storage:
+        - br-mgmt
+        - br-storage
+    network:
+        - br-mgmt
+        - br-vxlan
+        - br-vlan
+    compute:
+        - br-mgmt
+        - br-vxlan
+        - br-vlan

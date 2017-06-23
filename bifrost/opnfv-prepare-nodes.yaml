@@ -1,0 +1,66 @@
+---
+- hosts: node0
+  vars_files:
+    - "vars/pods.yaml"
+    - "vars/servers.yaml"
+    - "vars/defaults.yaml"
+  tasks:
+    ##
+    # install basic packages
+    ##
+    - name: Install list of packages
+      apt: name={{item}} state=installed
+      with_items:
+           - bridge-utils
+           - debootstrap
+           - ifenslave
+           - ifenslave-2.6
+           - lsof
+           - lvm2
+           - ntp
+           - ntpdate
+           - sudo
+           - tcpdump
+           - vlan
+    ##
+    # Prepare and clean node
+    ##
+    - name: configure modules
+      lineinfile:
+        dest: /etc/modules
+        state: present
+        create: yes
+        line: "8021q"
+    - name: add modules
+      modprobe:
+        name: 8021q
+        state: present
+    - name: ensure glean rules are removed
+      file:
+        path: "/etc/udev/rules.d/99-glean.rules"
+        state: absent
+    ##
+    # Get mac2intf list1
+    ##
+
+    - name: Get bridges to configure
+      set_fact:
+          bridges: "{{ inventory_hostname | get_bridges(hostvars, network_profiles, pod) }}"
+    - name: Get srv_macs
+      set_fact:
+          srv_macs: "{{ inventory_hostname | target_interfaces(hostvars, servers) }}"
+    - name: Get mac2intf
+      set_fact:
+          macs: "{{ inventory_hostname | mac2intf(hostvars, servers) }}"
+
+    ##
+    # Prepare network
+    ##
+    - name: ensure interfaces.d folder is empty
+      shell: "/bin/rm -rf /etc/network/interfaces.d/*"
+    - name: ensure interfaces file is updated
+      template:
+        src: "templates/interfaces.j2"
+        dest: "/etc/network/interfaces"
+    - name: restart network service
+      shell: "for if in $(ip a l | grep mtu | cut -d: -f2 | grep -v lo); do ip l set dev $if down; done && service networking restart"

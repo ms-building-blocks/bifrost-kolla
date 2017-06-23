@@ -1,10 +1,8 @@
-{% set node_id = [0] %}
 {% for server_name in pod.nodes | sort  %}
 {% set srv = servers[server_name] %}
-host node{{ node_id[0] }}
-    HostName {{ pod.networks.admin.network.split('.')[0:-1]|join('.') }}.1{{ node_id[0] }}
+host node{{ loop.index }}
+    HostName {{ pod.net_config['br-mgmt'].network.split('.')[0:-1]|join('.') }}.1{{ loop.index }}
 
-{% if node_id.append(node_id.pop() + 1) %}{% endif %}
 {% endfor %}
 host node*
     User root

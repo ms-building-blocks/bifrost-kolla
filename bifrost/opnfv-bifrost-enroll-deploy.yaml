@@ -1,0 +1,69 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - "vars/pods.yaml"
+    - "vars/servers.yaml"
+    - "vars/defaults.yaml"
+  tasks:
+    ##
+    # Prepare inventory and config files
+    ##
+    - name: copy bifrost target vars
+      template:
+        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/target"
+        src: "templates/target.j2"
+    - name: copy bifrost baremetal vars
+      template:
+        dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/baremetal"
+        src: "templates/baremetal.j2"
+    - name: set bifrost inventory
+      template:
+        src: "templates/bifrost_inventory.json.j2"
+        dest: "{{ ansible_env.HOME }}/bifrost_inventory.json"
+    - name: clean bifrost detailled inventory folder
+      file:
+        path: "{{ ansible_env.HOME }}/bifrost_inventory/"
+        state: absent
+    - name: set bifrost detailled inventory folder
+      file:
+        path: "{{ ansible_env.HOME }}/bifrost_inventory/"
+        state: directory
+    - name: set bifrost {{ item }} inventory
+      template:
+        src: "templates/bifrost_inventory.json.j2"
+        dest: "{{ ansible_env.HOME }}/bifrost_inventory/{{ item }}.json"
+      with_items: "{{ pod.nodes }}"
+    - name: prepare ssh config file
+      template:
+        src: "templates/ssh_config.j2"
+        dest: "{{ ansible_env.HOME }}/.ssh/config"
+    - name: set ansible node inventory
+      template:
+        src: "templates/ansible_inventory.j2"
+        dest: "{{ ansible_env.HOME }}/ansible_inventory"
+    ##
+    # Set various files
+    ##
+    - name: set .bash_aliases for bifrost
+      copy:
+        src: "files/bash_aliases"
+        dest: "{{ ansible_env.HOME }}/.bash_aliases"
+    ##
+    # Enroll
+    ##
+    - name: Enroll nodes
+      shell: ansible-playbook -vvvv -i inventory/bifrost_inventory.py enroll-dynamic.yaml
+      args:
+        chdir: "{{ bifrost_path }}/playbooks/"
+      environment:
+        BIFROST_INVENTORY_SOURCE: "{{ ansible_env.HOME }}/bifrost_inventory.json"
+    ##
+    # Deploy
+    ##
+    - name: Install bifrost
+      shell: ansible-playbook -vvvv -i inventory/target install.yaml deploy-dynamic.yaml
+      args:
+        chdir: "{{ bifrost_path }}/playbooks/"
+      environment:
+        BIFROST_INVENTORY_SOURCE: "{{ ansible_env.HOME }}/bifrost_inventory.json"

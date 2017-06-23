@@ -1,0 +1,17 @@
+[controllers]
+{% for server_name in pod.nodes | sort  %}
+{% if 'controller' in pod.nodes[server_name] %}
+node{{ loop.index }} node_id={{ loop.index }}
+{% endif %}
+{% endfor %}
+
+[computes]
+{% for server_name in pod.nodes | sort  %}
+{% if 'compute' in pod.nodes[server_name] %}
+node{{ loop.index }} node_id={{ loop.index }}
+{% endif %}
+{% endfor %}
+
+[nodes:children]
+controllers
+computes

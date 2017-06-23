@@ -1,5 +1,5 @@
 # default inventory source
-export BIFROST_INVENTORY_SOURCE=~/pod_inventory.json
+export BIFROST_INVENTORY_SOURCE=~/bifrost_inventory.json
 
 # functions
 bifrost_check_ssh_server(){
