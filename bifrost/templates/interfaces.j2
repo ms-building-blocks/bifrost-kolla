@@ -16,14 +16,14 @@ iface {{ intf }} inet manual
 {% endif %}
 
 auto {{ bridge }}
-iface {{ bridge }} inet {% static if bridge != 'br-vlan' else 'manual' %}
+iface {{ bridge }} inet {{ 'static' if bridge != 'br-vlan' else 'manual' }}
     bridge_stp off
     bridge_waitport 0
     bridge_fd 0
     bridge_ports {{ intf }}{% if pod.net_config[bridge].vlan > 0 %}.{{ pod.net_config[bridge].vlan }}{% endif %}
 
 {% if bridge != 'br-vlan' %}
-    address {{ pod.net_config[bridge].network.split('.')[0:-1]|join('.') }}.1{{ node_id }}
+    address {{ pod.net_config['br-mgmt'].network | ipadd( ip_shift + node_id ) }}
     netmask {{ pod.net_config[bridge].mask }}
 {% if pod.net_config[bridge].gateway is defined %}
     gateway {{ pod.net_config[bridge].gateway }}

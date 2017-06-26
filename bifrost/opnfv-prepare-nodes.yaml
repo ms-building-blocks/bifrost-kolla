@@ -78,3 +78,10 @@
       when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
     - name: restart all interfaces
       shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a"
+
+    ##
+    # Restart services
+    ##
+    - service:
+        name: ntp
+        state: restarted

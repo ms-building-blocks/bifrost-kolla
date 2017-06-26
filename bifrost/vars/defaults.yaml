@@ -8,13 +8,21 @@ ipmi_password: "opnfv2017"
 
 # Bifrost git params
 bifrost_url: https://github.com/openstack/bifrost.git
-bifrost_path: "/{{ lookup('env', 'HOME') }}/bifrost"
+bifrost_path: "/opt/bifrost"
 bifrost_branch: "stable/ocata"
+
+# OSA git params
+osa_url: https://git.openstack.org/openstack/openstack-ansible
+osa_path: /opt/openstack-ansible
+osa_branch: "stable/ocata"
+
+# OSA config
+osa_etc_path: /etc/openstack_deploy
 
 # Ironic drivers list
 ironic_drivers_list: agent_ipmitool,agent_ucs,pxe_ipmitool
 
-# Management bridge name
+# Management bridge name for jumphost
 network_interface: brMgmt
 
 # Ironic DB password
@@ -35,3 +43,26 @@ network_profiles:
         - br-mgmt
         - br-vxlan
         - br-vlan
+
+# Cinder
+cinder_physical_device: sdb
+
+# Openstack config
+openstack:
+  domain: pod1.opnfv.fr
+  rsyslog:
+    ip: 127.0.0.1
+    name: localhost
+  glance:
+    nfs:
+      server: 10.0.2.6
+      path: /images
+  cinder:
+    nfs:
+      server: 10.0.2.6
+      path: /vol/cinder
+
+
+# IP shift from network address to set ip
+# first used ip address of will be network + ip_shif + index
+ip_shift: 10

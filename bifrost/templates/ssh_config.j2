@@ -1,9 +1,13 @@
 {% for server_name in pod.nodes | sort  %}
 {% set srv = servers[server_name] %}
 host node{{ loop.index }}
-    HostName {{ pod.net_config['br-mgmt'].network.split('.')[0:-1]|join('.') }}.1{{ loop.index }}
+    HostName {{ pod.net_config['br-mgmt'].network | ipadd( ip_shift + loop.index ) }}
 
 {% endfor %}
 host node*
     User root
+    StrictHostKeyChecking=false
+
+host {{ openstack.rsyslog.name }}
+    HostName  {{ openstack.rsyslog.ip }}
     StrictHostKeyChecking=false

@@ -17,7 +17,7 @@
             { "mac": "{{ intf.mac }}" }{{ "," if not loop.last else '' }}
         {% endfor %} ],
         "driver": "agent_ipmitool",
-        "ipv4_address": "{{ pod.net_config['br-mgmt'].network.split('.')[0:-1]|join('.') }}.1{{ loop.index }}",
+        "ipv4_address": "{{ pod.net_config['br-mgmt'].network | ipadd( ip_shift + loop.index ) }}",
         "properties": {
             "cpu_arch": "x86_64",
             "ram": "{{ (srv.details.ram or '0') | sizeConv }}",
