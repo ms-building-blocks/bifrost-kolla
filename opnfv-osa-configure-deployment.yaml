@@ -16,7 +16,6 @@
       file:
         path: "{{ osa_etc_path }}"
         state: absent
-      become: true
     - name: clone openstack-ansible
       git:
         repo: "{{ osa_url }}"
@@ -29,7 +28,6 @@
       shell: ./bootstrap-ansible.sh
       args:
         chdir: "{{ osa_path }}/scripts/"
-      become: true
 
     ##
     # Prepare config
@@ -38,12 +36,10 @@
       shell: "cp -rf openstack_deploy {{ osa_etc_path }}"
       args:
         chdir: "{{ osa_path }}/etc/"
-      become: true
     - name: Generate pw-tokens
       shell: "python pw-token-gen.py --file {{ osa_etc_path }}/user_secrets.yml"
       args:
         chdir: "{{ osa_path }}/scripts/"
-      become: true
     - name: get nodes ips
       set_fact:
         nodes_ip: "{{ pod | node_ips (pod.net_config['br-mgmt'].network, ip_shift) }}"
@@ -54,7 +50,6 @@
       template:
         src: "templates/openstack_user_config.yml.prod.j2"
         dest: "{{ osa_etc_path }}/openstack_user_config.yml"
-      become: true
 
     ##
     # Check syntax
@@ -63,4 +58,3 @@
       shell: "openstack-ansible setup-infrastructure.yml --syntax-check"
       args:
         chdir: "{{ osa_path }}/playbooks/"
-      become: true

@@ -50,9 +50,7 @@ cinder_physical_device: sdb
 # Openstack config
 openstack:
   domain: pod1.opnfv.fr
-  rsyslog:
-    ip: 127.0.0.1
-    name: localhost
+  rsyslog: 127.0.0.1
   glance:
     nfs:
       server: 10.0.2.6

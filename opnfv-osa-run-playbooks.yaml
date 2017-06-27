@@ -12,4 +12,3 @@
       shell: "openstack-ansible setup-hosts.yml"
       args:
         chdir: "{{ osa_path }}/playbooks/"
-      become: true

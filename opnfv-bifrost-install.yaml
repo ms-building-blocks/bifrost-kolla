@@ -31,7 +31,6 @@
     ##
     - name: Remove pre-existing leases file
       file: path=/var/lib/misc/dnsmasq.leases state=absent
-      become: true
     ##
     # Prepare inventory and config files
     ##
@@ -49,7 +48,6 @@
     - name: Install bifrost requirements
       pip:
         requirements: "{{ bifrost_path }}/requirements.txt"
-      become: true
     - name: Install bifrost
       shell: ansible-playbook -vvvv -i inventory/target install.yaml -e staging_drivers_include=true
       args:
@@ -59,11 +57,9 @@
         path: /etc/ironic/ironic.conf
         regexp: '^enabled_drivers ='
         line: "enabled_drivers = {{ ironic_drivers_list }}"
-      become: true
     - service:
         name: ironic-conductor
         state: restarted
-      become: true
     ##
     # Correct DNSmasq config for default gateway
     ##
@@ -72,11 +68,9 @@
         path: /etc/dnsmasq.conf
         regexp: '^dhcp-option=3'
         line: "dhcp-option=3,{{ pod.net_config['br-mgmt'].gateway }}"
-      become: true
     - service:
         name: dnsmasq
         state: restarted
-      become: true
     ##
     # Set various files
     ##

@@ -26,6 +26,12 @@
         src: "templates/bifrost_inventory.json.j2"
         dest: "{{ ansible_env.HOME }}/bifrost_inventory/{{ item }}.json"
       with_items: "{{ pod.nodes }}"
+    - name: get nodes ips
+      set_fact:
+        nodes_ip: "{{ pod | node_ips (pod.net_config['br-mgmt'].network, ip_shift) }}"
+    - name: get job nodes
+      set_fact:
+        job2nodes: "{{ pod | job2nodes() }}"
     - name: prepare ssh config file
       template:
         src: "templates/ssh_config.j2"
@@ -34,7 +40,6 @@
       template:
         src: "templates/ssh_config.j2"
         dest: "/root/.ssh/config"
-      become: true
     - name: set ansible node inventory
       template:
         src: "templates/ansible_inventory.j2"
