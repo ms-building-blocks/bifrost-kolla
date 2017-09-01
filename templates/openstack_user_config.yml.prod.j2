@@ -17,7 +17,7 @@ global_overrides:
   # If using different protocols (https/http) for the public/internal
   # endpoints the two addresses must be different.
   #
-  external_lb_vip_address: {{ openstack.domain }}
+  external_lb_vip_address: {{ openstack.public_api_ip }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
@@ -211,7 +211,7 @@ metering-compute_hosts:
 # each container could have different storage targets.
 storage_hosts:
 {% for node in job2nodes['controller'] %}
-  infra{{ loop.index }}::
+  infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
     container_vars:
       cinder_backends:

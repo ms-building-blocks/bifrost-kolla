@@ -1,31 +1,52 @@
 ---
-- hosts: localhost
-  connection: local
+- hosts: jumphost
+  become: true
   vars_files:
     - "vars/pods.yaml"
     - "vars/servers.yaml"
     - "vars/defaults.yaml"
   tasks:
     ##
+    # Gen SSH keys if not exists
+    ##
+    - name: Generate SSH keys
+      shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+      args:
+        creates: /root/.ssh/id_rsa
+    ##
     # Clean and get Bifrost sources
     ##
+    - name: Update list of packages
+      apt:
+        name: 'python-pip'
+        update_cache: yes
+        state: installed
+    - name: Remove list of packages
+      apt:
+        name: "{{item}}"
+        state: absent
+      with_items:
+           - python-six
+    - name: Install list of packages
+      apt:
+        name: "{{item}}"
+        state: installed
+      with_items:
+           - python-pip
+           - python-dev
+           - libssl-dev
+           - virtualenv
+           - git
+           - jq
     - name: Clean old bifrost
       file:
         path: "{{ bifrost_path }}"
         state: absent
-    - name: clone bifrost
+    - name: "clone bifrost {{bifrost_branch}}"
       git:
         repo: "{{ bifrost_url }}"
         dest: "{{ bifrost_path }}"
         version: "{{ bifrost_branch }}"
-    - name: Clean fucking keystone file 1 that fails - Temp
-      file:
-          path: "{{ bifrost_path }}/playbooks/roles/bifrost-ironic-install/tasks/keystone_setup.yml"
-          state: absent
-    - name: Clean fucking keystone file 2 that fails - Temp
-      file:
-          path: "{{ bifrost_path }}/playbooks/roles/bifrost-ironic-install/tasks/keystone_setup_inspector.yml"
-          state: absent
     ##
     # Clean dnsmasq.leases
     ##
@@ -43,23 +64,35 @@
         dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/baremetal"
         src: "templates/baremetal.j2"
     ##
+    # Update pip and install ansible
+    ##
+    - name: Install ansible
+      pip:
+        name: "ansible"
+    ##
+    # Correct image gen and remove old images
+    ##
+    - name: correct bifrost image generation
+      lineinfile:
+        path: "{{ bifrost_path }}/playbooks/install.yaml"
+        regexp: '^(.*) serial-console(.*)$'
+        line: '\1 enable-serial-console\2'
+        backrefs: yes
+    - name: Remove old image
+      file:
+        path: "/httpboot/deployment_image*"
+        state: absent
+    ##
     # Install Bifrost
     ##
     - name: Install bifrost requirements
       pip:
         requirements: "{{ bifrost_path }}/requirements.txt"
+        # virtualenv: "{{ bifrost_venv }}"
     - name: Install bifrost
-      shell: ansible-playbook -vvvv -i inventory/target install.yaml -e staging_drivers_include=true
+      shell: "ansible-playbook -i inventory/target install.yaml -e staging_drivers_include=true;"
       args:
         chdir: "{{ bifrost_path }}/playbooks/"
-    - name: correct bifrost config - drivers list
-      lineinfile:
-        path: /etc/ironic/ironic.conf
-        regexp: '^enabled_drivers ='
-        line: "enabled_drivers = {{ ironic_drivers_list }}"
-    - service:
-        name: ironic-conductor
-        state: restarted
     ##
     # Correct DNSmasq config for default gateway
     ##
@@ -74,7 +107,12 @@
     ##
     # Set various files
     ##
-    - name: set bifrost_env-vars
-      copy:
-        src: "files/bifrost_env-vars"
-        dest: "{{ ansible_env.HOME }}/bifrost_env-vars"
+
+    - name: clean bifrost detailled inventory folder
+      file:
+        path: "{{ bosa_config }}/bifrost_inventory/"
+        state: absent
+    - name: set bifrost detailled inventory folder
+      file:
+        path: "{{ bosa_config }}/bifrost_inventory/"
+        state: directory

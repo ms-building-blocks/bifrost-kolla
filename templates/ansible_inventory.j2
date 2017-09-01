@@ -19,3 +19,6 @@ compute{{ compute_count[0] }} node_id={{ loop.index }}
 [nodes:children]
 controllers
 computes
+
+[all:vars]
+pod_name={{ pod_name }}

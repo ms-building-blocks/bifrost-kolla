@@ -1,13 +1,12 @@
-# Pod name, corresponding to pods.yaml config file
-pod_name: pod1
-pod: "{{ pods[pod_name] }}"
+# Main config folder
+bosa_config: /etc/bosa/
 
 # IPMI config
 ipmi_username: "Administrator"
 ipmi_password: "opnfv2017"
 
 # Bifrost git params
-bifrost_url: https://github.com/openstack/bifrost.git
+bifrost_url: https://git.openstack.org/openstack/bifrost
 bifrost_path: "/opt/bifrost"
 bifrost_branch: "stable/ocata"
 
@@ -19,11 +18,11 @@ osa_branch: "stable/ocata"
 # OSA config
 osa_etc_path: /etc/openstack_deploy
 
-# Ironic drivers list
-ironic_drivers_list: agent_ipmitool,agent_ucs,pxe_ipmitool
+# Bifrost ansible virtualenv
+bifrost_venv: /opt/bifrost-venv
 
 # Management bridge name for jumphost
-network_interface: brMgmt
+network_interface: ens3
 
 # Ironic DB password
 ironic_db_password: aSecretPassword473z
@@ -49,18 +48,25 @@ cinder_physical_device: sdb
 
 # Openstack config
 openstack:
-  domain: pod1.opnfv.fr
-  rsyslog: 127.0.0.1
+  public_api_ip: "{{ public_api_ip }}"
+  rsyslog: "{{ rsyslog }}"
   glance:
     nfs:
-      server: 10.0.2.6
-      path: /images
+      server: "{{ nfs }}"
+      path: "/{{ nfs_glance }}"
   cinder:
     nfs:
-      server: 10.0.2.6
+      server: "{{ nfs }}"
       path: /vol/cinder
 
 
 # IP shift from network address to set ip
-# first used ip address of will be network + ip_shif + index
+# first used ip address of will be network + ip_shif + node_id
 ip_shift: 10
+
+# Pod structure
+pod: "{{ pods[pod_name] }}"
+
+# Dib user
+dib_dev_user_username: ubuntu
+dib_dev_user_password: opnfv2017

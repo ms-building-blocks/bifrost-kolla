@@ -1,9 +1,11 @@
+host jump.{{ pod_name }}.{{ domain }}
+
 {% for node in job2nodes['controller'] %}
-host infra{{ loop.index }}:
+host infra{{ loop.index }}
     HostName {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 {% for node in job2nodes['compute'] %}
-host compute{{ loop.index }}:
+host compute{{ loop.index }}
     HostName {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 

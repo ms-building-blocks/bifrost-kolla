@@ -6,12 +6,12 @@ servers:
             alim: 230vAC
             cpu:
                 - Intel(R) Xeon(R) CPU E5-2683 v3 @ 2.00GHz
-            cores: 14
+            cores: 28
             additional_nics:
-            ram: 32 Go
+            ram: 128 Go
             storage:
                 - 300 Go SSD
-                - 300 Go SSD
+                - 1200 Go SSD
         enable: true
         interfaces:
             - sw: xe-0/0/18
@@ -28,20 +28,20 @@ servers:
             alim: 230vAC
             cpu:
                 - Intel(R) Xeon(R) CPU E5-2683 v3 @ 2.00GHz
-            cores: 14
+            cores: 28
             additional_nics:
-            ram: 32 Go
+            ram: 128 Go
             storage:
                 - 300 Go SSD
-                - 300 Go SSD
+                - 1200 Go SSD
         enable: true
         interfaces:
             - sw: xe-0/0/21
-              mac: 94:57:a5:52:63:b0
+              mac: 1c:98:ec:16:ae:38
             - sw: xe-0/0/22
-              mac: 94:57:a5:52:63:b1
-            - sw: xe-0/0/23
-              mac: 94:57:a5:52:63:b2
+              mac: 1c:98:ec:16:ae:39
+            - sw: xe-0/0/23i
+              mac: 1c:98:ec:16:ae:3a
         ipmi: 10.0.0.13
     server04:
         description: HP DL360 gen 9

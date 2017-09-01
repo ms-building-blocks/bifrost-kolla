@@ -10,6 +10,13 @@
     ##
     - name: ensure the gateway is correct
       shell: "ip r d default && ip r a default via {{ pod.net_config['br-mgmt'].gateway }}"
+
+    ##
+    # set correct resolv.conf
+    ##
+    - name: ensure the resolv.conf is correct
+      shell: "echo nameserver {{ pod.net_config['br-mgmt'].dns }} > /etc/resolv.conf"
+
     ##
     # install basic packages
     ##
@@ -28,7 +35,7 @@
            - tcpdump
            - vlan
     ##
-    # Prepare and clean node
+    # Prepare modules
     ##
     - name: configure modules
       lineinfile:
@@ -44,10 +51,10 @@
       file:
         path: "/etc/udev/rules.d/99-glean.rules"
         state: absent
+
     ##
     # Get mac2intf list1
     ##
-
     - name: get bridges to configure
       set_fact:
         bridges: "{{ inventory_hostname | get_bridges(hostvars, network_profiles, pod) }}"
@@ -77,11 +84,21 @@
       shell: "ip a d {{ mgmt_net_p }}.1{{ node_id }}/{{ pod.net_config['br-mgmt'].mask }} dev {{ mgmt_intf }} && ip l set dev {{ mgmt_intf }} down && ifup br-mgmt"
       when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
     - name: restart all interfaces
-      shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a"
+      shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a && sleep 5"
 
     ##
     # Restart services
     ##
-    - service:
+    - systemd:
         name: ntp
         state: restarted
+        daemon_reload: yes
+        no_block: true
+
+    ##
+    # Purge setuptools for a better OSA install
+    ##
+    - name: remove setuptools
+      pip:
+        name: setuptools
+        state: absent

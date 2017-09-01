@@ -1,5 +1,5 @@
 # default inventory source
-export BIFROST_INVENTORY_SOURCE=~/bifrost_inventory.json
+export BIFROST_INVENTORY_SOURCE=/etc/bosa/bifrost_inventory.json
 
 # functions
 bifrost_check_ssh_server(){
@@ -8,15 +8,15 @@ bifrost_check_ssh_server(){
 }
 bifrost_del_server(){
 	ironic node-set-maintenance $1 true
-        ironic node-delete $1
+    ironic node-delete $1
 }
-bifrost_reboot(){
-        ironic node-set-power-state $1 off
-        sleep 30
-        ironic node-set-power-state $1 on
+bifrost_reboot_server(){
+    ironic node-set-power-state $1 off
+    sleep 30
+    ironic node-set-power-state $1 on
 }
 ping_check(){
-    ping -c1 $1 | egrep "packet|ping"
+    ping -c1 $1 | grep icmp_seq > /dev/null && echo -e "$ip \e[32mPING_OK\e[39m" || echo -e "$ip \e[31mPING_NOK\e[39m"
 }
 
 # aliases
@@ -25,5 +25,3 @@ alias bifrost_check_dhcp='for ip in $(cat /var/lib/misc/dnsmasq.leases | cut -d\
 alias bifrost_check_ipmi='for ip in $(jq -r ".[].driver_info.power.ipmi_address" $BIFROST_INVENTORY_SOURCE); do ping_check $ip; done'
 alias bifrost_check_ping='for ip in $(jq -r ".[].ipv4_address" $BIFROST_INVENTORY_SOURCE ); do ping_check $ip; done'
 alias bifrost_clean='for srv in $(jq -r ".[].name" $BIFROST_INVENTORY_SOURCE); do bifrost_del_server $srv; done'
-alias bifrost_status='ironic node-list'
-alias bifrost_status_watch='watch ironic node-list'

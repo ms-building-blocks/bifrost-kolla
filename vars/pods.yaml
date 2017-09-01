@@ -4,9 +4,9 @@ pods:
       nodes:
         server02: [ compute, storage ]
         server03: [ compute, storage ]
-        server04: [ controller, storage ]
-        server09: [ controller, storage ]
-        server11: [ controller, storage ]
+        server04: [ controller, network, storage ]
+        server09: [ controller, network, storage ]
+        server11: [ controller, network, storage ]
       net_config:
         br-mgmt:
           interface: 0

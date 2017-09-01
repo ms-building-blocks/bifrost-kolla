@@ -12,9 +12,11 @@ def get_bridges(inventory_hostname, hostvars, network_profiles, pod):
         list of bridges on the node
     """
     br = []
-    for node_type in pod['nodes'][hostvars[inventory_hostname]['ansible_hostname']]:
+    for node_type in pod['nodes'][hostvars[
+            inventory_hostname]['ansible_hostname']]:
         br.extend(x for x in network_profiles[node_type] if x not in br)
     return br
+
 
 def target_interfaces(inventory_hostname, hostvars, servers):
     """Get the macs used on the node
@@ -27,8 +29,9 @@ def target_interfaces(inventory_hostname, hostvars, servers):
     Returns:
         list of macs of interfaces plugged on the node
     """
-    return [ i['mac'] for i in servers[hostvars[inventory_hostname][
-        'ansible_hostname']]['interfaces'] ]
+    return [i['mac'] for i in servers[hostvars[inventory_hostname][
+        'ansible_hostname']]['interfaces']]
+
 
 def mac2intf(inventory_hostname, hostvars, servers):
     """Get the mac associate to the interface name
@@ -43,18 +46,19 @@ def mac2intf(inventory_hostname, hostvars, servers):
         interfaces name
     """
     intf_list = hostvars[inventory_hostname]['ansible_interfaces']
-    target_interfaces = [ i['mac'] for i in servers[hostvars[
-        inventory_hostname]['ansible_hostname']]['interfaces'] ]
+    target_interfaces = [i['mac'] for i in servers[hostvars[
+        inventory_hostname]['ansible_hostname']]['interfaces']]
     macs = {}
     for intf in intf_list:
         # only recover phsical interfaces
         if (intf.startswith('en') or intf.startswith('eth')) and \
-            '.' not in intf:
+                '.' not in intf:
             mac = hostvars[inventory_hostname]["ansible_{}".format(intf)
                                                ]['macaddress']
             if mac in target_interfaces:
                 macs[mac] = intf
     return macs
+
 
 class FilterModule(object):
     '''

@@ -1,5 +1,5 @@
-
 import re
+
 
 def sizeConv(s, target_unit='Mo'):
     '''
@@ -22,6 +22,7 @@ def sizeConv(s, target_unit='Mo'):
         div = 1
     return size // div
 
+
 def sizeSum(sizes, target_unit='Mo'):
     '''
     sum of sizes
@@ -30,6 +31,7 @@ def sizeSum(sizes, target_unit='Mo'):
     for s in sizes:
         r += sizeConv(s, target_unit)
     return r
+
 
 class FilterModule(object):
     '''
