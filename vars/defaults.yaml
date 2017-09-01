@@ -48,7 +48,6 @@ cinder_physical_device: sdb
 
 # Openstack config
 openstack:
-  public_api_ip: "{{ public_api_ip }}"
   rsyslog: "{{ rsyslog }}"
   glance:
     nfs:

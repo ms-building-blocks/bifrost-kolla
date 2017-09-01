@@ -17,7 +17,7 @@ global_overrides:
   # If using different protocols (https/http) for the public/internal
   # endpoints the two addresses must be different.
   #
-  external_lb_vip_address: {{ openstack.public_api_ip }}
+  external_lb_vip_address: {{ pod.net_config['br-mgmt'].network | ipadd( 8 ) }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
