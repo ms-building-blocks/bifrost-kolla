@@ -94,10 +94,12 @@ ansible galera_container -m shell -a "mysql -h localhost -e 'show status like \"
 openstack-ansible setup-openstack.yml
 
 #-------------------------------------------------------------------------------
-# Fetch openrc
+# Fetch openrc and cert
 #-------------------------------------------------------------------------------
 CNT=$(ssh infra1 lxc-ls |grep utility)
 ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /root/openrc
+scp infra1:/etc/ssl/certs/haproxy.cert /root
+echo 'CA_CERT=haproxy.cert' >> /root/openrc
 
 #-------------------------------------------------------------------------------
 # End
