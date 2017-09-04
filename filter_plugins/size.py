@@ -9,14 +9,15 @@ def sizeConv(s, target_unit='Mo'):
     p = re.compile('(\d+)+\s*([^\s]*)')
     (size, unit) = p.findall(s)[0]
     size = int(size)
-    if unit == 'Go':
+    unit.lower()
+    if unit in ['g', 'go']:
         size *= 1024
-    elif unit == 'To':
+    elif unit in ['t', 'to']:
         size *= 1024 * 1024
 
-    if target_unit == 'Go':
+    if target_unit in ['g', 'go']:
         div = 1024
-    elif target_unit == 'To':
+    elif target_unit in ['t', 'to']:
         div = 1024 * 1024
     else:
         div = 1

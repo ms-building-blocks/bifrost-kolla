@@ -15,24 +15,28 @@ def ipadd(ip, add):
     return int2ip(int(ipaddress.ip_address(ip2int(ip))+add))
 
 
-def node_ips(pod, netw, shift):
-    nodes = {}
+def get_nodes_names(nodes):
+    return sorted(node['name'] for node in nodes)
+
+
+def node_ips(nodes, netw, shift):
+    nodes_ips = {}
     index = 1
-    for srv in sorted(pod['nodes']):
-        nodes[srv] = {'ip': ipadd(netw, shift + index),
-                      'shift': shift + index}
+    for srv_name in get_nodes_names(nodes):
+        nodes_ips[srv_name] = {'ip': ipadd(netw, shift + index),
+                               'index': index}
         index += 1
-    return nodes
+    return nodes_ips
 
 
-def job2nodes(pod):
+def job2nodes(nodes):
     jobs = {'controller': [],
             'compute': [],
             'storage': [],
             'network': []}
-    for srv in sorted(pod['nodes']):
-        for job in pod['nodes'][srv]:
-            jobs[job].append(srv)
+    for srv in sorted(nodes, key=lambda node: node['name']):
+        for funct in srv['functions']:
+            jobs[funct].append(srv['name'])
     return jobs
 
 

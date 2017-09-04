@@ -33,7 +33,7 @@ net_config:
     mask: 24
 ###################################################
 jumphost:
-  name: orange-pod1-jump.
+  name: orange-pod1-jump
   node:
     type: virtual                           # can be virtual or baremetal
     vendor: libvirt
@@ -57,6 +57,7 @@ jumphost:
 ###################################################
 nodes:
   - name: orange-pod1-node1
+    functions: [ compute, storage ]
     node: &nodeparams
       type: baremetal
       vendor: hp
@@ -74,7 +75,7 @@ nodes:
       pass: opnfv2017
     disks: &disks
       - name: 'disk1'
-        disk_capacity: 200G
+        disk_capacity: 300G
         disk_type: ssd
         disk_interface: ssd
         disk_rotation: 15000
@@ -93,6 +94,7 @@ nodes:
       - "94:57:a5:52:f1:83"
 ########################
   - name: orange-pod1-node2
+    functions: [ compute, storage ]
     node: *nodeparams
     disks: *disks
     remote_management:
@@ -105,8 +107,19 @@ nodes:
       - "1c:98:ec:16:ae:3a"
 ########################
   - name: orange-pod1-node3
+    functions: [ controller, network, storage ]
     node: *nodeparams
-    disks: *disks
+    disks: &disks2
+      - name: 'disk1'
+        disk_capacity: 300G
+        disk_type: ssd
+        disk_interface: ssd
+        disk_rotation: 15000
+      - name: 'disk2'
+        disk_capacity: 300G
+        disk_type: ssd
+        disk_interface: ssd
+        disk_rotation: 15000
     remote_management:
       <<: *remote_params
       address: 10.0.0.14/24
@@ -117,8 +130,9 @@ nodes:
       - "94:57:a5:52:c9:4a"
 ########################
   - name: orange-pod1-node4
+    functions: [ controller, network, storage ]
     node: *nodeparams
-    disks: *disks
+    disks: *disks2
     remote_management:
       <<: *remote_params
       address: 10.0.0.19/24
@@ -129,8 +143,9 @@ nodes:
       - "94:57:a5:52:53:7e"
 ########################
   - name: orange-pod1-node5
+    functions: [ controller, network, storage ]
     node: *nodeparams
-    disks: *disks
+    disks: *disks2
     remote_management:
       <<: *remote_params
       address: 10.0.0.19/24
