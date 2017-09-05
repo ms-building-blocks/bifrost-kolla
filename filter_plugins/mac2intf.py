@@ -1,4 +1,16 @@
-def get_bridges(inventory_hostname, hostvars, network_profiles, pod):
+def nodes_as_dict(nodes):
+    """Convert nodes list to dict indexed on nodes name
+
+    Args:
+        nodes: the nodes list
+
+    Returns:
+        dictionnary of nodes
+    """
+    return {n['name']: n for n in nodes}
+
+
+def get_bridges(inventory_hostname, hostvars, network_profiles, nodes):
     """Get the bridges needed for a node within its profile
 
     Args:
@@ -6,14 +18,13 @@ def get_bridges(inventory_hostname, hostvars, network_profiles, pod):
         hostvars: the ansible hostvars of the node
         network_profiles: the network_profiles associating brige name to
             server group
-        pod: the pod configuration
+        nodes: a dict of nodes
 
     Returns:
         list of bridges on the node
     """
     br = []
-    for node_type in pod['nodes'][hostvars[
-            inventory_hostname]['ansible_hostname']]:
+    for node_type in nodes[hostvars[inventory_hostname]['ansible_hostname']]:
         br.extend(x for x in network_profiles[node_type] if x not in br)
     return br
 
@@ -67,6 +78,7 @@ class FilterModule(object):
 
     def filters(self):
         return {
+            'nodes_as_dict': nodes_as_dict,
             'get_bridges': get_bridges,
             'target_interfaces': target_interfaces,
             'mac2intf': mac2intf,

@@ -2,9 +2,15 @@ import re
 
 
 def sizeConv(s, target_unit='Mo'):
-    '''
-    convert size into the targeted unit
-    '''
+    """convert size into the targeted unit
+
+    Args:
+        s: size, as a string
+        target_unit: the unit to convert to (default: Mo)
+
+    Returns:
+        the converted size as a string
+    """
     s = str(s)
     p = re.compile('(\d+)+\s*([^\s]*)')
     (size, unit) = p.findall(s)[0]
@@ -25,9 +31,15 @@ def sizeConv(s, target_unit='Mo'):
 
 
 def sizeSum(sizes, target_unit='Mo'):
-    '''
-    sum of sizes
-    '''
+    """Sum sizes, and convert to targeted unit
+
+    Args:
+        sizes: a list of sizes, as a string
+        target_unit: the unit to convert to (default: Mo)
+
+    Returns:
+        the sum of sizes as a string
+    """
     r = 0
     for s in sizes:
         r += sizeConv(s, target_unit)

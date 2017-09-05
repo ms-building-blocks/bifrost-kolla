@@ -30,18 +30,18 @@ ironic_db_password: aSecretPassword473z
 # network profiles
 network_profiles:
     controller:
-        - br-mgmt
+        - admin
     storage:
-        - br-mgmt
-        - br-storage
+        - admin
+        - storage
     network:
-        - br-mgmt
-        - br-vxlan
-        - br-vlan
+        - admin
+        - private
+        - public
     compute:
-        - br-mgmt
-        - br-vxlan
-        - br-vlan
+        - admin
+        - private
+        - public
 
 # Cinder
 cinder_physical_device: sdb
