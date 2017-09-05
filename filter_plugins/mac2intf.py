@@ -1,3 +1,6 @@
+from pprint import pprint as pp
+
+
 def nodes_as_dict(nodes):
     """Convert nodes list to dict indexed on nodes name
 
@@ -10,7 +13,7 @@ def nodes_as_dict(nodes):
     return {n['name']: n for n in nodes}
 
 
-def get_bridges(inventory_hostname, hostvars, network_profiles, nodes):
+def get_networks(inventory_hostname, hostvars, network_profiles, nodes):
     """Get the bridges needed for a node within its profile
 
     Args:
@@ -24,41 +27,41 @@ def get_bridges(inventory_hostname, hostvars, network_profiles, nodes):
         list of bridges on the node
     """
     br = []
-    for node_type in nodes[hostvars[inventory_hostname]['ansible_hostname']]:
+    for node_type in nodes[hostvars[inventory_hostname][
+            'ansible_hostname']]['functions']:
         br.extend(x for x in network_profiles[node_type] if x not in br)
     return br
 
 
-def target_interfaces(inventory_hostname, hostvars, servers):
+def target_interfaces(inventory_hostname, hostvars, nodes):
     """Get the macs used on the node
 
     Args:
         inventory_hostname: the node name
         hostvars: the ansible hostvars of the node
-        servers: the servers list
+        nodes: a dict of nodes
 
     Returns:
         list of macs of interfaces plugged on the node
     """
-    return [i['mac'] for i in servers[hostvars[inventory_hostname][
-        'ansible_hostname']]['interfaces']]
+    return nodes[hostvars[inventory_hostname][
+        'ansible_hostname']]['interfaces']
 
 
-def mac2intf(inventory_hostname, hostvars, servers):
+def mac2intf(inventory_hostname, hostvars, nodes):
     """Get the mac associate to the interface name
 
     Args:
         inventory_hostname: the node name
         hostvars: the ansible hostvars of the node
-        servers: the servers list
+        nodes: a dict of nodes
 
     Returns:
         list of macs of interfaces plugged on the node, linked with the
         interfaces name
     """
     intf_list = hostvars[inventory_hostname]['ansible_interfaces']
-    target_interfaces = [i['mac'] for i in servers[hostvars[
-        inventory_hostname]['ansible_hostname']]['interfaces']]
+    target_macs = target_interfaces(inventory_hostname, hostvars, nodes)
     macs = {}
     for intf in intf_list:
         # only recover phsical interfaces
@@ -66,7 +69,7 @@ def mac2intf(inventory_hostname, hostvars, servers):
                 '.' not in intf:
             mac = hostvars[inventory_hostname]["ansible_{}".format(intf)
                                                ]['macaddress']
-            if mac in target_interfaces:
+            if mac in target_macs:
                 macs[mac] = intf
     return macs
 
@@ -79,7 +82,7 @@ class FilterModule(object):
     def filters(self):
         return {
             'nodes_as_dict': nodes_as_dict,
-            'get_bridges': get_bridges,
+            'get_networks': get_networks,
             'target_interfaces': target_interfaces,
             'mac2intf': mac2intf,
         }

@@ -43,6 +43,13 @@ network_profiles:
         - private
         - public
 
+# network mapping
+network_mapping:
+    admin: br-mgmt
+    storage: br-storage
+    private: br-vxlan
+    public: br-vlan
+
 # Cinder
 cinder_physical_device: sdb
 
