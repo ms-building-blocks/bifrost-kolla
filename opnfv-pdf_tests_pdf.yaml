@@ -1,0 +1,88 @@
+---
+# - hosts: localhost
+#   become: true
+#   vars_files:
+#     - "vars/defaults.yaml"
+#     - "vars/pdf_orange-pod1.yaml"
+#   vars:
+#     target: '/tmp/bosa/tpl_pdf/'
+#   tasks:
+#     - name: set original templates folder
+#       file:
+#         path: "{{ target }}"
+#         state: directory
+#         recurse: yes
+#     ##
+#     # WIP local test of jinja templates
+#     ##
+#     - name: set bifrost inventory
+#       template:
+#         src: "templates_pdf/bifrost_inventory.json.j2"
+#         dest: "{{ target }}/bifrost_inventory.json"
+#     - name: get nodes ips
+#       set_fact:
+#         nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
+#     # - debug:
+#     #     var: nodes_ip
+#     - name: get job nodes
+#       set_fact:
+#         job2nodes: "{{ nodes | job2nodes() }}"
+#     # - debug:
+#     #     var: job2nodes
+#     - name: prepare ssh config file
+#       template:
+#         src: "templates_pdf/ssh_config.j2"
+#         dest: "{{ target }}/config"
+#     - name: set ansible node inventory
+#       template:
+#         src: "templates_pdf/ansible_inventory.j2"
+#         dest: "{{ target }}/ansible_inventory"
+#     - name: copy bifrost target vars
+#       template:
+#         dest: "{{ target }}/target"
+#         src: "templates_pdf/target.j2"
+#     - name: copy bifrost baremetal vars
+#       template:
+#         dest: "{{ target }}/baremetal"
+#         src: "templates_pdf/baremetal.j2"
+#     - name: set openstack_user_config.yml
+#       template:
+#         src: "templates_pdf/openstack_user_config.yml.prod.j2"
+#         dest: "{{ target }}/openstack_user_config.yml"
+
+- hosts: nodes
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/pdf_orange-pod1.yaml"
+  tasks:
+    ##
+    # Get mac2intf list1
+    ##
+    - name: get nodes as a dict
+      set_fact:
+        nodes_dict: "{{ nodes | nodes_as_dict() }}"
+    - name: get bridges to configure
+      set_fact:
+        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, nodes_dict) }}"
+    - name: get srv_macs
+      set_fact:
+        srv_macs: "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"
+    - debug:
+        var: srv_macs
+    - name: get mac2intf
+      set_fact:
+        macs: "{{ inventory_hostname | mac2intf(hostvars, nodes_dict) }}"
+    - debug:
+        var: macs
+    - name: get mgmt interface
+      set_fact:
+        mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
+    - debug:
+        var: mgmt_intf
+    - debug:
+        var: node_netw
+
+    - name: ensure interfaces file is updated
+      template:
+        src: "templates_pdf/interfaces.j2"
+        dest: "/etc/network/interfaces.test"

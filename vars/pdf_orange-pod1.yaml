@@ -91,7 +91,7 @@ nodes:
     interfaces:
       - "94:57:a5:52:f1:80"
       - "94:57:a5:52:f1:81"
-      - "94:57:a5:52:f1:83"
+      - "94:57:a5:52:f1:82"
 ########################
   - name: server03
     functions: [ compute, storage ]

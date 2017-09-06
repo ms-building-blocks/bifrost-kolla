@@ -1,0 +1,46 @@
+auto lo
+iface lo inet loopback
+{% for netw in node_netw %}
+
+##
+# OSA network '{{ netw }}'
+##
+{% set intf = macs[srv_macs[net_config[netw].interface]] %}
+{% set bridge_name = network_mapping[netw] %}
+{% if net_config[netw].vlan > 0 %}
+auto {{ intf }}.{{ net_config[netw].vlan }}
+iface {{ intf }}.{{ net_config[netw].vlan }} inet manual
+    vlan-raw-device {{ intf }}
+{% else %}
+auto {{ intf }}
+iface {{ intf }} inet manual
+{% endif %}
+
+auto {{ bridge_name }}
+iface {{ bridge_name }} inet {{ 'static' if netw != 'public' else 'manual' }}
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports {{ intf }}{% if net_config[netw].vlan > 0 %}.{{ net_config[netw].vlan }}{% endif %}
+{% if netw != 'public' %}
+
+    address {{ net_config[netw].network | ipadd( ip_shift + node_id ) }}
+    netmask {{ net_config[netw].mask }}
+{% if net_config[netw].gateway is defined %}
+    gateway {{ net_config[netw].gateway }}
+{% endif %}
+{% if net_config[netw].dns is defined %}
+    dns-nameservers {{ net_config[netw].dns }}
+{% endif %}
+{% elif 'compute' in nodes_dict[ansible_hostname].functions %}
+
+# Create veth pair, do not abort if already exists
+    pre-up ip link add br-vlan-veth type veth peer name eth12 || true
+# Set both ends UP
+    pre-up ip link set br-vlan-veth up
+    pre-up ip link set eth12 up
+# Delete veth pair on DOWN
+    post-down ip link del br-vlan-veth || true
+    bridge_ports bond1 br-vlan-veth
+{% endif %}
+{% endfor %}
