@@ -15,7 +15,7 @@ def sizeConv(s, target_unit='Mo'):
     p = re.compile('(\d+)+\s*([^\s]*)')
     (size, unit) = p.findall(s)[0]
     size = int(size)
-    unit.lower()
+    unit = unit.lower()
     if unit in ['g', 'go']:
         size *= 1024
     elif unit in ['t', 'to']:
