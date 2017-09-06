@@ -16,7 +16,7 @@
       template:
         src: "templates/bifrost_inventory.json.j2"
         dest: "{{ bosa_config }}/bifrost_inventory/{{ item }}.json"
-      with_items: "{{ pod.nodes }}"
+      with_items: "{{ nodes }}"
     - name: get nodes ips
       set_fact:
         nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
