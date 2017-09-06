@@ -21,10 +21,3 @@
         repo: "{{ osa_url }}"
         dest: "{{ osa_path }}"
         version: "{{ osa_branch }}"
-    ##
-    # Bootstra OSA
-    ##
-    # - name: Bootstrap OSA
-    #   shell: ./bootstrap-ansible.sh
-    #   args:
-    #     chdir: "{{ osa_path }}/scripts/"

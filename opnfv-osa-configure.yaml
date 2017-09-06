@@ -22,10 +22,10 @@
         chdir: "{{ osa_path }}/scripts/"
     - name: get nodes ips
       set_fact:
-        nodes_ip: "{{ pod | node_ips (pod.net_config['br-mgmt'].network, ip_shift) }}"
+        nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
     - name: get job nodes
       set_fact:
-        job2nodes: "{{ pod | job2nodes() }}"
+        job2nodes: "{{ nodes | job2nodes() }}"
     - name: set openstack_user_config.yml
       template:
         src: "templates/openstack_user_config.yml.prod.j2"

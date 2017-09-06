@@ -1,28 +1,27 @@
 {
-{% for server_name in pod.nodes | sort  %}
-{% if item is not defined or item == server_name %}
-{% set srv = servers[server_name] %}
-    "{{ server_name }}": {
-        "name": "{{ server_name }}",
-        "uuid": "00000000-0000-0000-0000-0000000000{{ server_name|replace('server','') }}",
+{% for srv in nodes | sort(attribute='name')  %}
+{% if item is not defined or item == srv.name %}
+    "{{ srv.name }}": {
+        "name": "{{ srv.name }}",
+        "uuid": "00000000-0000-0000-0000-0000000000{{ loop.index }}",
         "driver_info": {
         "power": {
-            "ipmi_username": "{{ ipmi_username }}",
-            "ipmi_address": "{{ srv.ipmi }}",
-            "ipmi_password": "{{ ipmi_password }}"
+            "ipmi_username": "{{ srv.remote_management.user }}",
+            "ipmi_address": "{{ srv.remote_management.address }}",
+            "ipmi_password": "{{ srv.remote_management.pass }}"
             }
         },
         "nics": [
-        {% for intf in srv.interfaces or []  %}
-            { "mac": "{{ intf.mac }}" }{{ "," if not loop.last else '' }}
+        {% for mac in srv.interfaces or []  %}
+            { "mac": "{{ mac }}" }{{ "," if not loop.last else '' }}
         {% endfor %} ],
         "driver": "agent_ipmitool",
-        "ipv4_address": "{{ pod.net_config['br-mgmt'].network | ipadd( ip_shift + loop.index ) }}",
+        "ipv4_address": "{{ net_config['admin'].network | ipadd( ip_shift + loop.index ) }}",
         "properties": {
             "cpu_arch": "x86_64",
-            "ram": "{{ (srv.details.ram or '0') | sizeConv }}",
-            "disk_size": "{{ (srv.details.storage or []) | sizeSum(target_unit='Go') }}",
-            "cpus": "{{ srv.details.cores }}"
+            "ram": "{{ (srv.node.memory or '0') | sizeConv }}",
+            "disk_size": "{{ (srv.disks or []) | map(attribute='disk_capacity') | list | sizeSum(target_unit='Go') }}",
+            "cpus": "{{ srv.node.cores }}"
         }
     }{{ "," if not loop.last else '' }}
 {% endif %}

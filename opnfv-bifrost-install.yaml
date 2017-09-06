@@ -2,9 +2,8 @@
 - hosts: jumphost
   become: true
   vars_files:
-    - "vars/pods.yaml"
-    - "vars/servers.yaml"
     - "vars/defaults.yaml"
+    - "vars/pdf_orange-pod1.yaml"
   tasks:
     ##
     # Gen SSH keys if not exists
@@ -100,7 +99,7 @@
       lineinfile:
         path: /etc/dnsmasq.conf
         regexp: '^dhcp-option=3'
-        line: "dhcp-option=3,{{ pod.net_config['br-mgmt'].gateway }}"
+        line: "dhcp-option=3,{{ net_config['admin'].gateway }}"
     - service:
         name: dnsmasq
         state: restarted

@@ -1,9 +1,8 @@
 ---
 - hosts: nodes
   vars_files:
-    - "vars/pods.yaml"
-    - "vars/servers.yaml"
     - "vars/defaults.yaml"
+    - "vars/pdf_orange-pod1.yaml"
   gather_facts: no
   tasks:
     ##

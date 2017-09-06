@@ -1,4 +1,4 @@
-host jump.{{ pod_name }}.{{ domain }}
+host  {{ jumphost.name }}
 
 {% for node in job2nodes['controller'] %}
 host infra{{ loop.index }}

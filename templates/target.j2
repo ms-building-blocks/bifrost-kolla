@@ -13,11 +13,11 @@ transform_boot_image: false
 create_ipa_image: false
 download_ipa: true
 
-dnsmasq_router: {{ pod.net_config['br-mgmt'].network | ipadd( 1 ) }}
+dnsmasq_router: {{ net_config['admin'].network | ipadd( 1 ) }}
 
-dnsmasq_dns_servers: {{ pod.net_config['br-mgmt'].network | ipadd( 1 ) }}
-dhcp_pool_start: {{ pod.net_config['br-mgmt'].network | ipadd( 150 ) }}
-dhcp_pool_end: {{ pod.net_config['br-mgmt'].network | ipadd( 250 ) }}
+dnsmasq_dns_servers: {{ net_config['admin'].network | ipadd( 1 ) }}
+dhcp_pool_start: {{ net_config['admin'].network | ipadd( 150 ) }}
+dhcp_pool_end: {{ net_config['admin'].network | ipadd( 250 ) }}
 dhcp_lease_time: 12h
 dhcp_static_mask: 24
 inventory_dns: true

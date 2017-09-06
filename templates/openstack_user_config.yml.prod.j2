@@ -1,23 +1,23 @@
 ---
 cidr_networks:
-  container: {{ pod.net_config['br-mgmt'].network }}/{{ pod.net_config['br-mgmt'].mask }}
-  tunnel: {{ pod.net_config['br-vxlan'].network }}/{{ pod.net_config['br-vxlan'].mask }}
-  storage: {{ pod.net_config['br-storage'].network }}/{{ pod.net_config['br-storage'].mask }}
+  container: {{ net_config['admin'].network }}/{{ net_config['admin'].mask }}
+  tunnel: {{ net_config['private'].network }}/{{ net_config['private'].mask }}
+  storage: {{ net_config['storage'].network }}/{{ net_config['storage'].mask }}
 
 used_ips:
-  - "{{ pod.net_config['br-mgmt'].network | ipadd( 1 ) }},{{ pod.net_config['br-mgmt'].network | ipadd( 50 ) }}"
-  - "{{ pod.net_config['br-vxlan'].network | ipadd( 1 ) }},{{ pod.net_config['br-vxlan'].network | ipadd( 50 ) }}"
-  - "{{ pod.net_config['br-storage'].network | ipadd( 1 ) }},{{ pod.net_config['br-storage'].network | ipadd( 50 ) }}"
+  - "{{ net_config['admin'].network | ipadd( 1 ) }},{{ net_config['admin'].network | ipadd( 50 ) }}"
+  - "{{ net_config['private'].network | ipadd( 1 ) }},{{ net_config['private'].network | ipadd( 50 ) }}"
+  - "{{ net_config['storage'].network | ipadd( 1 ) }},{{ net_config['storage'].network | ipadd( 50 ) }}"
 
 global_overrides:
-  internal_lb_vip_address: {{ pod.net_config['br-mgmt'].network | ipadd( 9 ) }}
+  internal_lb_vip_address: {{ net_config['admin'].network | ipadd( ip_shift-1 ) }}
   #
   # The below domain name must resolve to an IP address
   # in the CIDR specified in haproxy_keepalived_external_vip_cidr.
   # If using different protocols (https/http) for the public/internal
   # endpoints the two addresses must be different.
   #
-  external_lb_vip_address: {{ pod.net_config['br-mgmt'].network | ipadd( 8 ) }}
+  external_lb_vip_address: {{ net_config['admin'].network | ipadd( ip_shift ) }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
@@ -220,5 +220,5 @@ storage_hosts:
           volume_group: cinder-volumes
           volume_driver: cinder.volume.drivers.lvm.LVMVolumeDriver
           volume_backend_name: LVM_iSCSI
-          iscsi_ip_address: "{{ pod.net_config['br-storage'].network | ipadd(nodes_ip[node]['shift']) }}"
+          iscsi_ip_address: "{{ net_config['storage'].network | ipadd(nodes_ip[node]['index'] + ip_shift) }}"
 {% endfor %}

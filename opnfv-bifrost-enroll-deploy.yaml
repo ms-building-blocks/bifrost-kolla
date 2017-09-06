@@ -2,9 +2,8 @@
 - hosts: jumphost
   become: true
   vars_files:
-    - "vars/pods.yaml"
-    - "vars/servers.yaml"
     - "vars/defaults.yaml"
+    - "vars/pdf_orange-pod1.yaml"
   tasks:
     ##
     # Prepare inventory and config files
@@ -20,10 +19,10 @@
       with_items: "{{ pod.nodes }}"
     - name: get nodes ips
       set_fact:
-        nodes_ip: "{{ pod | node_ips (pod.net_config['br-mgmt'].network, ip_shift) }}"
+        nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
     - name: get job nodes
       set_fact:
-        job2nodes: "{{ pod | job2nodes() }}"
+        job2nodes: "{{ nodes | job2nodes() }}"
     - name: prepare ssh config file
       template:
         src: "templates/ssh_config.j2"
@@ -47,8 +46,8 @@
     # Check ipmi reachability
     ##
     - name: check ipmi reachability
-      local_action: ping {{ servers[item].ipmi }}
-      with_items: "{{ pod.nodes }}"
+      local_action: ping {{ item['remote_management']['address'] | regex_replace('/{d}*$')}}
+      with_items: "{{ nodes }}"
     # ##
     # # Enroll
     # ##
