@@ -3,7 +3,7 @@
 {% if item is not defined or item == srv.name %}
     "{{ srv.name }}": {
         "name": "{{ srv.name }}",
-        "uuid": "00000000-0000-0000-0000-0000000000{{ loop.index }}",
+        "uuid": "00000000-0000-0000-0000-000000000{{ '%03d'|format(loop.index|int) }}",
         "driver_info": {
         "power": {
             "ipmi_username": "{{ srv.remote_management.user }}",
