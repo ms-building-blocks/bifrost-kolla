@@ -87,7 +87,6 @@
     - name: Install bifrost requirements
       pip:
         requirements: "{{ bifrost_path }}/requirements.txt"
-        # virtualenv: "{{ bifrost_venv }}"
     - name: Install bifrost
       shell: "ansible-playbook -i inventory/target install.yaml -e staging_drivers_include=true;"
       args:
@@ -104,9 +103,19 @@
         name: dnsmasq
         state: restarted
     ##
+    # Upgrade pyasn1 as it make ironic conductor fail
+    # "hardware type or interface pxe_ilo could not be loaded"
+    ##
+    - name: Install pyasn1
+      pip:
+        name: pyasn1
+        state: latest
+    - service:
+        name: ironic-conductor
+        state: restarted
+    ##
     # Set various files
     ##
-
     - name: clean bifrost detailled inventory folder
       file:
         path: "{{ bosa_config }}/bifrost_inventory/"

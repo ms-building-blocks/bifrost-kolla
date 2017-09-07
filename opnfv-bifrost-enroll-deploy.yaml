@@ -12,10 +12,10 @@
       template:
         src: "templates/bifrost_inventory.json.j2"
         dest: "{{ bosa_config }}/bifrost_inventory.json"
-    - name: set bifrost {{ item }} inventory
+    - name: set bifrost {{ item.name }} inventory
       template:
         src: "templates/bifrost_inventory.json.j2"
-        dest: "{{ bosa_config }}/bifrost_inventory/{{ item }}.json"
+        dest: "{{ bosa_config }}/bifrost_inventory/{{ item.name }}.json"
       with_items: "{{ nodes }}"
     - name: get nodes ips
       set_fact:

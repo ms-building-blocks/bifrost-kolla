@@ -7,7 +7,7 @@
         "driver_info": {
         "power": {
             "ipmi_username": "{{ srv.remote_management.user }}",
-            "ipmi_address": "{{ srv.remote_management.address }}",
+            "ipmi_address": "{{ srv.remote_management.address | regex_replace('/{d}*$','') }}",
             "ipmi_password": "{{ srv.remote_management.pass }}"
             }
         },

@@ -84,7 +84,7 @@
         src: "templates/interfaces.j2"
         dest: "/etc/network/interfaces"
     - name: restart mgmt interface
-      shell: "ip a d {{ net_config.admin.network | ipadd( ip_shift + node_id }}/{{ net_config.admin.mask }} dev {{ mgmt_intf }} && ip l set dev {{ mgmt_intf }} down && ifup network_mapping['admin']"
+      shell: "ip a d {{ net_config.admin.network | ipadd( ip_shift + node_id ) }}/{{ net_config.admin.mask }} dev {{ mgmt_intf }} && ip l set dev {{ mgmt_intf }} down && ifup {{ network_mapping['admin'] }}"
       when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
     - name: restart all interfaces
       shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a && sleep 5"

@@ -86,7 +86,7 @@ nodes:
         disk_rotation: 15000
     remote_management:
       <<: *remote_params
-      address: 10.0.0.12/24
+      address: 10.0.0.12
       mac_address: "94:57:a5:62:f4:c7"
     interfaces:
       - "94:57:a5:52:f1:80"
@@ -99,7 +99,7 @@ nodes:
     disks: *disks
     remote_management:
       <<: *remote_params
-      address: 10.0.0.13/24
+      address: 10.0.0.13
       mac_address: "e0:07:1b:f8:7e:5f"
     interfaces:
       - "1c:98:ec:16:ae:38"
@@ -122,7 +122,7 @@ nodes:
         disk_rotation: 15000
     remote_management:
       <<: *remote_params
-      address: 10.0.0.14/24
+      address: 10.0.0.14
       mac_address: "94:57:a5:62:73:c3"
     interfaces:
       - "94:57:a5:52:c9:48"
@@ -135,7 +135,7 @@ nodes:
     disks: *disks2
     remote_management:
       <<: *remote_params
-      address: 10.0.0.19/24
+      address: 10.0.0.19
       mac_address: "94:57:a5:62:72:b9"
     interfaces:
       - "94:57:a5:52:53:7c"
@@ -148,7 +148,7 @@ nodes:
     disks: *disks2
     remote_management:
       <<: *remote_params
-      address: 10.0.0.19/24
+      address: 10.0.0.21
       mac_address: "94:57:a5:62:f4:a7"
     interfaces:
       - "94:57:a5:52:c1:d8"
