@@ -3,7 +3,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-INVENTORY=$1
 export ANSIBLE_STDOUT_CALLBACK=debug
 
 #-------------------------------------------------------------------------------
@@ -12,19 +11,6 @@ export ANSIBLE_STDOUT_CALLBACK=debug
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root" 1>&2
     exit
-fi
-
-#-------------------------------------------------------------------------------
-# Check pod config
-#-------------------------------------------------------------------------------
-echo '---- Inventory ----'
-cat $INVENTORY | grep -v "^//"
-echo '-------------------'
-read -p "Do you confirm those parameters? (y/n) " -n 1 -r
-echo    # (optional) move to a new line
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
- exit
 fi
 
 #-------------------------------------------------------------------------------
@@ -63,12 +49,13 @@ apt-get install -y software-properties-common python-setuptools \
 pip install --upgrade pip
 pip install cryptography
 pip install ansible
+echo "jumphost ansible_connection=local" > /etc/ansible/hosts
 
 #-------------------------------------------------------------------------------
 # BIFROST
 #-------------------------------------------------------------------------------
-ansible-playbook -i $INVENTORY opnfv-bifrost-install.yaml
-ansible-playbook -i $INVENTORY opnfv-bifrost-enroll-deploy.yaml
+ansible-playbook opnfv-bifrost-install.yaml
+ansible-playbook opnfv-bifrost-enroll-deploy.yaml
 
 #-------------------------------------------------------------------------------
 # Prepare nodes
@@ -79,10 +66,10 @@ ansible-playbook -i /etc/bosa/ansible_inventory opnfv-prepare-nodes.yaml
 #-------------------------------------------------------------------------------
 # Prepare OSA
 #-------------------------------------------------------------------------------
-ansible-playbook -i $INVENTORY opnfv-osa-prepare.yaml
+ansible-playbook opnfv-osa-prepare.yaml
 pip uninstall -y ansible
 /opt/openstack-ansible/scripts/bootstrap-ansible.sh
-ansible-playbook -i $INVENTORY opnfv-osa-configure.yaml
+ansible-playbook opnfv-osa-configure.yaml
 
 #-------------------------------------------------------------------------------
 # Run OSA

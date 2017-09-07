@@ -1,10 +1,6 @@
 # Main config folder
 bosa_config: /etc/bosa/
 
-# IPMI config
-ipmi_username: "Administrator"
-ipmi_password: "opnfv2017"
-
 # Bifrost git params
 bifrost_url: https://git.openstack.org/openstack/bifrost
 bifrost_path: "/opt/bifrost"
@@ -21,57 +17,28 @@ osa_etc_path: /etc/openstack_deploy
 # Bifrost ansible virtualenv
 bifrost_venv: /opt/bifrost-venv
 
-# Management bridge name for jumphost
-network_interface: ens3
-
 # Ironic DB password
 ironic_db_password: aSecretPassword473z
 
 # network profiles
 network_profiles:
     controller:
-        - admin
+        - br-mgmt
     storage:
-        - admin
-        - storage
+        - br-mgmt
+        - br-storage
     network:
-        - admin
-        - private
-        - public
+        - br-mgmt
+        - br-vxlan
+        - br-vlan
     compute:
-        - admin
-        - private
-        - public
-
-# network mapping
-network_mapping:
-    admin: br-mgmt
-    storage: br-storage
-    private: br-vxlan
-    public: br-vlan
-
-# Cinder
-cinder_physical_device: sdb
-
-# Openstack config
-openstack:
-  rsyslog: "{{ rsyslog }}"
-  glance:
-    nfs:
-      server: "{{ nfs }}"
-      path: "/{{ nfs_glance }}"
-  cinder:
-    nfs:
-      server: "{{ nfs }}"
-      path: /vol/cinder
-
+        - br-mgmt
+        - br-vxlan
+        - br-vlan
 
 # IP shift from network address to set ip
 # first used ip address of will be network + ip_shif + node_id
 ip_shift: 10
-
-# Pod structure
-pod: "{{ pods[pod_name] }}"
 
 # Dib user
 dib_dev_user_username: ubuntu
