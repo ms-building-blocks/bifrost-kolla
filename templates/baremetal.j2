@@ -1,5 +1,5 @@
 ---
-network_interface: "{{ network_interface }}"
+network_interface: "{{ openstack_ansible.jumphost_network_interface }}"
 ssh_public_key_path: "/root/.ssh/id_rsa.pub"
 testing_user: root
 wait_for_node_deploy: true

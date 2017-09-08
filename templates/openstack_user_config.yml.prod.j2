@@ -1,23 +1,24 @@
 ---
+{% set nmap = openstack_ansible.network_mapping %}
 cidr_networks:
-  container: {{ net_config['admin'].network }}/{{ net_config['admin'].mask }}
-  tunnel: {{ net_config['private'].network }}/{{ net_config['private'].mask }}
-  storage: {{ net_config['storage'].network }}/{{ net_config['storage'].mask }}
+  container: {{ net_config[nmap['br-mgmt']].network }}/{{ net_config[nmap['br-mgmt']].mask }}
+  tunnel: {{ net_config[nmap['br-vxlan']].network }}/{{ net_config[nmap['br-vxlan']].mask }}
+  storage: {{ net_config[nmap['br-storage']].network }}/{{ net_config[nmap['br-storage']].mask }}
 
 used_ips:
-  - "{{ net_config['admin'].network | ipadd( 1 ) }},{{ net_config['admin'].network | ipadd( 50 ) }}"
-  - "{{ net_config['private'].network | ipadd( 1 ) }},{{ net_config['private'].network | ipadd( 50 ) }}"
-  - "{{ net_config['storage'].network | ipadd( 1 ) }},{{ net_config['storage'].network | ipadd( 50 ) }}"
+  - "{{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }},{{ net_config[nmap['br-mgmt']].network | ipadd( 50 ) }}"
+  - "{{ net_config[nmap['br-vxlan']].network | ipadd( 1 ) }},{{ net_config[nmap['br-vxlan']].network | ipadd( 50 ) }}"
+  - "{{ net_config[nmap['br-storage']].network | ipadd( 1 ) }},{{ net_config[nmap['br-storage']].network | ipadd( 50 ) }}"
 
 global_overrides:
-  internal_lb_vip_address: {{ net_config['admin'].network | ipadd( ip_shift-1 ) }}
+  internal_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ipadd( ip_shift-1 ) }}
   #
   # The below domain name must resolve to an IP address
   # in the CIDR specified in haproxy_keepalived_external_vip_cidr.
   # If using different protocols (https/http) for the public/internal
   # endpoints the two addresses must be different.
   #
-  external_lb_vip_address: {{ net_config['admin'].network | ipadd( ip_shift ) }}
+  external_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ipadd( ip_shift ) }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
@@ -102,7 +103,7 @@ haproxy_hosts:
 # rsyslog server
 log_hosts:
   log1:
-    ip: {{ openstack.rsyslog }}
+    ip: {{ openstack_ansible.rsyslog }}
 
 ###
 ### OpenStack
@@ -134,8 +135,8 @@ image_hosts:
     container_vars:
       limit_container_types: glance
       glance_nfs_client:
-        - server: "{{ openstack.glance.nfs.server }}"
-          remote_path: "{{ openstack.glance.nfs.path }}"
+        - server: "{{ openstack_ansible.glance.nfs.server }}"
+          remote_path: "{{ openstack_ansible.glance.nfs.path }}"
           local_path: "/var/lib/glance/images"
           type: "nfs"
           options: "_netdev,auto"
@@ -220,5 +221,5 @@ storage_hosts:
           volume_group: cinder-volumes
           volume_driver: cinder.volume.drivers.lvm.LVMVolumeDriver
           volume_backend_name: LVM_iSCSI
-          iscsi_ip_address: "{{ net_config['storage'].network | ipadd(nodes_ip[node]['index'] + ip_shift) }}"
+          iscsi_ip_address: "{{ net_config[nmap['br-storage']].network | ipadd(nodes_ip[node]['index'] + ip_shift) }}"
 {% endfor %}

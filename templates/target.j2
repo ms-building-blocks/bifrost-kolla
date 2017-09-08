@@ -1,5 +1,5 @@
 ---
-network_interface: "{{ network_interface }}"
+network_interface: "{{ openstack_ansible.jumphost_network_interface }}"
 ironic_db_password: {{ ironic_db_password }}
 mysql_username: root
 mysql_password:
@@ -15,11 +15,12 @@ transform_boot_image: false
 create_ipa_image: false
 download_ipa: true
 
-dnsmasq_router: {{ net_config['admin'].network | ipadd( 1 ) }}
+{% set nmap = openstack_ansible.network_mapping %}
+dnsmasq_router: {{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }}
 
-dnsmasq_dns_servers: {{ net_config['admin'].network | ipadd( 1 ) }}
-dhcp_pool_start: {{ net_config['admin'].network | ipadd( 150 ) }}
-dhcp_pool_end: {{ net_config['admin'].network | ipadd( 250 ) }}
+dnsmasq_dns_servers: {{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }}
+dhcp_pool_start: {{ net_config[nmap['br-mgmt']].network | ipadd( 150 ) }}
+dhcp_pool_end: {{ net_config[nmap['br-mgmt']].network | ipadd( 250 ) }}
 dhcp_lease_time: 12h
 dhcp_static_mask: 24
 inventory_dns: true

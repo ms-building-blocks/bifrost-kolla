@@ -2,7 +2,7 @@
 # Orange Pod1 Installer descriptor file
 ###############################################################################
 
-openstack-ansible:
+openstack_ansible:
     rsyslog: 10.1.0.6
     glance:
       nfs:
@@ -15,13 +15,13 @@ openstack-ansible:
 
     # network mapping
     network_mapping:
-        admin: br-mgmt
-        storage: br-storage
-        private: br-vxlan
-        public: br-vlan
+        br-mgmt: admin
+        br-storage: storage
+        br-vxlan: private
+        br-vlan: public
 
     # Cinder
     cinder_physical_device: sdb
 
     # Management bridge name for jumphost
-    network_interface: ens3
+    jumphost_network_interface: ens3
