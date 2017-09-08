@@ -60,7 +60,7 @@
         nodes_dict: "{{ nodes | nodes_as_dict() }}"
     - name: get bridges to configure
       set_fact:
-        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, nodes_dict) }}"
+        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, openstack_ansible.nodes_roles) }}"
     - name: get srv_macs
       set_fact:
         srv_macs: "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"

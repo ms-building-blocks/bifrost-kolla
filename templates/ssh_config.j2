@@ -1,10 +1,10 @@
 host  {{ jumphost.name }}
 
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
 host infra{{ loop.index }}
     HostName {{ nodes_ip[node]['ip'] }}
 {% endfor %}
-{% for node in job2nodes['compute'] %}
+{% for node in role2nodes['compute'] %}
 host compute{{ loop.index }}
     HostName {{ nodes_ip[node]['ip'] }}
 {% endfor %}

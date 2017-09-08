@@ -79,14 +79,14 @@ global_overrides:
 
 # galera, memcache, rabbitmq, utility
 shared-infra_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # repository (apt cache, python packages, etc)
 repo-infra_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
@@ -95,7 +95,7 @@ repo-infra_hosts:
 # Ideally the load balancer should not use the Infrastructure hosts.
 # Dedicated hardware is best for improved performance and security.
 haproxy_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
@@ -111,14 +111,14 @@ log_hosts:
 
 # keystone
 identity_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # cinder api services
 storage-infra_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
@@ -129,7 +129,7 @@ storage-infra_hosts:
 # user_variables, but are left here to illustrate that
 # each container could have different storage targets.
 image_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
     container_vars:
@@ -144,63 +144,63 @@ image_hosts:
 
 # nova api, conductor, etc services
 compute-infra_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # heat
 orchestration_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # horizon
 dashboard_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # neutron server, agents (L3, etc)
 network_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # ceilometer (telemetry API)
 metering-infra_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # aodh (telemetry alarm service)
 metering-alarm_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # gnocchi (telemetry metrics storage)
 metrics_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # nova hypervisors
 compute_hosts:
-{% for node in job2nodes['compute'] %}
+{% for node in role2nodes['compute'] %}
   compute{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
 
 # ceilometer compute agent (telemetry)
 metering-compute_hosts:
-{% for node in job2nodes['compute'] %}
+{% for node in role2nodes['compute'] %}
   compute{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
 {% endfor %}
@@ -211,7 +211,7 @@ metering-compute_hosts:
 # user_variables, but are left here to illustrate that
 # each container could have different storage targets.
 storage_hosts:
-{% for node in job2nodes['controller'] %}
+{% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
     container_vars:

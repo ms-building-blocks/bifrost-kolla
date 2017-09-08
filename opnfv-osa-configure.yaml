@@ -26,7 +26,7 @@
         nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
     - name: get job nodes
       set_fact:
-        job2nodes: "{{ nodes | job2nodes() }}"
+        role2nodes: "{{ openstack_ansible.nodes_roles | role2nodes() }}"
     - name: set openstack_user_config.yml
       template:
         src: "templates/openstack_user_config.yml.prod.j2"

@@ -75,22 +75,22 @@ def node_ips(nodes, netw, shift):
     return nodes_ips
 
 
-def job2nodes(nodes):
-    """Get a dictionnary containing nodes associate to a function
+def role2nodes(nodes_roles):
+    """Get a dictionnary containing nodes associate to a role
 
     Args:
-        nodes: nodes list from PDF
+        nodes_roles: nodes_roles list from IDF
 
     Returns:
         {'controller': [], 'compute': [], 'storage': [], 'network': []...}
     """
-    jobs = {}
-    for srv in sorted(nodes, key=lambda node: node['name']):
-        for funct in srv['functions']:
-            if funct not in jobs.keys():
-                jobs[funct] = []
-            jobs[funct].append(srv['name'])
-    return jobs
+    roles = {}
+    for node, node_roles in sorted(nodes_roles):
+        for role in node_roles:
+            if role not in roles.keys():
+                roles[role] = []
+            roles[role].append(node)
+    return roles
 
 
 class FilterModule(object):
@@ -102,5 +102,5 @@ class FilterModule(object):
         return {
             'ipadd': ipadd,
             'node_ips': node_ips,
-            'job2nodes': job2nodes,
+            'role2nodes': role2nodes,
         }

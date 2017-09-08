@@ -32,7 +32,7 @@ iface {{ netw }} inet {{ 'static' if netw != 'br-vlan' else 'manual' }}
 {% if net_config[nmap[netw]].dns is defined %}
     dns-nameservers {{ net_config[nmap[netw]].dns }}
 {% endif %}
-{% elif 'compute' in nodes_dict[ansible_hostname].functions %}
+{% elif 'compute' in openstack_ansible.nodes_roles[ansible_hostname] %}
 
 # Create veth pair, do not abort if already exists
     pre-up ip link add br-vlan-veth type veth peer name eth12 || true

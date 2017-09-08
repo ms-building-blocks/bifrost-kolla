@@ -25,9 +25,9 @@
 #         nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
 #     - name: get job nodes
 #       set_fact:
-#         job2nodes: "{{ nodes | job2nodes() }}"
+#         role2nodes: "{{ openstack_ansible.nodes_roles | role2nodes() }}"
 #     - debug:
-#         var: job2nodes
+#         var: role2nodes
 #     - name: prepare ssh config file
 #       template:
 #         src: "templates/ssh_config.j2"
@@ -65,7 +65,7 @@
         var: nodes_dict
     - name: get bridges to configure
       set_fact:
-        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, nodes_dict) }}"
+        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, openstack_ansible.nodes_roles) }}"
     - debug:
         var: node_netw
     - name: get srv_macs

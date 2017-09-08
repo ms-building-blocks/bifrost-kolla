@@ -59,7 +59,6 @@ jumphost:
 ###################################################
 nodes:
   - name: server02
-    functions: [ compute, storage ]
     node: &nodeparams
       type: baremetal
       vendor: hp
@@ -96,7 +95,6 @@ nodes:
       - "94:57:a5:52:f1:82"
 ########################
   - name: server03
-    functions: [ compute, storage ]
     node: *nodeparams
     disks: *disks
     remote_management:
@@ -109,7 +107,6 @@ nodes:
       - "1c:98:ec:16:ae:3a"
 ########################
   - name: server04
-    functions: [ controller, network, storage ]
     node: *nodeparams
     disks: &disks2
       - name: 'disk1'
@@ -132,7 +129,6 @@ nodes:
       - "94:57:a5:52:c9:4a"
 ########################
   - name: server09
-    functions: [ controller, network, storage ]
     node: *nodeparams
     disks: *disks2
     remote_management:
@@ -145,7 +141,6 @@ nodes:
       - "94:57:a5:52:53:7e"
 ########################
   - name: server11
-    functions: [ controller, network, storage ]
     node: *nodeparams
     disks: *disks2
     remote_management:

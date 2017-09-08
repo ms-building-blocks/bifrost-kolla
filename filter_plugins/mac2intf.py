@@ -13,7 +13,7 @@ def nodes_as_dict(nodes):
     return {n['name']: n for n in nodes}
 
 
-def get_networks(inventory_hostname, hostvars, network_profiles, nodes):
+def get_networks(inventory_hostname, hostvars, network_profiles, nodes_roles):
     """Get the bridges needed for a node within its profile
 
     Args:
@@ -21,15 +21,15 @@ def get_networks(inventory_hostname, hostvars, network_profiles, nodes):
         hostvars: the ansible hostvars of the node
         network_profiles: the network_profiles associating brige name to
             server group
-        nodes: a dict of nodes
+        nodes_roles: a dict of nodes
 
     Returns:
         list of bridges on the node
     """
     br = []
-    for node_type in nodes[hostvars[inventory_hostname][
-            'ansible_hostname']]['functions']:
-        br.extend(x for x in network_profiles[node_type] if x not in br)
+    for node_role in nodes_roles[hostvars[inventory_hostname][
+            'ansible_hostname']]:
+        br.extend(x for x in network_profiles[node_role] if x not in br)
     return br
 
 
