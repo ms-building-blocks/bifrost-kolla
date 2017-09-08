@@ -49,32 +49,42 @@
 #         src: "templates/openstack_user_config.yml.prod.j2"
 #         dest: "{{ target }}/openstack_user_config.yml"
 #
-# - hosts: nodes
-#   vars_files:
-#     - "vars/defaults.yaml"
-#     - "vars/idf_orange-pod1.yaml"
-#     - "vars/pdf_orange-pod1.yaml"
-#   tasks:
-#     ##
-#     # Get mac2intf list1
-#     ##
-#     - name: get nodes as a dict
-#       set_fact:
-#         nodes_dict: "{{ nodes | nodes_as_dict() }}"
-#     - name: get bridges to configure
-#       set_fact:
-#         node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, nodes_dict) }}"
-#     - name: get srv_macs
-#       set_fact:
-#         srv_macs: "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"
-#     - name: get mac2intf
-#       set_fact:
-#         macs: "{{ inventory_hostname | mac2intf(hostvars, nodes_dict) }}"
-#     - name: get mgmt interface
-#       set_fact:
-#         mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
-#
-#     - name: ensure interfaces file is updated
-#       template:
-#         src: "templates_pdf/interfaces.j2"
-#         dest: "/etc/network/interfaces.test"
+- hosts: nodes
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/idf_orange-pod1.yaml"
+    - "vars/pdf_orange-pod1.yaml"
+  tasks:
+    ##
+    # Get mac2intf list1
+    ##
+    - name: get nodes as a dict
+      set_fact:
+        nodes_dict: "{{ nodes | nodes_as_dict() }}"
+    - debug:
+        var: nodes_dict
+    - name: get bridges to configure
+      set_fact:
+        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, nodes_dict) }}"
+    - debug:
+        var: node_netw
+    - name: get srv_macs
+      set_fact:
+        srv_macs: "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"
+    - debug:
+        var: srv_macs
+    - name: get mac2intf
+      set_fact:
+        macs: "{{ inventory_hostname | mac2intf(hostvars, nodes_dict) }}"
+    - debug:
+        var: macs
+    - name: get mgmt interface
+      set_fact:
+        mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
+    - debug:
+        var: mgmt_intf
+
+    - name: ensure interfaces file is updated
+      template:
+        src: "templates/interfaces.j2"
+        dest: "/etc/network/interfaces.test"
