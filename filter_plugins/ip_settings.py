@@ -85,8 +85,8 @@ def role2nodes(nodes_roles):
         {'controller': [], 'compute': [], 'storage': [], 'network': []...}
     """
     roles = {}
-    for node, node_roles in sorted(nodes_roles):
-        for role in node_roles:
+    for node in sorted(nodes_roles):
+        for role in nodes_roles[node]:
             if role not in roles.keys():
                 roles[role] = []
             roles[role].append(node)
