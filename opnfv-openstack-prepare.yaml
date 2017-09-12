@@ -1,0 +1,47 @@
+---
+- hosts: jumphost
+  gather_facts: false
+  become: true
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
+  tasks:
+    - pip:
+        name: shade
+        state: latest
+    - name: create images folders
+      file:
+        path: "{{ item }}"
+        state: directory
+        recurse: true
+      with_items:
+        - "{{ images_folder }}/ubuntu"
+        - "{{ images_folder }}/debian"
+        - "{{ images_folder }}/cirros"
+        - "{{ images_folder }}/centos"
+        - "{{ images_folder }}/suse"
+    - name: Download images
+      get_url:
+        url: "{{ item.url }}"
+        dest: "{{ images_folder }}/{{ item.file }}"
+      with_items: "{{ os_images }}"
+    - name: Push images
+      os_image:
+        name: "{{ item.name }}"
+        container_format: bare
+        disk_format: qcow2
+        state: present
+        filename: "{{ images_folder }}/{{ item.file }}"
+        min_disk: "{{ item.min_disk }}"
+        properties:
+          cpu_arch: x86_64
+          distro: "{{ item.distro }}"
+      with_items: "{{ os_images }}"
+    - name: "Create '{{ item.name }}' flavor with {{ item.ram }}MB of RAM, {{ item.vcpu }} virtual CPU, and {{ item.disk }}GB of local disk."
+      os_nova_flavor:
+        state: present
+        name: "{{ item.name }}"
+        ram: "{{ item.ram }}"
+        vcpus: "{{ item.vcpu }}"
+        disk: "{{ item.disk }}"
