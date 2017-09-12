@@ -45,3 +45,4 @@
         ram: "{{ item.ram }}"
         vcpus: "{{ item.vcpu }}"
         disk: "{{ item.disk }}"
+      with_items: "{{ os_flavors }}"
