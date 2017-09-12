@@ -1,5 +1,5 @@
 ---
-{% set nmap = openstack_ansible.network_mapping %}
+{% set nmap = xci.network_mapping %}
 cidr_networks:
   container: {{ net_config[nmap['br-mgmt']].network }}/{{ net_config[nmap['br-mgmt']].mask }}
   tunnel: {{ net_config[nmap['br-vxlan']].network }}/{{ net_config[nmap['br-vxlan']].mask }}
@@ -103,7 +103,7 @@ haproxy_hosts:
 # rsyslog server
 log_hosts:
   log1:
-    ip: {{ openstack_ansible.rsyslog }}
+    ip: {{ xci.rsyslog }}
 
 ###
 ### OpenStack
@@ -135,8 +135,8 @@ image_hosts:
     container_vars:
       limit_container_types: glance
       glance_nfs_client:
-        - server: "{{ openstack_ansible.glance.nfs.server }}"
-          remote_path: "{{ openstack_ansible.glance.nfs.path }}"
+        - server: "{{ xci.glance.nfs.server }}"
+          remote_path: "{{ xci.glance.nfs.path }}"
           local_path: "/var/lib/glance/images"
           type: "nfs"
           options: "_netdev,auto"

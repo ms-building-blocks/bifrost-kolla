@@ -1,6 +1,6 @@
 auto lo
 iface lo inet loopback
-{% set nmap = openstack_ansible.network_mapping %}
+{% set nmap = xci.network_mapping %}
 {% for netw in node_netw %}
 
 ##
@@ -32,7 +32,7 @@ iface {{ netw }} inet {{ 'static' if netw != 'br-vlan' else 'manual' }}
 {% if net_config[nmap[netw]].dns is defined %}
     dns-nameservers {{ net_config[nmap[netw]].dns }}
 {% endif %}
-{% elif 'compute' in openstack_ansible.nodes_roles[ansible_hostname] %}
+{% elif 'compute' in xci.nodes_roles[ansible_hostname] %}
 
 # Create veth pair, do not abort if already exists
     pre-up ip link add br-vlan-veth type veth peer name eth12 || true

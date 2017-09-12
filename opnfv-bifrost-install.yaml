@@ -3,8 +3,8 @@
   become: true
   vars_files:
     - "vars/defaults.yaml"
-    - "vars/idf_orange-pod1.yaml"
-    - "vars/pdf_orange-pod1.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
   tasks:
     ##
     # Gen SSH keys if not exists

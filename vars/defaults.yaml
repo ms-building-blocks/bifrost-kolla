@@ -4,12 +4,12 @@ bosa_config: /etc/bosa/
 # Bifrost git params
 bifrost_url: https://git.openstack.org/openstack/bifrost
 bifrost_path: "/opt/bifrost"
-bifrost_branch: "stable/ocata"
+bifrost_branch: "stable/ocata" # will be pushed in SDF
 
 # OSA git params
 osa_url: https://git.openstack.org/openstack/openstack-ansible
 osa_path: /opt/openstack-ansible
-osa_branch: "stable/ocata"
+osa_branch: "stable/ocata" # will be pushed in SDF
 
 # OSA config
 osa_etc_path: /etc/openstack_deploy
@@ -43,3 +43,47 @@ ip_shift: 10
 # Dib user
 dib_dev_user_username: ubuntu
 dib_dev_user_password: opnfv2017
+
+# Default images folder on jumphost
+images_folder: /mnt/images
+
+# Push images
+os_images:
+    - { name: 'cirros-0.3.5',
+        file: 'cirros/cirros-0.3.5-x86_64-disk.img',
+        distro: 'cirros',
+        min_disk: 2,
+        url: 'http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img' }
+    - { name: 'ubuntu-17.04-daily',
+        file: 'ubuntu/ubuntu-17.04-daily.img',
+        distro: 'ubuntu',
+        min_disk: 4,
+        url: 'https://cloud-images.ubuntu.com/zesty/current/zesty-server-cloudimg-amd64.img' }
+    - { name: 'ubuntu-14.04-daily',
+        file: 'ubuntu/ubuntu-14.04-daily.img',
+        distro: 'ubuntu',
+        min_disk: 4,
+        url: 'https://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img' }
+    - { name: 'ubuntu-16.04-daily',
+        file: 'ubuntu/ubuntu-16.04-daily.img',
+        distro: 'ubuntu',
+        min_disk: 4,
+        url: 'https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img' }
+    - { name: 'debian-9',
+        file: 'debian/debian-9-openstack-amd64.img',
+        distro: 'debian',
+        min_disk: 4,
+        url: 'https://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.qcow2' }
+
+os_flavors:
+    { ram: 1024,  disk: 0,   vcpu: 1,  name: 'test.smaller'   }
+    # { ram: 2048,  disk: 10,  vcpu: 1,  name: 'm1.small'     }
+    # { ram: 3072,  disk: 10,  vcpu: 2,  name: 'm1.medium'    }
+    # { ram: 8192,  disk: 10,  vcpu: 4,  name: 'm1.medium'    }
+    # { ram: 8192,  disk: 10,  vcpu: 4,  name: 'm1.large'     }
+    # { ram: 8192,  disk: 10,  vcpu: 8,  name: 'm1.xlarge'    }
+    # { ram: 1024,  disk: 50,  vcpu: 2,  name: 'onap.small'   }
+    # { ram: 4096,  disk: 50,  vcpu: 4,  name: 'onap.medium'  }
+    # { ram: 8192,  disk: 50,  vcpu: 8,  name: 'onap.large'   }
+    # { ram: 16384, disk: 50,  vcpu: 16, name: 'onap.xlarge'  }
+    # { ram: 32768, disk: 500, vcpu: 16, name: 'onap.xxlarge' }

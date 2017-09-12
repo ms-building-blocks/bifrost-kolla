@@ -3,8 +3,8 @@
 #   become: true
 #   vars_files:
 #     - "vars/defaults.yaml"
-#     - "vars/idf_orange-pod1.yaml"
-#     - "vars/pdf_orange-pod1.yaml"
+#     - "vars/idf.yaml"
+#     - "vars/pdf.yaml"
 #   vars:
 #     target: '/tmp/bosa/tpl_pdf/'
 #   tasks:
@@ -25,7 +25,7 @@
 #         nodes_ip: "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
 #     - name: get job nodes
 #       set_fact:
-#         role2nodes: "{{ openstack_ansible.nodes_roles | role2nodes() }}"
+#         role2nodes: "{{ xci.nodes_roles | role2nodes() }}"
 #     - debug:
 #         var: role2nodes
 #     - name: prepare ssh config file
@@ -52,8 +52,8 @@
 - hosts: nodes
   vars_files:
     - "vars/defaults.yaml"
-    - "vars/idf_orange-pod1.yaml"
-    - "vars/pdf_orange-pod1.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
   tasks:
     ##
     # Get mac2intf list1
@@ -65,7 +65,7 @@
         var: nodes_dict
     - name: get bridges to configure
       set_fact:
-        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, openstack_ansible.nodes_roles) }}"
+        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, xci.nodes_roles) }}"
     - debug:
         var: node_netw
     - name: get srv_macs

@@ -1,5 +1,5 @@
 ---
-network_interface: "{{ openstack_ansible.jumphost_network_interface }}"
+network_interface: "{{ xci.jumphost_network_interface }}"
 ironic_db_password: {{ ironic_db_password }}
 mysql_username: root
 mysql_password:
@@ -15,7 +15,7 @@ transform_boot_image: false
 create_ipa_image: false
 download_ipa: true
 
-{% set nmap = openstack_ansible.network_mapping %}
+{% set nmap = xci.network_mapping %}
 dnsmasq_router: {{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }}
 
 dnsmasq_dns_servers: {{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }}

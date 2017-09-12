@@ -2,8 +2,8 @@
 - hosts: nodes
   vars_files:
     - "vars/defaults.yaml"
-    - "vars/idf_orange-pod1.yaml"
-    - "vars/pdf_orange-pod1.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
   tasks:
     ##
     # set correct gateway
@@ -60,7 +60,7 @@
         nodes_dict: "{{ nodes | nodes_as_dict() }}"
     - name: get bridges to configure
       set_fact:
-        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, openstack_ansible.nodes_roles) }}"
+        node_netw: "{{ inventory_hostname | get_networks(hostvars, network_profiles, xci.nodes_roles) }}"
     - name: get srv_macs
       set_fact:
         srv_macs: "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"
@@ -76,7 +76,7 @@
         mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
     - name: shortcut for network mapping
       set_fact:
-        nmap: "{{ openstack_ansible.network_mapping }}"
+        nmap: "{{ xci.network_mapping }}"
 
     ##
     # Prepare network

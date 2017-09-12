@@ -4,6 +4,8 @@ set -o nounset
 set -o pipefail
 
 export ANSIBLE_STDOUT_CALLBACK=debug
+export LAB=$1
+export POD=$2
 
 #-------------------------------------------------------------------------------
 # Check run as root
@@ -11,6 +13,22 @@ export ANSIBLE_STDOUT_CALLBACK=debug
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root" 1>&2
     exit
+fi
+
+#-------------------------------------------------------------------------------
+# Check config source
+#-------------------------------------------------------------------------------
+if [ ! -f config_sources/labs/$LAB/$POD/pdf_$LAB-$POD.yaml ]; then
+    echo "No PDF file (config_sources/labs/$LAB/$POD/pdf_$LAB-$POD.yaml)" 1>&2
+    exit
+else
+    cp config_sources/labs/$LAB/$POD/pdf_$LAB-$POD.yaml vars/pdf.yaml
+fi
+if [ ! -f config_sources/labs/$LAB/$POD/idf_$LAB-$POD.yaml ]; then
+    echo "No IDF file (config_sources/labs/$LAB/$POD/idf_$LAB-$POD.yaml)" 1>&2
+    exit
+else
+    cp config_sources/labs/$LAB/$POD/idf_$LAB-$POD.yaml vars/idf.yaml
 fi
 
 #-------------------------------------------------------------------------------
@@ -84,9 +102,14 @@ openstack-ansible setup-openstack.yml
 # Fetch openrc and cert
 #-------------------------------------------------------------------------------
 CNT=$(ssh infra1 lxc-ls |grep utility)
-ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /root/openrc
-scp infra1:/etc/ssl/certs/haproxy.cert /root
-echo 'CA_CERT=haproxy.cert' >> /root/openrc
+ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
+scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
+echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
+
+#-------------------------------------------------------------------------------
+# Fetch openrc and cert
+#-------------------------------------------------------------------------------
+
 
 #-------------------------------------------------------------------------------
 # End
