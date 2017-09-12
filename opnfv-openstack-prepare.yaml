@@ -7,9 +7,14 @@
     - "vars/idf.yaml"
     - "vars/pdf.yaml"
   tasks:
+    # Push shade lib to latest stable version (the one installed with OSA
+    # crashes with following actions)
     - pip:
         name: shade
         state: latest
+    ##
+    # Push images
+    ##
     - name: create images folders
       file:
         path: "{{ item }}"
@@ -38,6 +43,9 @@
           cpu_arch: x86_64
           distro: "{{ item.distro }}"
       with_items: "{{ os_images }}"
+      ##
+      # Push flavors
+      ##
     - name: "Create '{{ item.name }}' flavor with {{ item.ram }}MB of RAM, {{ item.vcpu }} virtual CPU, and {{ item.disk }}GB of local disk."
       os_nova_flavor:
         state: present

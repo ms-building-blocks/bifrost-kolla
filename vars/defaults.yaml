@@ -75,15 +75,11 @@ os_images:
         min_disk: 4,
         url: 'https://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.qcow2' }
 
+# default flavors
 os_flavors:
-    { ram: 1024,  disk: 0,   vcpu: 1,  name: 'test.smaller'   }
-    # { ram: 2048,  disk: 10,  vcpu: 1,  name: 'm1.small'     }
-    # { ram: 3072,  disk: 10,  vcpu: 2,  name: 'm1.medium'    }
-    # { ram: 8192,  disk: 10,  vcpu: 4,  name: 'm1.medium'    }
-    # { ram: 8192,  disk: 10,  vcpu: 4,  name: 'm1.large'     }
-    # { ram: 8192,  disk: 10,  vcpu: 8,  name: 'm1.xlarge'    }
-    # { ram: 1024,  disk: 50,  vcpu: 2,  name: 'onap.small'   }
-    # { ram: 4096,  disk: 50,  vcpu: 4,  name: 'onap.medium'  }
-    # { ram: 8192,  disk: 50,  vcpu: 8,  name: 'onap.large'   }
-    # { ram: 16384, disk: 50,  vcpu: 16, name: 'onap.xlarge'  }
-    # { ram: 32768, disk: 500, vcpu: 16, name: 'onap.xxlarge' }
+    - { ram: 1024,  disk: 0,   vcpu: 1,  name: 'm1.smaller'   }
+    - { ram: 2048,  disk: 10,  vcpu: 1,  name: 'm1.small'     }
+    - { ram: 3072,  disk: 10,  vcpu: 2,  name: 'm1.medium'    }
+    - { ram: 8192,  disk: 10,  vcpu: 4,  name: 'm1.medium'    }
+    - { ram: 8192,  disk: 10,  vcpu: 4,  name: 'm1.large'     }
+    - { ram: 8192,  disk: 10,  vcpu: 8,  name: 'm1.xlarge'    }
