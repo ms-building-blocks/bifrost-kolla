@@ -6,19 +6,19 @@ cidr_networks:
   storage: {{ net_config[nmap['br-storage']].network }}/{{ net_config[nmap['br-storage']].mask }}
 
 used_ips:
-  - "{{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }},{{ net_config[nmap['br-mgmt']].network | ipadd( 50 ) }}"
-  - "{{ net_config[nmap['br-vxlan']].network | ipadd( 1 ) }},{{ net_config[nmap['br-vxlan']].network | ipadd( 50 ) }}"
-  - "{{ net_config[nmap['br-storage']].network | ipadd( 1 ) }},{{ net_config[nmap['br-storage']].network | ipadd( 50 ) }}"
+  - "{{ net_config[nmap['br-mgmt']].network | ip_add( 1 ) }},{{ net_config[nmap['br-mgmt']].network | ip_add( 50 ) }}"
+  - "{{ net_config[nmap['br-vxlan']].network | ip_add( 1 ) }},{{ net_config[nmap['br-vxlan']].network | ip_add( 50 ) }}"
+  - "{{ net_config[nmap['br-storage']].network | ip_add( 1 ) }},{{ net_config[nmap['br-storage']].network | ip_add( 50 ) }}"
 
 global_overrides:
-  internal_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ipadd( ip_shift-1 ) }}
+  internal_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ip_add( ip_shift-1 ) }}
   #
   # The below domain name must resolve to an IP address
   # in the CIDR specified in haproxy_keepalived_external_vip_cidr.
   # If using different protocols (https/http) for the public/internal
   # endpoints the two addresses must be different.
   #
-  external_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ipadd( ip_shift ) }}
+  external_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
@@ -221,5 +221,5 @@ storage_hosts:
           volume_group: cinder-volumes
           volume_driver: cinder.volume.drivers.lvm.LVMVolumeDriver
           volume_backend_name: LVM_iSCSI
-          iscsi_ip_address: "{{ net_config[nmap['br-storage']].network | ipadd(nodes_ip[node]['index'] + ip_shift) }}"
+          iscsi_ip_address: "{{ net_config[nmap['br-storage']].network | ip_add(nodes_ip[node]['index'] + ip_shift) }}"
 {% endfor %}

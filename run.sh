@@ -107,9 +107,10 @@ scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
 echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
 
 #-------------------------------------------------------------------------------
-# Fetch openrc and cert
+# Prepare Infra
 #-------------------------------------------------------------------------------
-
+source /etc/bosa/openstack_openrc
+ansible-playbook opnfv-openstack-prepare.yml
 
 #-------------------------------------------------------------------------------
 # End

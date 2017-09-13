@@ -1,37 +1,9 @@
-import struct
-import socket
-import ipaddress
+from netaddr import IPAddress, IPNetwork
 
 
-def ip2packed(ipstr):
-    """Convert an IPv4 address from dotted-quad string
-    (for example, '123.45.67.89') to 32-bit packed binary format, as a string
-    four characters in length.
+# This need to be rewritten to be IPv6 compliant
 
-    Args:
-        ipstr: IP as a dotted string
-
-    Returns:
-        a packed ip
-    """
-    return struct.unpack('!I', socket.inet_aton(ipstr))[0]
-
-
-def packed2ip(n):
-    """Convert a 32-bit packed IPv4 address (a string four characters in length)
-    to its standard dotted-quad string representation
-    (for example, '123.45.67.89').
-
-    Args:
-        n: IP as an int
-
-    Returns:
-        ip as a dotted string
-    """
-    return socket.inet_ntoa(struct.pack('!I', n))
-
-
-def ipadd(ip, add):
+def ip_add(ip, add):
     """Increment an dotted string ip with a value
 
     Args:
@@ -41,7 +13,20 @@ def ipadd(ip, add):
     Returns:
         IP as a dotted string
     """
-    return packed2ip(int(ipaddress.ip_address(ip2packed(ip))+add))
+    return str(IPAddress(int(IPAddress(ip))+add))
+
+
+def ip_last_of(net, mask):
+    """Increment an dotted string ip with a value
+
+    Args:
+        net: Network as a dotted string
+        mask: network mask as int
+
+    Returns:
+        IP as a dotted string
+    """
+    return ip_add(int(IPNetwork("{}/{}".format(net, mask)).broadcast), -1)
 
 
 def get_nodes_names(nodes):
@@ -70,27 +55,9 @@ def node_ips(nodes, netw, shift):
     """
     nodes_ips = {}
     for index, srv_name in enumerate(get_nodes_names(nodes)):
-        nodes_ips[srv_name] = {'ip': ipadd(netw, shift+index+1),
+        nodes_ips[srv_name] = {'ip': ip_add(netw, shift+index+1),
                                'index': index+1}
     return nodes_ips
-
-
-def role2nodes(nodes_roles):
-    """Get a dictionnary containing nodes associate to a role
-
-    Args:
-        nodes_roles: nodes_roles list from IDF
-
-    Returns:
-        {'controller': [], 'compute': [], 'storage': [], 'network': []...}
-    """
-    roles = {}
-    for node in sorted(nodes_roles):
-        for role in nodes_roles[node]:
-            if role not in roles.keys():
-                roles[role] = []
-            roles[role].append(node)
-    return roles
 
 
 class FilterModule(object):
@@ -100,7 +67,7 @@ class FilterModule(object):
 
     def filters(self):
         return {
-            'ipadd': ipadd,
+            'ip_add': ip_add,
+            'ip_last_of': ip_last_of,
             'node_ips': node_ips,
-            'role2nodes': role2nodes,
         }

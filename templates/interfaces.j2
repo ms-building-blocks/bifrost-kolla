@@ -24,7 +24,7 @@ iface {{ netw }} inet {{ 'static' if netw != 'br-vlan' else 'manual' }}
     bridge_ports {{ intf }}{% if net_config[nmap[netw]].vlan > 0 %}.{{ net_config[nmap[netw]].vlan }}{% endif %}
 {% if netw != 'br-vlan' %}
 
-    address {{ net_config[nmap[netw]].network | ipadd( ip_shift + node_id ) }}
+    address {{ net_config[nmap[netw]].network | ip_add( ip_shift + node_id ) }}
     netmask {{ net_config[nmap[netw]].mask }}
 {% if net_config[nmap[netw]].gateway is defined %}
     gateway {{ net_config[nmap[netw]].gateway }}

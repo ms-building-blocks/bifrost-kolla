@@ -16,11 +16,11 @@ create_ipa_image: false
 download_ipa: true
 
 {% set nmap = xci.network_mapping %}
-dnsmasq_router: {{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }}
+dnsmasq_router: {{ net_config[nmap['br-mgmt']].network | ip_add( 1 ) }}
 
-dnsmasq_dns_servers: {{ net_config[nmap['br-mgmt']].network | ipadd( 1 ) }}
-dhcp_pool_start: {{ net_config[nmap['br-mgmt']].network | ipadd( 150 ) }}
-dhcp_pool_end: {{ net_config[nmap['br-mgmt']].network | ipadd( 250 ) }}
+dnsmasq_dns_servers: {{ net_config[nmap['br-mgmt']].network | ip_add( 1 ) }}
+dhcp_pool_start: {{ net_config[nmap['br-mgmt']].network | ip_add( 150 ) }}
+dhcp_pool_end: {{ net_config[nmap['br-mgmt']].network | ip_add( 250 ) }}
 dhcp_lease_time: 12h
 dhcp_static_mask: 24
 inventory_dns: true

@@ -16,7 +16,7 @@
             { "mac": "{{ mac }}" }{{ "," if not loop.last else '' }}
         {% endfor %} ],
         "driver": "agent_ipmitool",
-        "ipv4_address": "{{ net_config['admin'].network | ipadd( ip_shift + loop.index ) }}",
+        "ipv4_address": "{{ net_config['admin'].network | ip_add( ip_shift + loop.index ) }}",
         "properties": {
             "cpu_arch": "x86_64",
             "ram": "{{ (srv.node.memory or '0') | sizeConv }}",
