@@ -23,6 +23,10 @@ osa_branch: "stable/ocata" # will be pushed in SDF
 # Bifrost config
 ##
 
+# Enable VENV
+bifrost_enable_venv: true
+bifrost_venv_folder: /opt/stack/bifrost
+
 # Ironic DB password
 ironic_db_password: aSecretPassword473z
 
@@ -59,7 +63,7 @@ ip_shift: 10
 ##
 
 os_basic:
-    images: true
+    images: false
     flavors: true
     ext_net: true
 

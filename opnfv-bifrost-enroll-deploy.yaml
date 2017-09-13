@@ -49,11 +49,11 @@
     - name: check ipmi reachability
       local_action: ping {{ item['remote_management']['address'] | regex_replace('/{d}*$')}}
       with_items: "{{ nodes }}"
-    # ##
-    # # Enroll
-    # ##
+    ##
+    # Enroll
+    ##
     - name: Enroll nodes
-      shell: "ansible-playbook -vvvv -i inventory/bifrost_inventory.py enroll-dynamic.yaml"
+      shell: "bifrost-ansible -i inventory/bifrost_inventory.py enroll-dynamic.yaml"
       args:
         chdir: "{{ bifrost_path }}/playbooks/"
       environment:
@@ -62,7 +62,7 @@
     # Deploy
     ##
     - name: Deploy bifrost
-      shell: "ansible-playbook -vvvv -i inventory/bifrost_inventory.py deploy-dynamic.yaml"
+      shell: "bifrost-ansible -i inventory/bifrost_inventory.py deploy-dynamic.yaml"
       args:
         chdir: "{{ bifrost_path }}/playbooks/"
       environment:

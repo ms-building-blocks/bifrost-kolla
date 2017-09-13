@@ -64,12 +64,28 @@
         dest: "{{ bifrost_path }}/playbooks/inventory/group_vars/baremetal"
         src: "templates/baremetal.j2"
     ##
-    # Update pip and install ansible
+    # Setup bifrost ansible environment
     ##
-    - name: Install ansible
-      pip:
-        name: "ansible"
+    - name: setup bifrost ansible environment
+      shell: "./env-setup.sh"
+      args:
+        chdir: "{{ bifrost_path }}/scripts/"
+      environment:
+        VENV: "{{ bifrost_venv_folder if bifrost_enable_venv else '' }}"
     ##
+    # Setup bifrost wrapper to enable or not virtualenv
+    ##
+    - name: Set bifrost-ansible wrapper
+      template:
+        dest: "/usr/local/bin/bifrost-ansible"
+        src: "templates/bifrost-ansible.j2"
+        mode: 0500
+    - name: Set bifrost-pip wrapper
+      template:
+        dest: "/usr/local/bin/bifrost-pip"
+        src: "templates/bifrost-pip.j2"
+        mode: 0500
+      ##
     # Correct image gen and remove old images
     ##
     - name: correct bifrost image generation
@@ -85,11 +101,8 @@
     ##
     # Install Bifrost
     ##
-    - name: Install bifrost requirements
-      pip:
-        requirements: "{{ bifrost_path }}/requirements.txt"
     - name: Install bifrost
-      shell: "ansible-playbook -i inventory/target install.yaml -e staging_drivers_include=true;"
+      shell: "bifrost-ansible -i inventory/target install.yaml -e staging_drivers_include=true;"
       args:
         chdir: "{{ bifrost_path }}/playbooks/"
     ##
@@ -107,10 +120,8 @@
     # Upgrade pyasn1 as it make ironic conductor fail
     # "hardware type or interface pxe_ilo could not be loaded"
     ##
-    - name: Install pyasn1
-      pip:
-        name: pyasn1
-        state: latest
+    - name: Install bifrost
+      shell: "bifrost-pip install pyasn1 --upgrade"
     - service:
         name: ironic-conductor
         state: restarted

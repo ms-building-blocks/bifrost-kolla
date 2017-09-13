@@ -13,7 +13,7 @@
         name: shade
         state: latest
     ##
-    # Push images
+    # Push images if asked
     ##
     - name: create images folders
       file:
@@ -32,6 +32,7 @@
         url: "{{ item.url }}"
         dest: "{{ images_folder }}/{{ item.file }}"
       with_items: "{{ os_images }}"
+      when: os_basic.images
     - name: Push images
       os_image:
         name: "{{ item.name }}"
@@ -46,7 +47,7 @@
       with_items: "{{ os_images }}"
       when: os_basic.images
     ##
-    # Push flavors
+    # Push flavors if asked
     ##
     - name: "Create '{{ item.name }}' flavor with {{ item.ram }}MB of RAM, {{ item.vcpu }} virtual CPU, and {{ item.disk }}GB of local disk."
       os_nova_flavor:
@@ -58,7 +59,7 @@
       with_items: "{{ os_flavors }}"
       when: os_basic.flavors
     ##
-    # Push Ext-net
+    # Push Ext-net if asked
     ##
     - name: "Create external network based on br-vlan"
       os_network:
@@ -72,9 +73,6 @@
     - name: Gather facts about a previously created subnet by name
       os_subnets_facts:
         name: "{{ ext_net.name }}_subnet"
-    - name: Show openstack subnets
-      debug:
-        var: openstack_subnets
     - name: create external subnetwork
       os_subnet:
         state: present
@@ -85,4 +83,4 @@
         allocation_pool_start: "{{ ext_subnet.network | ip_add(ext_net.dhcp.start_shift) }}"
         allocation_pool_end: "{{ ext_subnet.network | ip_last_of(ext_subnet.mask) }}"
         dns_nameservers: "{{ ext_subnet.dns }}"
-      when: openstack_subnets is null and os_basic.ext_net
+      when: openstack_subnets.0 is not defined and os_basic.ext_net
