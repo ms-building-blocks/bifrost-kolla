@@ -14,11 +14,11 @@ xci:
     glance:
       nfs:
         server: 10.0.2.6
-        path: /glance_pod1
+        path: /pod1/glance
     cinder:
       nfs:
         server: 10.0.2.6
-        path: /vol/cinder
+        path: /pod1/cinder
 
     # network mapping
     network_mapping:

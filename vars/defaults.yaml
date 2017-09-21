@@ -97,11 +97,6 @@ os_images:
         distro: 'debian',
         min_disk: 4,
         url: 'https://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.qcow2' }
-    - { name: 'centos-7',
-        file: 'centos/centOS-7-x86_64.img',
-        distro: 'centos',
-        min_disk: 4,
-        url: 'http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2' }
     - { name: 'opensuse-13.2',
         file: 'centos/opensuse-13.2-x86_64.img',
         distro: 'opensuse',
@@ -117,7 +112,7 @@ os_flavors:
     - { ram: 16384,  disk: 160,  vcpu: 8,  name: 'm1.xlarge'    }
 
 ext_net:
-    name: ext-net2
+    name: ext-net
     dhcp:
       start_shift: 5
       from_end_shift: 0

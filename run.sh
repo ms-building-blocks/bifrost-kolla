@@ -19,17 +19,17 @@ fi
 # Check config source
 #-------------------------------------------------------------------------------
 
-if [ ! -f config_sources/labs/$LAB/$POD/pdf_$LAB-$POD.yaml ]; then
-    echo "No PDF file (config_sources/labs/$LAB/$POD/pdf_$LAB-$POD.yaml)" 1>&2
+if [ ! -f config_sources/labs/$LAB/$POD.yaml ]; then
+    echo "No PDF file (config_sources/labs/$LAB/$POD.yaml)" 1>&2
     exit
 else
-    cp config_sources/labs/$LAB/$POD/pdf_$LAB-$POD.yaml vars/pdf.yaml
+    cp config_sources/labs/$LAB/$POD.yaml vars/pdf.yaml
 fi
-if [ ! -f config_sources/labs/$LAB/$POD/idf_$LAB-$POD.yaml ]; then
-    echo "No IDF file (config_sources/labs/$LAB/$POD/idf_$LAB-$POD.yaml)" 1>&2
+if [ ! -f config_sources/labs/$LAB/$POD/idf-$POD.yaml ]; then
+    echo "No IDF file (config_sources/labs/$LAB/idf-$POD.yaml)" 1>&2
     exit
 else
-    cp config_sources/labs/$LAB/$POD/idf_$LAB-$POD.yaml vars/idf.yaml
+    cp config_sources/labs/$LAB/idf-$POD.yaml vars/idf.yaml
 fi
 
 echo "
@@ -131,7 +131,7 @@ echo "
 #-------------------------------------------------------------------------------
 "
 source /etc/bosa/openstack_openrc
-ansible-playbook opnfv-openstack-prepare.yml
+ansible-playbook opnfv-openstack-prepare.yaml
 
 echo "
 #-------------------------------------------------------------------------------
