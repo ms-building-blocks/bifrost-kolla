@@ -25,7 +25,7 @@ if [ ! -f config_sources/labs/$LAB/$POD.yaml ]; then
 else
     cp config_sources/labs/$LAB/$POD.yaml vars/pdf.yaml
 fi
-if [ ! -f config_sources/labs/$LAB/$POD/idf-$POD.yaml ]; then
+if [ ! -f config_sources/labs/$LAB/idf-$POD.yaml ]; then
     echo "No IDF file (config_sources/labs/$LAB/idf-$POD.yaml)" 1>&2
     exit
 else
