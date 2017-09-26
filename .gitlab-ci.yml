@@ -3,4 +3,5 @@ before_script:
   - apt-get update -qq && apt-get install -y -qq yamllint
 
 syntax_checking:
-  - yamllint config_sources/labs/orange/*y?ml
+    script:
+        - yamllint config_sources/labs/orange/*y?ml
