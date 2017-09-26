@@ -94,49 +94,49 @@ echo "
 "
 ansible-playbook -i /etc/bosa/ansible_inventory opnfv-wait-for-nodes.yaml
 ansible-playbook -i /etc/bosa/ansible_inventory opnfv-prepare-nodes.yaml
-#
-# echo "
-# #-------------------------------------------------------------------------------
-# # Prepare OSA
-# #-------------------------------------------------------------------------------
-# "
-# ansible-playbook opnfv-osa-prepare.yaml
-# /opt/openstack-ansible/scripts/bootstrap-ansible.sh
-# ansible-playbook opnfv-osa-configure.yaml
-#
-# echo "
-# #-------------------------------------------------------------------------------
-# # Run OSA
-# #-------------------------------------------------------------------------------
-# "
-# cd /opt/openstack-ansible/playbooks
-# openstack-ansible setup-hosts.yml
-# openstack-ansible setup-infrastructure.yml
-# ansible galera_container -m shell -a \
-#     "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
-# openstack-ansible setup-openstack.yml
-#
-# echo "
-# #-------------------------------------------------------------------------------
-# # Fetch openrc and cert
-# #-------------------------------------------------------------------------------
-# "
-# CNT=$(ssh infra1 lxc-ls |grep utility)
-# ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
-# scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
-# echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
-#
-# echo "
-# #-------------------------------------------------------------------------------
-# # Prepare Infra
-# #-------------------------------------------------------------------------------
-# "
-# cd /opt/bosa
-# source /etc/bosa/openstack_openrc
-# ansible-playbook opnfv-openstack-prepare.yaml
-#
-# echo "
-# #-------------------------------------------------------------------------------
-# # End
-# #-------------------------------------------------------------------------------
-# "
+
+echo "
+#-------------------------------------------------------------------------------
+# Prepare OSA
+#-------------------------------------------------------------------------------
+"
+ansible-playbook opnfv-osa-prepare.yaml
+/opt/openstack-ansible/scripts/bootstrap-ansible.sh
+ansible-playbook opnfv-osa-configure.yaml
+
+echo "
+#-------------------------------------------------------------------------------
+# Run OSA
+#-------------------------------------------------------------------------------
+"
+cd /opt/openstack-ansible/playbooks
+openstack-ansible setup-hosts.yml
+openstack-ansible setup-infrastructure.yml
+ansible galera_container -m shell -a \
+    "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
+openstack-ansible setup-openstack.yml
+
+echo "
+#-------------------------------------------------------------------------------
+# Fetch openrc and cert
+#-------------------------------------------------------------------------------
+"
+CNT=$(ssh infra1 lxc-ls |grep utility)
+ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
+scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
+echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
+
+echo "
+#-------------------------------------------------------------------------------
+# Prepare Infra
+#-------------------------------------------------------------------------------
+"
+cd /opt/bosa
+source /etc/bosa/openstack_openrc
+ansible-playbook opnfv-openstack-prepare.yaml
+
+echo "
+#-------------------------------------------------------------------------------
+# End
+#-------------------------------------------------------------------------------
+"
