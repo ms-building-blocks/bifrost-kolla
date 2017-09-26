@@ -4,7 +4,7 @@ before_script:
 
 syntax_checking:
     tags:
-        - debian
+        - ubuntu
         - docker
     script:
         - yamllint config_sources/labs/orange/*y?ml
