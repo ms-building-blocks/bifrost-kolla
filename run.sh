@@ -83,6 +83,7 @@ echo "
 # Setup and run Bifrost
 #-------------------------------------------------------------------------------
 "
+cd /opt/bosa
 ansible-playbook opnfv-bifrost-install.yaml
 ansible-playbook opnfv-bifrost-enroll-deploy.yaml
 
@@ -130,6 +131,7 @@ echo "
 # Prepare Infra
 #-------------------------------------------------------------------------------
 "
+cd /opt/bosa
 source /etc/bosa/openstack_openrc
 ansible-playbook opnfv-openstack-prepare.yaml
 
