@@ -3,5 +3,8 @@ before_script:
   - apt-get update -qq && apt-get install -y -qq yamllint
 
 syntax_checking:
+    tags:
+        - debian
+        - docker
     script:
         - yamllint config_sources/labs/orange/*y?ml
