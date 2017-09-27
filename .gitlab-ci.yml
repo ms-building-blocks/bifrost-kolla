@@ -1,7 +1,8 @@
 ---
 before_script:
   - apt-get update -qq
-  - apt-get install -y -qq python yamllint
+  - apt-get install -y -qq python yamllint curl
+  - curl https://bootstrap.pypa.io/ez_setup.py | python
 
 syntax_checking:
     image: dockerproxy-iva.si.francetelecom.fr/debian:latest
