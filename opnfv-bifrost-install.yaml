@@ -19,25 +19,25 @@
     - name: Update list of packages
       apt:
         name: 'python-pip'
-        update_cache: yes
+        update_cache: 'yes'
         state: installed
     - name: Remove list of packages
       apt:
         name: "{{item}}"
         state: absent
       with_items:
-           - python-six
+        - python-six
     - name: Install list of packages
       apt:
         name: "{{item}}"
         state: installed
       with_items:
-           - python-pip
-           - python-dev
-           - libssl-dev
-           - virtualenv
-           - git
-           - jq
+        - python-pip
+        - python-dev
+        - libssl-dev
+        - virtualenv
+        - git
+        - jq
     - name: Clean old bifrost
       file:
         path: "{{ bifrost_path }}"
@@ -85,7 +85,7 @@
         dest: "/usr/local/bin/bifrost-pip"
         src: "templates/bifrost-pip.j2"
         mode: 0500
-      ##
+    ##
     # Correct image gen and remove old images
     ##
     - name: correct bifrost image generation
@@ -93,7 +93,7 @@
         path: "{{ bifrost_path }}/playbooks/install.yaml"
         regexp: '^(.*) serial-console(.*)$'
         line: '\1 enable-serial-console\2'
-        backrefs: yes
+        backrefs: 'yes'
     - name: Remove old image
       file:
         path: "/httpboot/deployment_image*"
@@ -102,7 +102,9 @@
     # Install Bifrost
     ##
     - name: Install bifrost
-      shell: "bifrost-ansible -i inventory/target install.yaml -e staging_drivers_include=true;"
+      shell: >
+        bifrost-ansible -i inventory/target install.yaml
+        -e staging_drivers_include=true;
       args:
         chdir: "{{ bifrost_path }}/playbooks/"
     ##
