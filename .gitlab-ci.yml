@@ -4,7 +4,8 @@ before_script:
 
 syntax_checking:
     tags:
-        - stretch
+        - forge
+        - debian
         - docker
     script:
         - yamllint config_sources/labs/orange/*y?ml
