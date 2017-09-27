@@ -49,7 +49,9 @@
     ##
     # Push flavors if asked
     ##
-    - name: "Create '{{ item.name }}' flavor with {{ item.ram }}MB of RAM, {{ item.vcpu }} virtual CPU, and {{ item.disk }}GB of local disk."
+    - name: >
+        Create '{{ item.name }}' flavor with {{ item.ram }}MB of RAM,
+        {{ item.vcpu }} virtual CPU, and {{ item.disk }}GB of local disk.
       os_nova_flavor:
         state: present
         name: "{{ item.name }}"
@@ -80,7 +82,9 @@
         name: "{{ ext_net.name }}_subnet"
         cidr: "{{ ext_subnet.network }}/{{ ext_subnet.mask }}"
         gateway_ip: "{{ ext_subnet.gateway }}"
-        allocation_pool_start: "{{ ext_subnet.network | ip_add(ext_net.dhcp.start_shift) }}"
-        allocation_pool_end: "{{ ext_subnet.network | ip_last_of(ext_subnet.mask) }}"
+        allocation_pool_start:
+          "{{ ext_subnet.network | ip_add(ext_net.dhcp.start_shift) }}"
+        allocation_pool_end:
+          "{{ ext_subnet.network | ip_last_of(ext_subnet.mask) }}"
         dns_nameservers: "{{ ext_subnet.dns }}"
       when: openstack_subnets.0 is not defined and os_basic.ext_net

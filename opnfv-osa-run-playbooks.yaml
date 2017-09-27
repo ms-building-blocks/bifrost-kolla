@@ -6,9 +6,6 @@
     - "vars/idf.yaml"
     - "vars/pdf.yaml"
   tasks:
-    ##
-    # Check syntax
-    ##
     - name: Setup hosts
       shell: "openstack-ansible setup-hosts.yml"
       args:

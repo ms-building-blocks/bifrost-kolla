@@ -18,12 +18,17 @@
       args:
         chdir: "{{ osa_path }}/etc/"
     - name: Generate pw-tokens
-      shell: "/usr/bin/python pw-token-gen.py --file {{ osa_etc_path }}/user_secrets.yml"
+      shell: >
+        /usr/bin/python pw-token-gen.py --file
+        {{ osa_etc_path }}/user_secrets.yml
       args:
         chdir: "{{ osa_path }}/scripts/"
     - name: get nodes ips
       set_fact:
-        nodes_ip: "{{ nodes | node_ips (net_config[xci.network_mapping['br-mgmt']].network, ip_shift) }}"
+        nodes_ip: >
+          {{ nodes |
+          node_ips(net_config[xci.network_mapping['br-mgmt']].network,
+                   ip_shift) }}
     - name: get role nodes
       set_fact:
         role2nodes: "{{ xci.nodes_roles | role2nodes() }}"

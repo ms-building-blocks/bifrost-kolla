@@ -22,7 +22,3 @@
         repo: "{{ osa_url }}"
         dest: "{{ osa_path }}"
         version: "{{ osa_branch }}"
-    # - name: set ansible-role-requirements
-    #   copy:
-    #     dest: "{{ osa_path }}/ansible-role-requirements.yml"
-    #     src: files/ansible-role-requirements.yml
