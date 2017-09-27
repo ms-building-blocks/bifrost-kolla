@@ -6,7 +6,6 @@ syntax_checking:
     image: dockerproxy-iva.si.francetelecom.fr/debian:latest
     tags:
         - shared
-        - rsc
         - docker
     script:
         - yamllint config_sources/labs/orange/*y?ml
