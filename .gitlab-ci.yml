@@ -1,11 +1,11 @@
 ---
 before_script:
   - apt-get update -qq
-  - apt-get install -y -qq --reinstall python-pkg-resources
   - apt-get install -y -qq yamllint
+  - curl https://bootstrap.pypa.io/ez_setup.py | python
 
 syntax_checking:
-    image: dockerproxy-iva.si.francetelecom.fr/ubuntu:latest
+    image: dockerproxy-iva.si.francetelecom.fr/debian:latest
     tags:
         - shared
         - docker
