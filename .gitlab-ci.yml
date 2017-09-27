@@ -1,8 +1,7 @@
 ---
 before_script:
   - apt-get update -qq
-  - apt-get install -y -qq python yamllint curl
-  - curl http://bootstrap.pypa.io/ez_setup.py | python
+  - apt-get install -y -qq yamllint python3-pkg-resources
 
 syntax_checking:
     image: dockerproxy-iva.si.francetelecom.fr/debian:latest
@@ -11,4 +10,6 @@ syntax_checking:
         - docker
         - innovation
     script:
-        - yamllint config_sources/labs/orange/*y?ml
+        - yamllint *.y?ml
+        - yamllint vars/*.y?ml
+        - yamllint config_sources/labs/orange/*.y?ml
