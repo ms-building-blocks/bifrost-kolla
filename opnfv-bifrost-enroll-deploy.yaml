@@ -20,8 +20,8 @@
       with_items: "{{ nodes }}"
     - name: get nodes ips
       set_fact:
-        nodes_ip: |
-          "{{ nodes | node_ips (net_config['admin'].network, ip_shift) }}"
+        nodes_ip: >
+          {{ nodes | node_ips (net_config['admin'].network, ip_shift) }}
     - name: get job nodes
       set_fact:
         role2nodes: "{{ xci.nodes_roles | role2nodes() }}"

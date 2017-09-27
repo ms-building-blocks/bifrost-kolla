@@ -92,10 +92,11 @@
         src: "templates/interfaces.j2"
         dest: "/etc/network/interfaces"
     - name: restart mgmt interface
-      shell: >
-        ip a d {{ net_config[nmap['br-mgmt']].network |
-        ip_add( ip_shift + node_id ) }}/
-          {{ net_config[nmap['br-mgmt']].mask }} dev {{ mgmt_intf }} &&
+      shell: >-
+        ip a d {{
+        net_config[nmap['br-mgmt']].network | ip_add(
+        ip_shift+node_id) }}/{{ net_config[nmap['br-mgmt']].mask }}
+        dev {{ mgmt_intf }} &&
         ip l set dev {{ mgmt_intf }} down && ifup br-mgmt
       when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
     - name: restart all interfaces

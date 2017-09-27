@@ -3,11 +3,11 @@ export BIFROST_INVENTORY_SOURCE=/etc/bosa/bifrost_inventory.json
 
 # functions
 bifrost_check_ssh_server(){
-	ip=$1
-	ssh -q -o 'StrictHostKeyChecking=no' root@$ip 'echo -n 2>&1' && echo -e "$ip \e[32mSSH_OK\e[39m" || echo -e "$ip \e[31mSSH_NOK\e[39m"
+    ip=$1
+    ssh -q -o 'StrictHostKeyChecking=no' root@$ip 'echo -n 2>&1' && echo -e "$ip \e[32mSSH_OK\e[39m" || echo -e "$ip \e[31mSSH_NOK\e[39m"
 }
 bifrost_del_server(){
-	ironic node-set-maintenance $1 true
+    ironic node-set-maintenance $1 true
     ironic node-delete $1
 }
 bifrost_reboot_server(){
