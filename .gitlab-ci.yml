@@ -1,13 +1,14 @@
 ---
 before_script:
   - apt-get update -qq
-  - apt-get install -y -qq python-pip
-  - pip install yamllint
+  - apt-get install --reinstall python-pkg-resources
+  - apt-get install -y -qq yamllint
 
 syntax_checking:
     image: dockerproxy-iva.si.francetelecom.fr/debian:latest
     tags:
         - shared
         - docker
+        - innovation
     script:
         - yamllint config_sources/labs/orange/*y?ml
