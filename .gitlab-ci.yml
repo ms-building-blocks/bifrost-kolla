@@ -5,7 +5,7 @@ before_script:
   - apt-get install -y -qq yamllint
 
 syntax_checking:
-    image: dockerproxy-iva.si.francetelecom.fr/debian:latest
+    image: dockerproxy-iva.si.francetelecom.fr/ubuntu:latest
     tags:
         - shared
         - docker
