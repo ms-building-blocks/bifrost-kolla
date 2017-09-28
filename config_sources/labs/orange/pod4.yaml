@@ -1,0 +1,192 @@
+###############################################################################
+# Orange Pod4 descriptor file
+###############################################################################
+
+---
+details:
+    pod owner: Orange
+    contact: bertrand.lelamer@orange.com
+    lab: Orange Lab Lannion
+    location: Lannion, Bretagne, France
+    type: development
+    link: http://wiki.opnfv.org/
+###################################################
+net_config:
+    admin:
+        interface: 0
+        vlan: 0                # interface switch mode access vlan=0
+        network: 10.4.0.0
+        mask: 24
+        gateway: 10.4.0.1
+        dns: 10.4.0.1
+    storage:
+        interface: 1
+        vlan: 2066            # public_infra
+        network: 10.4.1.0
+        mask: 24
+    private:
+        interface: 2
+        vlan: 0            # interface switch mode access vlan=0
+        network: 10.4.3.0
+        mask: 24
+    public:
+        interface: 1
+        vlan: 2067            # public_vm
+        network: 10.4.2.0
+        mask: 24
+        gateway: 10.4.2.1
+        dns: 8.8.8.8
+###################################################
+jumphost:
+    name: orange-pod4-jump
+    node:
+        type: virtual              # can be virtual or baremetal
+        vendor: libvirt
+        model: qemu
+        arch: x86_64
+        cpus: 1
+        cpu_cflags: haswell        # add values based on CFLAGS in GCC
+        cores: 8                   # physical cores, not including hyper-threads
+        memory: 8G
+    disks:                       # disk list
+        - name: 'disk1'            # second disk
+          disk_capacity: 17.20G
+          disk_type: ssd
+          disk_interface: virtio
+          disk_rotation: 15000
+    remote_management:
+        type:
+            - libvirt: qemu+ssh://ubuntu@srv10.infra.opnfv.fr/system
+        bridges:
+            - admin: brAdm4
+###################################################
+nodes:
+    - name: server23
+      node: &nodeparams
+          type: baremetal
+          vendor: dell
+          model: r630
+          arch: x86_64
+          cpus: 2
+          cpu_cflags: haswell
+          cores: 16
+          memory: 256G
+      remote_params: &remote_params
+          type:
+              - ipmi: [2.0]
+          user: Administrator
+          pass: opnfv2017
+      disks: &disks
+          - name: 'disk1'
+            disk_capacity: 200G
+            disk_type: ssd
+            disk_interface: sata
+            disk_rotation: ssd
+          - name: 'disk2'
+            disk_capacity: 200G
+            disk_type: ssd
+            disk_interface: sata
+            disk_rotation: ssd
+          - name: 'disk3'
+            disk_capacity: 1800G
+            disk_type: sas
+            disk_interface: sata
+            disk_rotation: 15000
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.33
+          mac_address: "50:9A:4C:A8:4D:42"
+      interfaces:
+          - "24:6E:96:75:F2:DC"
+          - "24:6E:96:75:F2:DD"
+          - "A0:36:9F:B9:DF:D8"
+    ########################
+    - name: server24
+      node: *nodeparams
+      disks: *disks
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.34
+          mac_address: "50:9A:4C:A8:48:84"
+      interfaces:
+          - "24:6E:96:75:F6:74"
+          - "24:6E:96:75:F6:75"
+          - "A0:36:9F:38:05:CC"
+    ########################
+    - name: server25
+      node: *nodeparams
+      disks: *disks
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.35
+          mac_address: "50:9A:4C:A8:4E:0C"
+      interfaces:
+          - "24:6E:96:75:EC:6C"
+          - "24:6E:96:75:EC:6D"
+          - "A0:36:9F:BA:33:9C"
+    ########################
+    - name: server26
+      node: *nodeparams
+      disks: *disks
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.36
+          mac_address: "50:9A:4C:A8:49:3A"
+      interfaces:
+          - "24:6E:96:75:EC:5C"
+          - "24:6E:96:75:EC:5D"
+          - "A0:36:9F:BA:34:C8"
+    ########################
+    - name: server27
+      node: &nodeparams2
+          type: baremetal
+          vendor: dell
+          model: r630
+          arch: x86_64
+          cpus: 1
+          cpu_cflags: haswell
+          cores: 8
+          memory: 64G
+      disks: &disks2
+          - name: 'disk1'
+            disk_capacity: 200G
+            disk_type: ssd
+            disk_interface: sata
+            disk_rotation: ssd
+          - name: 'disk2'
+            disk_capacity: 1800G
+            disk_type: sas
+            disk_interface: sata
+            disk_rotation: 15000
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.37
+          mac_address: "50:9A:4C:A8:42:F6"
+      interfaces:
+          - "24:6E:96:75:FF:E4"
+          - "24:6E:96:75:FF:E5"
+          - "A0:36:9F:3E:76:3A"
+    ########################
+    - name: server28
+      node: *nodeparams2
+      disks: *disks2
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.38
+          mac_address: "50:9A:4C:A8:43:8A"
+      interfaces:
+          - "24:6E:96:75:E8:24"
+          - "24:6E:96:75:E8:25"
+          - "A0:36:9F:3E:75:C4"
+    ########################
+    - name: server29
+      node: *nodeparams2
+      disks: *disks2
+      remote_management:
+          <<: *remote_params
+          address: 10.0.0.39
+          mac_address: "50:9A:4C:A8:43:C2"
+      interfaces:
+          - "24:6E:96:75:F6:5C"
+          - "24:6E:96:75:F6:5D"
+          - "A0:36:9F:3E:76:C0"
