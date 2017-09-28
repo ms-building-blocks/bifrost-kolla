@@ -78,6 +78,8 @@
     - name: get mgmt interface
       set_fact:
         mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
+    - debug:
+        var: mgmt_intf
     - name: shortcut for network mapping
       set_fact:
         nmap: "{{ xci.network_mapping }}"

@@ -42,10 +42,10 @@ def target_interfaces(inventory_hostname, hostvars, nodes):
         nodes: a dict of nodes
 
     Returns:
-        list of macs of interfaces plugged on the node
+        list of macs in (lower case) of interfaces plugged on the node
     """
-    return nodes[hostvars[inventory_hostname][
-        'ansible_hostname']]['interfaces']
+    return [m.lower() for m in nodes[hostvars[inventory_hostname][
+        'ansible_hostname']]['interfaces']]
 
 
 def mac2intf(inventory_hostname, hostvars, nodes):
@@ -69,7 +69,7 @@ def mac2intf(inventory_hostname, hostvars, nodes):
                 '.' not in intf:
             mac = hostvars[inventory_hostname]["ansible_{}".format(intf)
                                                ]['macaddress']
-            if mac in target_macs:
+            if mac.lower() in target_macs:
                 macs[mac] = intf
     return macs
 
