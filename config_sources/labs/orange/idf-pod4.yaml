@@ -2,25 +2,25 @@
 # Orange Pod4 Installer descriptor file
 ###############################################################################
 
+---
 xci:
     nodes_roles:
-        server23: [ controller, network, storage ]
-        server24: [ controller, network, storage ]
-        server25: [ controller, network, storage ]
-	server26: [ controller, network, storage ]
-	server27: [ compute, storage ]
-        server28: [ compute, storage ]
-	server29: [ compute, storage ]
-       
-    rsyslog: 10.1.0.6
+        server23: [compute, storage]
+        server24: [compute, storage]
+        server25: [compute, storage]
+        server26: [compute, storage]
+        server27: [controller, network]
+        server28: [controller, network]
+        server29: [controller, network]
+    rsyslog: 10.4.0.6
     glance:
-      nfs:
-        server: 10.0.2.6
-        path: /pod1/glance
+        nfs:
+            server: 10.0.2.6
+            path: /pod4/glance
     cinder:
-      nfs:
-        server: 10.0.2.6
-        path: /pod1/cinder
+        nfs:
+            server: 10.0.2.6
+            path: /pod4/cinder
 
     # network mapping
     network_mapping:
@@ -30,7 +30,7 @@ xci:
         br-vlan: public
 
     # Cinder
-    cinder_physical_device: sdb
+    cinder_physical_device: sdc
 
     # Management bridge name for jumphost
     jumphost_network_interface: ens3
