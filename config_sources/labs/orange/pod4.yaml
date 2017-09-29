@@ -95,11 +95,11 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.33
-          mac_address: "50:9A:4C:A8:4D:42"
+          mac_address: "50:9a:4c:a8:4d:42"
       interfaces:
-          - "24:6E:96:75:F2:DC"
-          - "24:6E:96:75:F2:DD"
-          - "A0:36:9F:B9:DF:D8"
+          - "24:6e:96:75:f2:dc"
+          - "24:6e:96:75:f2:dd"
+          - "a0:36:9f:b9:df:d8"
     ########################
     - name: server24
       node: *nodeparams
@@ -107,11 +107,11 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.34
-          mac_address: "50:9A:4C:A8:48:84"
+          mac_address: "50:9a:4c:a8:48:84"
       interfaces:
-          - "24:6E:96:75:F6:74"
-          - "24:6E:96:75:F6:75"
-          - "A0:36:9F:38:05:CC"
+          - "24:6e:96:75:f6:74"
+          - "24:6e:96:75:f6:75"
+          - "a0:36:9f:ba:30:40"
     ########################
     - name: server25
       node: *nodeparams
@@ -119,11 +119,11 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.35
-          mac_address: "50:9A:4C:A8:4E:0C"
+          mac_address: "50:9a:4c:a8:4e:0c"
       interfaces:
-          - "24:6E:96:75:EC:6C"
-          - "24:6E:96:75:EC:6D"
-          - "A0:36:9F:BA:33:9C"
+          - "24:6e:96:75:ec:6c"
+          - "24:6e:96:75:ec:6d"
+          - "a0:36:9f:ba:33:9c"
     ########################
     - name: server26
       node: *nodeparams
@@ -131,11 +131,11 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.36
-          mac_address: "50:9A:4C:A8:49:3A"
+          mac_address: "50:9a:4c:a8:49:3a"
       interfaces:
-          - "24:6E:96:75:EC:5C"
-          - "24:6E:96:75:EC:5D"
-          - "A0:36:9F:BA:34:C8"
+          - "24:6e:96:75:ec:5c"
+          - "24:6e:96:75:ec:5d"
+          - "a0:36:9f:ba:34:c8"
     ########################
     - name: server27
       node: &nodeparams2
@@ -161,11 +161,11 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.37
-          mac_address: "50:9A:4C:A8:42:F6"
+          mac_address: "50:9a:4c:a8:42:f6"
       interfaces:
-          - "24:6E:96:75:FF:E4"
-          - "24:6E:96:75:FF:E5"
-          - "A0:36:9F:3E:76:3A"
+          - "24:6e:96:75:ff:e4"
+          - "24:6e:96:75:ff:e5"
+          - "a0:36:9f:3e:76:3a"
     ########################
     - name: server28
       node: *nodeparams2
@@ -173,11 +173,11 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.38
-          mac_address: "50:9A:4C:A8:43:8A"
+          mac_address: "50:9a:4c:a8:43:8a"
       interfaces:
-          - "24:6E:96:75:E8:24"
-          - "24:6E:96:75:E8:25"
-          - "A0:36:9F:3E:75:C4"
+          - "24:6e:96:75:e8:24"
+          - "24:6e:96:75:e8:25"
+          - "a0:36:9f:3e:75:c4"
     ########################
     - name: server29
       node: *nodeparams2
@@ -185,8 +185,8 @@ nodes:
       remote_management:
           <<: *remote_params
           address: 10.0.0.39
-          mac_address: "50:9A:4C:A8:43:C2"
+          mac_address: "50:9a:4c:a8:43:c2"
       interfaces:
-          - "24:6E:96:75:F6:5C"
-          - "24:6E:96:75:F6:5D"
-          - "A0:36:9F:3E:76:C0"
+          - "24:6e:96:75:f6:5c"
+          - "24:6e:96:75:f6:5d"
+          - "a0:36:9f:3e:76:c0"
