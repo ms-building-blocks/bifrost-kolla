@@ -9,9 +9,9 @@ xci:
         server24: [compute, storage]
         server25: [compute, storage]
         server26: [compute, storage]
-        server27: [controller, network]
-        server28: [controller, network]
-        server29: [controller, network]
+        server27: [controller, network, storage]
+        server28: [controller, network, storage]
+        server29: [controller, network, storage]
     rsyslog: 10.4.0.6
     glance:
         nfs:
