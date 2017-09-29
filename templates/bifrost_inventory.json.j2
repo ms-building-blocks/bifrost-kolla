@@ -1,6 +1,6 @@
 {
 {% for srv in nodes | sort(attribute='name')  %}
-{% if item is not defined or item == srv.name %}
+{% if item is not defined or item.name == srv.name %}
     "{{ srv.name }}": {
         "name": "{{ srv.name }}",
         "uuid": "00000000-0000-0000-0000-000000000{{ '%03d'|format(loop.index|int) }}",
