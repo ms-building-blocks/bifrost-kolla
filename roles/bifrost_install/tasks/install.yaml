@@ -1,0 +1,29 @@
+---
+##
+# Install Bifrost using the wrapper to ensure venv is used
+##
+- name: Install bifrost
+  shell: >
+    bifrost-ansible -i inventory/target install.yaml
+    -e staging_drivers_include=true;
+  args:
+    chdir: "{{ bifrost_path }}/playbooks/"
+##
+# Upgrade pyasn1 as it make ironic conductor fail
+# "hardware type or interface pxe_ilo could not be loaded"
+##
+- name: Install bifrost
+  shell: "bifrost-pip install pyasn1 --upgrade"
+- service:
+    name: ironic-conductor
+    state: restarted
+##
+# Set various files
+##
+- name: install libs needed outside the VENV
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - jsonpatch
+    - shade
+  when: bifrost_enable_venv

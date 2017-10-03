@@ -1,0 +1,13 @@
+---
+- name: get bifrost sources
+  import_tasks: sources.yaml
+- name: generate baremetal and target inventory
+  import_tasks: inventory.yaml
+- name: setup bifrost
+  import_tasks: setup.yaml
+- name: remove old images and update image generation parameters
+  import_tasks: images_prepare.yaml
+- name: install bifrost
+  import_tasks: install.yaml
+- name: update dnsmasq
+  import_tasks: dnsmasq.yaml

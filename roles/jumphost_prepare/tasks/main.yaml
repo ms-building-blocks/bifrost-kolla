@@ -1,0 +1,23 @@
+---
+##
+# Gen SSH keys if not exists
+##
+- name: Generate SSH keys
+  shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+  args:
+    creates: /root/.ssh/id_rsa
+
+##
+# Clean and install packages get Bifrost sources
+##
+- name: install packages
+  import_tasks: install_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: get bifrost sources
+  import_tasks: sources.yaml
+
+##
+# Clean dnsmasq.leases
+##
+- name: Remove pre-existing leases file
+  file: path=/var/lib/misc/dnsmasq.leases state=absent
