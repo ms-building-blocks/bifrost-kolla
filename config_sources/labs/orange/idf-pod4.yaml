@@ -30,7 +30,7 @@ xci:
         br-vlan: public
 
     # Cinder
-    cinder_physical_device: sdc
+    cinder_physical_device: sdb
 
     # Management bridge name for jumphost
     jumphost_network_interface: ens3

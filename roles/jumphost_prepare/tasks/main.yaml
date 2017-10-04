@@ -13,11 +13,3 @@
 - name: install packages
   import_tasks: install_DEBIAN.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-- name: get bifrost sources
-  import_tasks: sources.yaml
-
-##
-# Clean dnsmasq.leases
-##
-- name: Remove pre-existing leases file
-  file: path=/var/lib/misc/dnsmasq.leases state=absent

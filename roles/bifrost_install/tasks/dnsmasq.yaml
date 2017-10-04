@@ -1,9 +1,0 @@
----
-- name: correct dnsmasq config - default gateway
-  lineinfile:
-    path: /etc/dnsmasq.conf
-    regexp: '^dhcp-option=3'
-    line: "dhcp-option=3,{{ net_config['admin'].gateway }}"
-- service:
-    name: dnsmasq
-    state: restarted
