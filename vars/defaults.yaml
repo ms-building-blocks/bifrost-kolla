@@ -35,6 +35,9 @@ ironic_db_password: aSecretPassword473z
 dib_dev_user_username: ubuntu
 dib_dev_user_password: opnfv2017
 
+# opnfv user
+opnfv_user: opnfv
+
 ##
 # Network config
 ##

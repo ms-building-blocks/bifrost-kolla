@@ -17,17 +17,21 @@
 ##
 # Create an OPNFV user
 ##
+- group:
+    name: "{{ opnfv_user }}"
+    state: present
 - user:
-    name: opnfv
+    name: "{{ opnfv_user }}"
     comment: "OPNFV ops"
-    group: admin
+    group: "{{ opnfv_user }}"
+    groups: admin
     generate_ssh_key: yes
 - name: copy certs
   copy:
     src: "/root/.ssh/{{ item }}"
-    dest: "/home/opnfv/.ssh/{{ item }}"
-    owner: opnfv
-    group: opnfv
+    dest: "/home/{{ opnfv_user }}/.ssh/{{ item }}"
+    owner: "{{ opnfv_user }}"
+    group: "{{ opnfv_user }}"
   with_items:
     - 'id_rsa'
     - 'id_rsa.pub'

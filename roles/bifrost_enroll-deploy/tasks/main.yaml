@@ -38,7 +38,7 @@
     dest: "{{ item }}"
   with_items:
     - "/root/.ssh/config"
-    - "/home/opnfv/.ssh/config"  # To update for multi-os
+    - "/home/{{ opnfv_user }}/.ssh/config"  # To update for multi-os
 ##
 # Prepare ansible inventory for nodes_* roles
 ##
@@ -52,7 +52,7 @@
 - name: set .bash_aliases for bifrost
   copy:
     src: "files/bash_aliases"
-    dest: "/home/{{ ops_user }}/.bash_aliases"
+    dest: "/home/{{ opnfv_user }}/.bash_aliases"
 ##
 # Check ipmi reachability
 ##
