@@ -24,7 +24,7 @@
     generate_ssh_key: yes
 - name: copy certs
   copy:
-    src: "/root/ssh/{{ item }}"
+    src: "/root/.ssh/{{ item }}"
     dest: "/home/opnfv/.ssh/{{ item }}"
     owner: opnfv
     group: opnfv
