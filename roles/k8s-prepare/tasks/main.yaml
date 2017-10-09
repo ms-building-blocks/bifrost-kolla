@@ -1,0 +1,18 @@
+---
+- include: docker.yaml
+  become: true
+  tags: docker
+  when: ('server' in group_names) or
+        ('node' in group_names)
+
+- include: server.yaml
+  tags: server
+  when: "'server' in group_names"
+
+- include: node.yaml
+  tags: node
+  when: "'node' in group_names"
+
+- include: kubernetes.yaml
+  tags: k8s
+  when: "'jumphost' in group_names"

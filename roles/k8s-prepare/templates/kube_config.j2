@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    api-version: v1
+    insecure-skip-tls-verify: true
+    server: "https://{{ server_url }}/k8s/clusters/{{ cluster_id }}"
+  name: "System"
+contexts:
+- context:
+    cluster: "System"
+    user: "System"
+  name: "System"
+current-context: "System"
+users:
+- name: "System"
+  user:
+    username: "{{ username }}"
+    password: "{{ password }}"
