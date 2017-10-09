@@ -34,33 +34,13 @@ fi
 
 echo "
 #-------------------------------------------------------------------------------
-# cleanup
+# cleanup local vars
 #-------------------------------------------------------------------------------
 "
-
-# purge ironic DB
-MPWD=$(grep ironic_db_password: vars/defaults.yaml | cut -d\  -f2)
-mysql -uironic -p${MPWD} -e "show databases" | \
-        grep -v Database | \
-        grep -v mysql| \
-        grep -v information_schema| \
-        gawk '{print "drop database " $1 ";select sleep(0.1);"}' | \
-        mysql -uironic -p${MPWD} || true
-# remove old ansible
-if test $(pip freeze|grep ansible); then
-    pip uninstall -y ansible
-fi
-# remove folders
-rm -rf /usr/local/bin/ansible*
-rm -rf /usr/local/bin/bifrost*
-rm -rf /opt/ansible-runtime/
-rm -rf /opt/bifrost/
-rm -rf /opt/openstack-ansible/
-rm -rf /opt/stack/
-rm -rf /etc/bosa/
 # Clean OS envvars
 for var in $(export |cut -d\  -f3| cut -d= -f1| grep '^OS_'); do
     unset var;
+    export ${var}=''
 done
 
 echo "
@@ -68,32 +48,42 @@ echo "
 # install ansible
 #-------------------------------------------------------------------------------
 "
+# remove old ansible
+if test $(pip freeze|grep ansible); then
+    pip uninstall -y ansible
+fi
+# remove folders
+rm -rf /usr/local/bin/ansible*
+rm -rf /etc/ansible/
+# install ansible from package
 apt update
 apt install -y software-properties-common python-setuptools \
-    python-dev libffi-dev libssl-dev git sshpass tree python-pip
-pip install --upgrade pip
-pip install cryptography
-pip install ansible
-pip install netaddr
+    python-dev libffi-dev libssl-dev git python-pip
+pip install --upgrade pip cryptography ansible netaddr
 mkdir -p /etc/ansible
 echo "jumphost ansible_connection=local" > /etc/ansible/hosts
+
+cd /opt/bosa
+echo "
+#-------------------------------------------------------------------------------
+# Cleanup previous install
+#-------------------------------------------------------------------------------
+"
+ansible-playbook opnfv-jumphost.yaml
 
 echo "
 #-------------------------------------------------------------------------------
 # Setup and run Bifrost
 #-------------------------------------------------------------------------------
 "
-cd /opt/bosa
-ansible-playbook opnfv-bifrost-install.yaml
-ansible-playbook opnfv-bifrost-enroll-deploy.yaml
+ansible-playbook opnfv-bifrost.yaml
 
 echo "
 #-------------------------------------------------------------------------------
 # Prepare nodes
 #-------------------------------------------------------------------------------
 "
-ansible-playbook -i /etc/bosa/ansible_inventory opnfv-wait-for-nodes.yaml
-ansible-playbook -i /etc/bosa/ansible_inventory opnfv-prepare-nodes.yaml
+ansible-playbook -i /etc/bosa/ansible_inventory opnfv-nodes-prepare.yaml
 
 echo "
 #-------------------------------------------------------------------------------
@@ -128,12 +118,12 @@ echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
 
 echo "
 #-------------------------------------------------------------------------------
-# Prepare Infra
+# Post install
 #-------------------------------------------------------------------------------
 "
 cd /opt/bosa
 source /etc/bosa/openstack_openrc
-ansible-playbook opnfv-openstack-prepare.yaml
+ansible-playbook opnfv-post-install.yaml
 
 echo "
 #-------------------------------------------------------------------------------

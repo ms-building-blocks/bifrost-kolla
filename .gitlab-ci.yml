@@ -11,5 +11,6 @@ syntax_checking:
         - innovation
     script:
         - yamllint *.y?ml
-        - yamllint vars/*.y?ml
+        - yamllint vars/
+        - yamllint roles/*/tasks/*.y?ml
         - yamllint config_sources/labs/orange/*.y?ml

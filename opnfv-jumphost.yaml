@@ -3,7 +3,5 @@
   become: true
   vars_files:
     - "vars/defaults.yaml"
-    - "vars/idf.yaml"
-    - "vars/pdf.yaml"
   roles:
-    - osa_configure
+    - jumphost_prepare

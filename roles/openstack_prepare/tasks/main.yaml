@@ -1,2 +1,33 @@
 ---
 
+# Push shade lib to latest stable version (the one installed with OSA
+# crashes with following actions)
+- pip:
+    name: shade
+    state: latest
+##
+# Push images if asked
+##
+- name: push images
+  import_tasks: images.yaml
+  when: os_basic.images
+##
+# Push flavors if asked
+##
+- name: >
+    Create '{{ item.name }}' flavor with {{ item.ram }}MB of RAM,
+    {{ item.vcpu }} virtual CPU, and {{ item.disk }}GB of local disk.
+  os_nova_flavor:
+    state: present
+    name: "{{ item.name }}"
+    ram: "{{ item.ram }}"
+    vcpus: "{{ item.vcpu }}"
+    disk: "{{ item.disk }}"
+  with_items: "{{ os_flavors }}"
+  when: os_basic.flavors
+##
+# Push Ext-net if asked
+##
+- name: push external networkk
+  import_tasks: ext_net.yaml
+  when: os_basic.ext_net

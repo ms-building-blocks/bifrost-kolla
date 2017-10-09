@@ -1,5 +1,26 @@
 ---
 ##
+# Clean
+##
+- name: Clean old files and folders
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - '/usr/local/bin/bifrost*'
+    - '/opt/ansible-runtime/'
+    - '/opt/bifrost/'
+    - '/opt/openstack-ansible/'
+    - '/opt/stack/'
+    - '/etc/bosa/'
+- name: clean Bifrost DB
+  mysql_db:
+    name: ironic
+    state: absent
+    login_user: ironic
+    login_password: "{{ ironic_db_password }}"
+  ignore_errors: yes
+##
 # Gen SSH keys if not exists
 ##
 - name: Generate SSH keys
@@ -25,7 +46,7 @@
     comment: "OPNFV ops"
     group: "{{ opnfv_user }}"
     groups: admin
-    generate_ssh_key: yes
+    generate_ssh_key: "yes"
 - name: copy certs
   copy:
     src: "/root/.ssh/{{ item }}"

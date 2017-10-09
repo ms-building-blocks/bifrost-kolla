@@ -2,10 +2,6 @@
 ##
 # Get bifrost sources
 ##
-- name: Clean old bifrost
-  file:
-    path: "{{ bifrost_path }}"
-    state: absent
 - name: "clone bifrost {{bifrost_branch}}"
   git:
     repo: "{{ bifrost_url }}"

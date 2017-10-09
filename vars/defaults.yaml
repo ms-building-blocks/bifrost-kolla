@@ -129,7 +129,7 @@ os_images:
       http://download.opensuse.org/repositories/Cloud:/Images:/
       openSUSE_13.2/images/openSUSE-13.2-OpenStack-Guest.x86_64.qcow2
   - name: 'centos-7'
-    file: 'centos/centos-7-x86_64.img'
+    file: 'centos/CentOS-7-x86_64-GenericCloud.qcow2'
     distro: 'opensuse'
     min_disk: 4
     url: >
