@@ -24,10 +24,10 @@ deploy:
   tags:
     - sina
   variables:
-    - pod: pod1
-    - target_folder: /opt/bosa
-    - terrahouat_raw:
-        https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
+    pod: pod1
+    target_folder: /opt/bosa
+    terrahouat_raw:
+      https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
   script:
     - wget -O vars/pdf.yaml ${terrahouat_raw}/config/${pod}.yaml
     - wget -O vars/idf.yaml ${terrahouat_raw}/config/idf-${pod}.yaml
