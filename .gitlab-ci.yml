@@ -1,5 +1,4 @@
 ---
-
 stages:
   - syntax_checking
   - deploy
@@ -30,10 +29,9 @@ deploy:
     - target_folder: /opt/bosa
     - terrahouat_raw:
         https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
-    - config_sources: config_sources/labs/orange
   script:
-    - wget -P ${config_sources} ${terrahouat_raw}/config/${pod}.yaml
-    - wget -P ${config_sources} ${terrahouat_raw}/config/idf-${pod}.yaml
+    - wget -O vars/pdf.yaml ${terrahouat_raw}/config/${pod}.yaml
+    - wget -O vars/idf.yaml ${terrahouat_raw}/config/idf-${pod}.yaml
     - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
     - ssh ${pod}.opnfv.fr "sudo screen -S CI -d -m"
     - ssh ${pod}.opnfv.fr "sudo screen -S CI -X stuff 'cd /opt/bosa\n./run.sh orange ${pod}\n'"

@@ -20,7 +20,7 @@
     state: absent
     login_user: ironic
     login_password: "{{ ironic_db_password }}"
-  ignore_errors: yes
+  ignore_errors: 'yes'
 ##
 # Gen SSH keys if not exists
 ##

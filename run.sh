@@ -15,23 +15,6 @@ if [[ $EUID -ne 0 ]]; then
     exit
 fi
 
-#-------------------------------------------------------------------------------
-# Check config source
-#-------------------------------------------------------------------------------
-
-if [ ! -f config_sources/labs/$LAB/$POD.yaml ]; then
-    echo "No PDF file (config_sources/labs/$LAB/$POD.yaml)" 1>&2
-    exit
-else
-    cp config_sources/labs/$LAB/$POD.yaml vars/pdf.yaml
-fi
-if [ ! -f config_sources/labs/$LAB/idf-$POD.yaml ]; then
-    echo "No IDF file (config_sources/labs/$LAB/idf-$POD.yaml)" 1>&2
-    exit
-else
-    cp config_sources/labs/$LAB/idf-$POD.yaml vars/idf.yaml
-fi
-
 echo "
 #-------------------------------------------------------------------------------
 # cleanup local vars
