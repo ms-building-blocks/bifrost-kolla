@@ -4,7 +4,11 @@ clusters:
 - cluster:
     api-version: v1
     insecure-skip-tls-verify: true
+    {% if ':' in server_url %}
     server: "https://{{ server_url }}/k8s/clusters/{{ cluster_id }}"
+    {% else %}
+    server: "https://{{ server_url }}:80/k8s/clusters/{{ cluster_id }}"
+    {% endif %}
   name: "System"
 contexts:
 - context:
