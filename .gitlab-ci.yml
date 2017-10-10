@@ -16,7 +16,6 @@ syntax_checking:
     - yamllint *.y?ml
     - yamllint vars/
     - yamllint roles/*/tasks/*.y?ml
-    - yamllint config_sources/labs/orange/*.y?ml
 
 
 ### A travailler
