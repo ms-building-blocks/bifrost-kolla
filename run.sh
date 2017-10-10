@@ -66,7 +66,7 @@ echo "jumphost ansible_connection=local" > /etc/ansible/hosts
 cd /opt/bosa
 echo "
 #-------------------------------------------------------------------------------
-# Cleanup previous install
+# Cleanup previous install and prepare jumphost
 #-------------------------------------------------------------------------------
 "
 ansible-playbook opnfv-jumphost.yaml
@@ -90,8 +90,8 @@ echo "
 # Prepare OSA
 #-------------------------------------------------------------------------------
 "
-ansible-playbook opnfv-osa-prepare.yaml
-/opt/openstack-ansible/scripts/bootstrap-ansible.sh
+# ansible-playbook opnfv-osa-prepare.yaml
+# /opt/openstack-ansible/scripts/bootstrap-ansible.sh
 ansible-playbook opnfv-osa-configure.yaml
 
 echo "
@@ -125,8 +125,14 @@ cd /opt/bosa
 source /etc/bosa/openstack_openrc
 ansible-playbook opnfv-post-install.yaml
 
+URL=$(grep AUTH_URL /etc/bosa/openstack_openrc | perl -pe 's!^.*//(.*):.*!$1!')
+PASS=$(grep PASSWORD /etc/bosa/openstack_openrc | perl -pe "s/^.*'(.*)'/\$1/")
+
 echo "
 #-------------------------------------------------------------------------------
 # End
 #-------------------------------------------------------------------------------
+You can now connect to https://${URL}
+with login: admin
+and password: ${PASS}
 "

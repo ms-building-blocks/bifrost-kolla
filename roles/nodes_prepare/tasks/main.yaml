@@ -1,17 +1,5 @@
 ---
 ##
-# wait for nodes to be reachable after bifrost deploy reboot
-##
-- name: wait for nodes to be reachable
-  local_action: >
-    shell ansible -i {{ bosa_config }}/ansible_inventory
-    -m ping {{ inventory_hostname }}
-  register: result
-  until: result.rc == 0
-  retries: 60
-  delay: 10
-
-##
 # set correct gateway
 ##
 - name: ensure the gateway is correct

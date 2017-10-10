@@ -13,6 +13,7 @@
     - '/opt/openstack-ansible/'
     - '/opt/stack/'
     - '/etc/bosa/'
+    - '/etc/openstack_deploy/'
 - name: clean Bifrost DB
   mysql_db:
     name: ironic

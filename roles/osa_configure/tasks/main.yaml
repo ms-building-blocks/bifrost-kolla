@@ -24,11 +24,11 @@
     role2nodes: "{{ xci.nodes_roles | role2nodes() }}"
 - name: set openstack_user_config.yml
   template:
-    src: "templates/openstack_user_config.yml.prod.j2"
+    src: "openstack_user_config.yml.prod.j2"
     dest: "{{ osa_etc_path }}/openstack_user_config.yml"
 - name: set user_variables.yml
   copy:
-    src: "files/user_variables.yml"
+    src: "user_variables.yml"
     dest: "{{ osa_etc_path }}/user_variables.yml"
 
 ##

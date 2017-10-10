@@ -1,15 +1,16 @@
 ---
-
 # Push shade lib to latest stable version (the one installed with OSA
 # crashes with following actions)
-- pip:
+- name: update shade with pip
+  pip:
     name: shade
     state: latest
+
 ##
 # Push images if asked
 ##
 - name: push images
-  import_tasks: images.yaml
+  include: images.yaml    # include shall move to import_tasks with 2.4 version
   when: os_basic.images
 ##
 # Push flavors if asked
@@ -29,5 +30,5 @@
 # Push Ext-net if asked
 ##
 - name: push external networkk
-  import_tasks: ext_net.yaml
+  include: ext_net.yaml   # include shall move to import_tasks with 2.4 version
   when: os_basic.ext_net

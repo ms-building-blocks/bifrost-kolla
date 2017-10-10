@@ -4,7 +4,8 @@
     state: present
     name: "{{ ext_net.name }}"
     external: true
-    visibility: true
+    provider_network_type: flat
+    provider_physical_network: flat
 - name: 'get ext_subnet info'
   set_fact:
     ext_subnet: "{{ net_config[xci.network_mapping['br-vlan']] }}"
