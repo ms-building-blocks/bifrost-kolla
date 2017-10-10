@@ -1,16 +1,39 @@
 ---
-before_script:
-  - apt-get update -qq
-  - apt-get install -y -qq yamllint python3-pkg-resources
+
+stages:
+  - syntax_checking
+  - deploy
 
 syntax_checking:
-    image: dockerproxy-iva.si.francetelecom.fr/debian:latest
-    tags:
-        - shared
-        - docker
-        - innovation
-    script:
-        - yamllint *.y?ml
-        - yamllint vars/
-        - yamllint roles/*/tasks/*.y?ml
-        - yamllint config_sources/labs/orange/*.y?ml
+  stage: syntax_checking
+  image: dockerproxy-iva.si.francetelecom.fr/debian:latest
+  tags:
+    - shared
+    - docker
+    - innovation
+  script:
+    - apt-get update -qq
+    - apt-get install -y -qq yamllint python3-pkg-resources
+    - yamllint *.y?ml
+    - yamllint vars/
+    - yamllint roles/*/tasks/*.y?ml
+    - yamllint config_sources/labs/orange/*.y?ml
+
+
+### A travailler
+deploy:
+  stage: deploy
+  tags:
+    - sina
+  variables:
+    - pod: pod1
+    - target_folder: /opt/bosa
+    - terrahouat_raw:
+        https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
+    - config_sources: config_sources/labs/orange
+  script:
+    - wget -P ${config_sources} ${terrahouat_raw}/config/${pod}.yaml
+    - wget -P ${config_sources} ${terrahouat_raw}/config/idf-${pod}.yaml
+    - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
+    - ssh ${pod}.opnfv.fr "sudo screen -S CI -d -m"
+    - ssh ${pod}.opnfv.fr "sudo screen -S CI -X stuff 'cd /opt/bosa\n./run.sh orange ${pod}\n'"
