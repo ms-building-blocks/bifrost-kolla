@@ -14,6 +14,11 @@
     status_code: 200
     url: "http://{{ server_url }}/v3/projects/"
   register: projects
+  until: (projects.status == 200) and (projects.json.data|selectattr('name', 'equalto', 'System')|list|length > 0)
+  retries: 100
+  delay: 1
+
+- debug: msg="{{ projects.json }}"
 
 - name: register System project id
   set_fact:
@@ -25,11 +30,9 @@
     status_code: 200
     url: "http://{{ server_url }}/v2-beta/projects/{{ system_project_id }}/clusters"
   register: registration_tokens
-  until: registration_tokens.status == 200
-  retries: 100
-  delay: 1
   when: agent_installed|failed
 
 - name: register host
+  become: true
   command: "{{ (registration_tokens.json.data|selectattr('name', 'equalto', 'Default')|first).registrationToken.hostCommand|replace('sudo ', '') }}"
   when: agent_installed|failed

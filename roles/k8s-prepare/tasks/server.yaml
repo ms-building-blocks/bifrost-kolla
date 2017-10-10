@@ -1,5 +1,6 @@
 ---
 - name: start rancher server
+  become: true
   docker_container:
     name: rancher_server
     image: "rancher/server:preview"

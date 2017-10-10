@@ -4,7 +4,7 @@
 
 Aim is to propose a role that onboard a k8s cluster using rancher 2.0
 
-# Hosts configuration
+## Hosts configuration
 
 You need a server (HA work not done), one or several nodes and a jumphost
 
@@ -19,4 +19,15 @@ server
 
 [jumphost:children]
 server
+
+[k8s-cluster:children]
+server
+node
+jumphost
 ```
+
+# TODO
+
+- [] HA Mode for server
+- [] Deploy Registry Cache for Docker
+- [] Functionnal tests

@@ -60,7 +60,7 @@
     mode: 0755
 
 - name: retrieve catalog from rancher
-  command: rancher --url http://{{ server_url }}/v3 --env {{ system_project_id }} catalog --format json/bi
+  command: rancher --url http://{{ server_url }}/v3 --env {{ system_project_id }} catalog --format json
   register: catalog
   when: kube_dns_not_present
 
