@@ -73,8 +73,8 @@ echo "
 # Prepare OSA
 #-------------------------------------------------------------------------------
 "
-# ansible-playbook opnfv-osa-prepare.yaml
-# /opt/openstack-ansible/scripts/bootstrap-ansible.sh
+ansible-playbook opnfv-osa-prepare.yaml
+/opt/openstack-ansible/scripts/bootstrap-ansible.sh
 ansible-playbook opnfv-osa-configure.yaml
 
 echo "
