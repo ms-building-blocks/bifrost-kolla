@@ -18,8 +18,6 @@
   retries: 100
   delay: 1
 
-- debug: msg="{{ projects.json }}"
-
 - name: register System project id
   set_fact:
     system_project_id: "{{ (projects.json.data|selectattr('name', 'equalto', 'System')|first).id }}"

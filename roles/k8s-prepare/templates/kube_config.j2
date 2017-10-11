@@ -4,20 +4,20 @@ clusters:
 - cluster:
     api-version: v1
     insecure-skip-tls-verify: true
-    {% if ':' in server_url %}
+{% if ':' in server_url %}
     server: "https://{{ server_url }}/k8s/clusters/{{ cluster_id }}"
-    {% else %}
+{% else %}
     server: "https://{{ server_url }}:80/k8s/clusters/{{ cluster_id }}"
-    {% endif %}
-  name: "System"
+{% endif %}
+  name: "Default"
 contexts:
 - context:
-    cluster: "System"
-    user: "System"
-  name: "System"
-current-context: "System"
+    cluster: "Default"
+    user: "Default"
+  name: "Default"
+current-context: "Default"
 users:
-- name: "System"
+- name: "Default"
   user:
     username: "{{ username }}"
     password: "{{ password }}"

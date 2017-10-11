@@ -9,24 +9,26 @@
     url: "http://{{ server_url }}/v3/projects/"
   register: projects
 
-- name: register System project id
-  set_fact:
-    system_project_id: "{{ (projects.json.data|selectattr('name', 'equalto', 'System')|first).id }}"
+- debug: msg="{{projects.json}}"
 
-- name: get all launched stacks on System project
+- name: register kube project id
+  set_fact:
+    kube_project_id: "{{ (projects.json.data|selectattr('name', 'equalto', 'kube-system')|first).id }}"
+
+- name: get all launched stacks on Kube project
   uri:
     method: GET
     status_code: 200
-    url: "http://{{ server_url }}/v3/projects/{{ system_project_id }}/stacks"
-  register: system_stacks
+    url: "http://{{ server_url }}/v3/projects/{{ kube_project_id }}/stacks"
+  register: kube_stacks
 
 - set_fact:
     kube_dns_not_present: true
-  when: system_stacks.json.data|selectattr('name', 'equalto', 'kube-dns')|list|length == 0
+  when: kube_stacks.json.data|selectattr('name', 'equalto', 'kube-dns')|list|length == 0
 
 - set_fact:
     kube_dns_not_present: false
-  when: system_stacks.json.data|selectattr('name', 'equalto', 'kube-dns')|list|length != 0
+  when: kube_stacks.json.data|selectattr('name', 'equalto', 'kube-dns')|list|length != 0
 
 
 # Cannot uncompress an archive directly on /tmp as tar tries to change the ctime and it's weirdly not allowed
@@ -60,9 +62,8 @@
     mode: 0755
 
 - name: retrieve catalog from rancher
-  command: rancher --url http://{{ server_url }}/v3 --env {{ system_project_id }} catalog --format json
+  command: rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }} catalog --format json
   register: catalog
-  when: kube_dns_not_present
 
 - name: retrieve kube-dns project id
   set_fact:
@@ -70,7 +71,7 @@
   when: kube_dns_not_present
 
 - name: launch installation of kube-dns
-  command: rancher --url http://{{ server_url }}/v3 --env {{ system_project_id }} catalog install --name kube-dns {{ kube_dns_catalog_id }}
+  command: rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }} catalog install --name kube-dns {{ kube_dns_catalog_id }}
   when: kube_dns_not_present
 
 - name: get clusters of project
@@ -88,7 +89,7 @@
   uri:
     method: POST
     status_code: 201
-    url: "http://{{ server_url }}/v3/projects/{{ system_project_id }}/apikey"
+    url: "http://{{ server_url }}/v3/projects/1a5/apikey"
     body:
       - type: "apiKey"
       - name: "kubectl"
@@ -105,7 +106,7 @@
   uri:
     method: GET
     status_code: 200
-    url: "http://{{ server_url }}/v3/projects/{{ system_project_id }}/apikey/{{ apikey_id }}"
+    url: "http://{{ server_url }}/v3/projects/1a5/apikey/{{ apikey_id }}"
   register: apikey_infos
   until: apikey_infos.json.state == "active"
   retries: 10
@@ -131,3 +132,34 @@
   template:
     src: kube_config.j2
     dest: "{{ ansible_env.HOME }}/.kube/config"
+
+- set_fact:
+    helm_not_present: true
+  when: kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length == 0
+
+- set_fact:
+    helm_not_present: false
+  when: kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length != 0
+
+- name: retrieve helm project id
+  set_fact:
+    helm_catalog_id: "{{ (catalog.stdout_lines | select('match', '.*helm.*') | first | from_json).ID }}"
+  when: helm_not_present
+
+- name: launch installation of helm
+  command: rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }} catalog install --name helm {{ helm_catalog_id }}
+  when: helm_not_present
+
+- name: get helm latest release
+  get_url:
+    url: https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get
+    dest: /tmp/get_helm.sh
+
+- name: make helm.sh executable
+  file:
+    path: /tmp/get_helm.sh
+    mode: 0700
+
+- name: install helm on jumphost
+  command: "/tmp/get_helm.sh"
+
