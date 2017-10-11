@@ -12,7 +12,7 @@ export POD=$2
 #-------------------------------------------------------------------------------
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root" 1>&2
-    exit
+    exit -1
 fi
 
 echo "
