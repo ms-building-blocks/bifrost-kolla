@@ -32,5 +32,4 @@ deploy:
     - wget -O vars/pdf.yaml ${terrahouat_raw}/config/${pod}.yaml
     - wget -O vars/idf.yaml ${terrahouat_raw}/config/idf-${pod}.yaml
     - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
-    - ssh ${pod}.opnfv.fr "sudo screen -S CI -d -m"
-    - ssh ${pod}.opnfv.fr "sudo screen -S CI -X stuff 'cd /opt/bosa\n./run.sh orange ${pod}\n'"
+    - ssh ${pod}.opnfv.fr "cd /opt/bosa\n./run.sh orange ${pod}"
