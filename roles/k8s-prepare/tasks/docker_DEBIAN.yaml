@@ -27,10 +27,12 @@
 
 - name: add docker repo
   apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ distri }} {{ release }} stable"
+    repo: >
+      deb [arch=amd64] https://download.docker.com/linux/{{ distri }}
+        {{ release }} stable"
     state: present
 
 - name: install docker
   apt:
-    update_cache: yes
+    update_cache: 'yes'
     name: docker-ce

@@ -1,6 +1,7 @@
 ---
 - set_fact:
-    server_url: "{{ hostvars[groups['server'][0]].ansible_default_ipv4.address }}"
+    server_url:
+      "{{ hostvars[groups['server'][0]].ansible_default_ipv4.address }}"
 
 - name: get projects list
   uri:
@@ -13,7 +14,9 @@
 
 - name: register kube project id
   set_fact:
-    kube_project_id: "{{ (projects.json.data|selectattr('name', 'equalto', 'kube-system')|first).id }}"
+    kube_project_id: >
+      "{{ (projects.json.data|selectattr('name', 'equalto',
+                                         'kube-system')|first).id }}"
 
 - name: get all launched stacks on Kube project
   uri:
@@ -24,14 +27,19 @@
 
 - set_fact:
     kube_dns_not_present: true
-  when: kube_stacks.json.data|selectattr('name', 'equalto', 'kube-dns')|list|length == 0
+  when: >
+    kube_stacks.json.data|selectattr('name', 'equalto',
+                                     'kube-dns')|list|length == 0
 
 - set_fact:
     kube_dns_not_present: false
-  when: kube_stacks.json.data|selectattr('name', 'equalto', 'kube-dns')|list|length != 0
+  when: >
+    kube_stacks.json.data|selectattr('name', 'equalto',
+                                     'kube-dns')|list|length != 0
 
 
-# Cannot uncompress an archive directly on /tmp as tar tries to change the ctime and it's weirdly not allowed
+# Cannot uncompress an archive directly on /tmp as tar tries to change
+#   the ctime and it's weirdly not allowed
 - name: create /tmp/rancher if needed
   file:
     path: /tmp/rancher
@@ -40,38 +48,48 @@
 
 - name: decompress rancher cli for Linux
   unarchive:
-    src: https://github.com/rancher/cli/releases/download/v1.0.0-alpha4/rancher-linux-amd64-v1.0.0-alpha4.tar.gz
+    src: >-
+      https://github.com/rancher/cli/releases/download/v1.0.0-alpha4/
+        rancher-linux-amd64-v1.0.0-alpha4.tar.gz
     dest: /tmp/rancher
-    remote_src: yes
+    remote_src: 'yes'
   when: (ansible_system == 'Linux') and
         (ansible_userspace_architecture == 'x86_64')
 
 - name: decompress rancher cli for MacOs
   unarchive:
-    src: https://github.com/rancher/cli/releases/download/v1.0.0-alpha4/rancher-linux-amd64-v1.0.0-alpha4.tar.gz
+    src: >-
+      https://github.com/rancher/cli/releases/download/v1.0.0-alpha4/
+        rancher-linux-amd64-v1.0.0-alpha4.tar.gz
     dest: /tmp/rancher
-    remote_src: yes
+    remote_src: 'yes'
   when: ansible_system == "Darwin"
 
 - name: move executable
   become: true
   copy:
-    remote_src: yes
+    remote_src: 'yes'
     src: /tmp/rancher/rancher-v1.0.0-alpha4/rancher
     dest: /usr/local/bin/rancher
     mode: 0755
 
 - name: retrieve catalog from rancher
-  command: rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }} catalog --format json
+  command: >
+    rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
+      catalog --format json
   register: catalog
 
 - name: retrieve kube-dns project id
   set_fact:
-    kube_dns_catalog_id: "{{ (catalog.stdout_lines | select('match', '.*kube-dns.*') | first | from_json).ID }}"
+    kube_dns_catalog_id: >
+      "{{ (catalog.stdout_lines | select('match', '.*kube-dns.*') |
+        first | from_json).ID }}"
   when: kube_dns_not_present
 
 - name: launch installation of kube-dns
-  command: rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }} catalog install --name kube-dns {{ kube_dns_catalog_id }}
+  command: >
+    rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
+      catalog install --name kube-dns {{ kube_dns_catalog_id }}
   when: kube_dns_not_present
 
 - name: get clusters of project
@@ -83,7 +101,9 @@
 
 - name: register k8s cluster id
   set_fact:
-    cluster_id: "{{ (clusters.json.data|selectattr('orchestration', 'equalto', 'kubernetes')|first).id }}"
+    cluster_id: >
+      "{{ (clusters.json.data|selectattr('orchestration',
+                                         'equalto', 'kubernetes')|first).id }}"
 
 - name: create api key for kubectl
   uri:
@@ -118,7 +138,9 @@
 - name: install latest kubectl
   become: true
   get_url:
-    url: https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl
+    url: >-
+      https://storage.googleapis.com/kubernetes-release/release/v1.8.0/
+      bin/linux/amd64/kubectl
     dest: /usr/local/bin/kubectl
     mode: 0777
 
@@ -135,19 +157,25 @@
 
 - set_fact:
     helm_not_present: true
-  when: kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length == 0
+  when:
+    kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length == 0
 
 - set_fact:
     helm_not_present: false
-  when: kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length != 0
+  when:
+    kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length != 0
 
 - name: retrieve helm project id
   set_fact:
-    helm_catalog_id: "{{ (catalog.stdout_lines | select('match', '.*helm.*') | first | from_json).ID }}"
+    helm_catalog_id: >
+      "{{ (catalog.stdout_lines | select('match', '.*helm.*') |
+      first | from_json).ID }}"
   when: helm_not_present
 
 - name: launch installation of helm
-  command: rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }} catalog install --name helm {{ helm_catalog_id }}
+  command: >
+    rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
+      catalog install --name helm {{ helm_catalog_id }}
   when: helm_not_present
 
 - name: get helm latest release
@@ -162,4 +190,3 @@
 
 - name: install helm on jumphost
   command: "/tmp/get_helm.sh"
-
