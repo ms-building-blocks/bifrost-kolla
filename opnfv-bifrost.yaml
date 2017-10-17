@@ -6,4 +6,5 @@
     - "vars/idf.yaml"
     - "vars/pdf.yaml"
   roles:
-    - osa_configure
+    - bifrost_install
+    - bifrost_enroll-deploy

@@ -35,6 +35,9 @@ ironic_db_password: aSecretPassword473z
 dib_dev_user_username: ubuntu
 dib_dev_user_password: opnfv2017
 
+# opnfv user
+opnfv_user: opnfv
+
 ##
 # Network config
 ##
@@ -113,6 +116,24 @@ os_images:
     url: >
       http://download.opensuse.org/repositories/Cloud:/Images:/
       openSUSE_13.2/images/openSUSE-13.2-OpenStack-Guest.x86_64.qcow2
+  - name: 'opensuse-13.2'
+    file: 'centos/opensuse-13.2-x86_64.img'
+    distro: 'opensuse'
+    min_disk: 4
+    url: >
+  - name: 'opensuse-13.2'
+    file: 'centos/opensuse-13.2-x86_64.img'
+    distro: 'opensuse'
+    min_disk: 4
+    url: >
+      http://download.opensuse.org/repositories/Cloud:/Images:/
+      openSUSE_13.2/images/openSUSE-13.2-OpenStack-Guest.x86_64.qcow2
+  - name: 'centos-7'
+    file: 'centos/CentOS-7-x86_64-GenericCloud.qcow2'
+    distro: 'opensuse'
+    min_disk: 4
+    url: >
+      http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
 
 # default flavors
 # https://docs.openstack.org/horizon/latest/admin/manage-flavors.html
