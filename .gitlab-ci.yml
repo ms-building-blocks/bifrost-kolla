@@ -9,8 +9,6 @@ variables:
   os_version: stable/pike
   target_folder: /opt/bosa
   scenario: os-nosdn-nofeature-ha
-  terrahouat_raw:
-    https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
 
 syntax_checking:
   stage: test
@@ -26,6 +24,7 @@ syntax_checking:
     - yamllint vars/
     - yamllint roles/*/tasks/*.y?ml
 
+# Deploy
 deploy:
   stage: deploy
   tags:
@@ -45,6 +44,7 @@ deploy:
   artifacts:
     - ansible-role-requirements${os_version}_${date}.yml
 
+# Run functest
 trigger_check:
   stage: check
   script:
