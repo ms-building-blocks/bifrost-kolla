@@ -4,8 +4,6 @@ set -o nounset
 set -o pipefail
 
 export ANSIBLE_STDOUT_CALLBACK=debug
-export LAB=$1
-export POD=$2
 
 #-------------------------------------------------------------------------------
 # Check run as root

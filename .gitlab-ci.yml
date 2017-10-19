@@ -25,6 +25,7 @@ deploy:
     - sina
   variables:
     pod: pod1
+    os_version: stable/pike
     target_folder: /opt/bosa
     terrahouat_raw:
       https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
@@ -32,6 +33,7 @@ deploy:
     - cd vars
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config idf-${pod}.yaml | tar -x
+    - perl -i -pe "s!stable/ocata!$os_version!"
     - ln -s ${pod}.yaml pdf.yaml
     - ln -s idf-${pod}.yaml idf.yaml
     - cd ..
