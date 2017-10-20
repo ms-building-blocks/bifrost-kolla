@@ -211,15 +211,29 @@ metering-compute_hosts:
 # user_variables, but are left here to illustrate that
 # each container could have different storage targets.
 storage_hosts:
+{% for node in role2nodes['compute'] %}
+  compute{{ loop.index }}:
+    ip: {{ nodes_ip[node]['ip'] }}
+    container_vars:
+      cinder_backends:
+        nfs-volume1:
+          volume_backend_name: NFS_VOLUME1
+          volume_driver: cinder.volume.drivers.nfs.NfsDriver
+          nfs_shares_config: /etc/cinder/nfs_shares_volume1
+          nfs_mount_options: "rsize=65535,wsize=65535,timeo=1200,actimeo=120"
+          shares:
+          - { ip: "{{ xci.cinder.nfs.server }}", share: "{{ xci.cinder.nfs.path }}" }
+{% endfor %}
 {% for node in role2nodes['controller'] %}
   infra{{ loop.index }}:
     ip: {{ nodes_ip[node]['ip'] }}
     container_vars:
       cinder_backends:
-        limit_container_types: cinder_volume
-        lvm:
-          volume_group: cinder-volumes
-          volume_driver: cinder.volume.drivers.lvm.LVMVolumeDriver
-          volume_backend_name: LVM_iSCSI
-          iscsi_ip_address: "{{ net_config[nmap['br-storage']].network | ip_add(nodes_ip[node]['index'] + ip_shift) }}"
+        nfs-volume1:
+          volume_backend_name: NFS_VOLUME1
+          volume_driver: cinder.volume.drivers.nfs.NfsDriver
+          nfs_shares_config: /etc/cinder/nfs_shares_volume1
+          nfs_mount_options: "rsize=65535,wsize=65535,timeo=1200,actimeo=120"
+          shares:
+          - { ip: "{{ xci.cinder.nfs.server }}", share: "{{ xci.cinder.nfs.path }}" }
 {% endfor %}

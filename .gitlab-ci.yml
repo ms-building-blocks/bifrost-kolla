@@ -40,9 +40,12 @@ deploy:
     - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
     - ssh ${pod}.opnfv.fr "cd /opt/bosa; sudo ./run.sh orange ${pod}"
     - date=$(date +%Y-%m-%d)
-    - cp /opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements${os_version}_${date}.yml
+    - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
+    - rm ansible-role-requirements*
+    - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements${os_version}_${date}.yml
   artifacts:
-    - ansible-role-requirements${os_version}_${date}.yml
+    paths:
+      - ansible-role-requirements${os_version}_*.yml
 
 # Run functest
 trigger_check:
