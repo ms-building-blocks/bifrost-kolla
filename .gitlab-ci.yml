@@ -29,6 +29,8 @@ deploy:
   stage: deploy
   tags:
     - sina
+  only:
+    - master
   script:
     - cd vars
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
@@ -50,6 +52,8 @@ deploy:
 # Run functest
 trigger_check:
   stage: check
+  only:
+    - master
   script:
     - "curl -X POST\
       -F token=${functest_token}\

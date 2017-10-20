@@ -89,6 +89,26 @@
   shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a && sleep 5"
 
 ##
+# Mount nova instance disk
+##
+- name: prepare nova instances folder
+  file:
+    path: /var/lib/nova/instances
+    state: directory
+    recurse: true
+  when: inventory_hostname in groups['computes']
+- name: make block device
+  filesystem:
+    fstype: ext4
+    dev: "/dev/{{ xci.nova_physical_device }}"
+  when: inventory_hostname in groups['computes']
+- name: mount nova instances folder on secondary disk
+  mount:
+    path: /var/lib/nova/instances
+    src: "/dev/{{ xci.nova_physical_device }}"
+    state: present
+  when: inventory_hostname in groups['computes']
+##
 # Restart services
 ##
 - systemd:
