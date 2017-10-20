@@ -43,13 +43,13 @@ deploy:
     - ssh ${pod}.opnfv.fr "cd /opt/bosa; sudo ./run.sh orange ${pod}"
     - date=$(date +%Y-%m-%d)
     - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
-    - rm ansible-role-requirements*
-    - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements${os_version}_${date}.yml
+    - rm -f ansible-role-requirements* || true
+    - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
   artifacts:
     paths:
-      - ansible-role-requirements${os_version}_*.yml
+      - ansible-role-requirements_${os_version}_*.yml
 
-# Run functest
+# Run functest from TerraHouat
 trigger_check:
   stage: check
   only:
