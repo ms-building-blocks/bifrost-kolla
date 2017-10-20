@@ -107,6 +107,7 @@
     path: /var/lib/nova/instances
     src: "/dev/{{ xci.nova_physical_device }}"
     state: present
+    fstype: ext4
   when: inventory_hostname in groups['computes']
 ##
 # Restart services
