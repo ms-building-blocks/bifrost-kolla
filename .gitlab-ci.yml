@@ -5,7 +5,6 @@ stages:
   - check
 
 variables:
-  pod: pod4
   os_version: stable/pike
   target_folder: /opt/bosa
   scenario: os-nosdn-nofeature-ha
@@ -25,10 +24,11 @@ syntax_checking:
     - yamllint roles/*/tasks/*.y?ml
 
 # Deploy
-deploy:
+.deploy_pod: &deploy_pod
   stage: deploy
   tags:
     - sina
+    - shell
   only:
     - master
   script:
@@ -45,19 +45,41 @@ deploy:
     - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
     - rm -f ansible-role-requirements* || true
     - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
-  artifacts:
-    paths:
-      - ansible-role-requirements_*.yml
-
-# Run functest from TerraHouat
-trigger_check:
-  stage: check
-  only:
-    - master
-  script:
     - "curl -X POST\
       -F token=${functest_token}\
       -F ref={functest_ref_name}\
       -F 'variables[pod]=${pod}'\
       -F 'variables[scenario]=${scenario}'\
       https://gitlab.forge.orange-labs.fr/api/v4/projects/1674/trigger/pipeline"
+  artifacts:
+    paths:
+      - ansible-role-requirements_*.yml
+
+deploy_pod1:
+  variables:
+    pod: pod1
+  environment:
+    name: pod1
+    url: https://10.1.0.9/
+  <<: *deploy_pod
+
+deploy_pod2:
+  variables:
+    pod: pod2
+    scenario: os-nosdn-nofeature-noha
+  environment:
+    name: pod2
+    url: https://10.2.0.9/
+  when: manual
+  <<: *deploy_pod
+
+deploy_pod4:
+  variables:
+    pod: pod4
+    scenario: os-nosdn-nofeature-ha
+  environment:
+    name: pod4
+    url: https://10.4.0.9/
+  when: manual
+  <<: *deploy_pod
+
