@@ -47,7 +47,7 @@ deploy:
     - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
   artifacts:
     paths:
-      - ansible-role-requirements_${os_version}_*.yml
+      - ansible-role-requirements_*.yml
 
 # Run functest from TerraHouat
 trigger_check:
