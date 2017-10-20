@@ -24,6 +24,10 @@
     role2nodes: "{{ xci.nodes_roles | role2nodes() }}"
 - name: set openstack_user_config.yml
   template:
+    src: "designate.yml.j2"
+    dest: "{{ osa_etc_path }}/conf.d/designate.yml"
+- name: add designate service
+  template:
     src: "openstack_user_config.yml.prod.j2"
     dest: "{{ osa_etc_path }}/openstack_user_config.yml"
 - name: set user_variables.yml

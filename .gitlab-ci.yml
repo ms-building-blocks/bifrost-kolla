@@ -1,10 +1,17 @@
 ---
 stages:
-  - syntax_checking
+  - test
   - deploy
+  - check
+
+variables:
+  pod: pod1
+  os_version: stable/pike
+  target_folder: /opt/bosa
+  scenario: os-nosdn-nofeature-ha
 
 syntax_checking:
-  stage: syntax_checking
+  stage: test
   image: dockerproxy-iva.si.francetelecom.fr/debian:latest
   tags:
     - shared
@@ -17,18 +24,13 @@ syntax_checking:
     - yamllint vars/
     - yamllint roles/*/tasks/*.y?ml
 
-
-### A travailler
+# Deploy
 deploy:
   stage: deploy
   tags:
     - sina
-  variables:
-    pod: pod1
-    os_version: stable/pike
-    target_folder: /opt/bosa
-    terrahouat_raw:
-      https://gitlab.forge.orange-labs.fr/opnfv/TerraHouat/raw/master
+  only:
+    - master
   script:
     - cd vars
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
@@ -39,3 +41,23 @@ deploy:
     - cd ..
     - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
     - ssh ${pod}.opnfv.fr "cd /opt/bosa; sudo ./run.sh orange ${pod}"
+    - date=$(date +%Y-%m-%d)
+    - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
+    - rm ansible-role-requirements*
+    - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements${os_version}_${date}.yml
+  artifacts:
+    paths:
+      - ansible-role-requirements${os_version}_*.yml
+
+# Run functest
+trigger_check:
+  stage: check
+  only:
+    - master
+  script:
+    - "curl -X POST\
+      -F token=${functest_token}\
+      -F ref={functest_ref_name}\
+      -F 'variables[pod]=${pod}'\
+      -F 'variables[scenario]=${scenario}'\
+      https://gitlab.forge.orange-labs.fr/api/v4/projects/1674/trigger/pipeline"
