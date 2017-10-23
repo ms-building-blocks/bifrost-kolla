@@ -1,0 +1,8 @@
+---
+# change ownership of cinder volumes
+- name: change ownership of cinder volumes
+  file:
+    path: /var/lib/cinder
+    owner: cinder
+    group: cinder
+    recurse: yes
