@@ -104,7 +104,10 @@ echo "
 "
 cd /opt/bosa
 source /etc/bosa/openstack_openrc
-ansible-playbook opnfv-post-install.yaml
+ansible-playbook \
+  -i /etc/bosa/ansible_inventory \
+  -i /etc/ansible/hosts \
+  opnfv-post-install.yaml
 
 URL=$(grep AUTH_URL /etc/bosa/openstack_openrc | perl -pe 's!^.*//(.*):.*!$1!')
 PASS=$(grep PASSWORD /etc/bosa/openstack_openrc | perl -pe "s/^.*'(.*)'/\$1/")
