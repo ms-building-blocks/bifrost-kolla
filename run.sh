@@ -73,7 +73,7 @@ echo "
 "
 ansible-playbook opnfv-osa-prepare.yaml
 /opt/openstack-ansible/scripts/bootstrap-ansible.sh
-ansible-playbook opnfv-osa-configure.yaml --vault-password-file ~/.vault_pass.txt
+ansible-playbook opnfv-osa-configure.yaml --vault-password-file .vault_pass.txt
 
 echo "
 #-------------------------------------------------------------------------------
