@@ -110,7 +110,7 @@ os_images:
       "https://cdimage.debian.org/cdimage/openstack/current-9/\
       debian-9-openstack-amd64.qcow2"
   - name: 'opensuse-13.2'
-    file: 'centos/opensuse-13.2-x86_64.img'
+    file: 'suse/opensuse-13.2-x86_64.img'
     distro: 'opensuse'
     min_disk: 4
     url:
