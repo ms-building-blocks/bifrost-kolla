@@ -70,6 +70,7 @@ os_basic:
   images: false
   flavors: true
   ext_net: true
+  own_certs: true
 
 # Default images folder on jumphost
 images_folder: /mnt/images

@@ -149,10 +149,15 @@ debug: false
 # HAProxy Keepalived configuration (cf. documentation)
 # Make sure that this is set correctly according to the CIDR used for your
 # internal and external addresses.
-haproxy_keepalived_external_vip_cidr: "{{external_lb_vip_address}}/32"
-haproxy_keepalived_internal_vip_cidr: "{{internal_lb_vip_address}}/32"
+haproxy_keepalived_external_vip_cidr: "{% raw %}{{external_lb_vip_address}}{% endraw %}/32"
+haproxy_keepalived_internal_vip_cidr: "{% raw %}{{internal_lb_vip_address}}{% endraw %}/32"
 haproxy_keepalived_external_interface: br-mgmt
 haproxy_keepalived_internal_interface: br-mgmt
+{% if os_basic.own_certs | bool %}
+haproxy_user_ssl_cert: /etc/etc/openstack_deploy/certs/{{ ssl_cert_name }}
+haproxy_user_ssl_key: /etc/etc/openstack_deploy/certs/{{ ssl_key_name }}
+haproxy_user_ssl_ca_cert: /etc/etc/openstack_deploy/certs/{{ ssl_ca_cert }}
+{% endif %}
 
 # Defines the default VRRP id used for keepalived with haproxy.
 # Overwrite it to your value to make sure you don't overlap
