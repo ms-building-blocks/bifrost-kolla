@@ -30,6 +30,7 @@ syntax_checking:
     - sina
     - shell
   script:
+    - echo ${ANSIBLE_VAULT_PASSWORD} > ~/.vault_pass.txt
     - cd vars
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config idf-${pod}.yaml | tar -x
@@ -52,7 +53,7 @@ syntax_checking:
       -F 'variables[scenario]=${scenario}' \
       https://gitlab.forge.orange-labs.fr/api/v4/projects/1674/trigger/pipeline"
   after_script:
-    - rm .vault_pass.txt || true
+    - rm ~/.vault_pass.txt || true
   artifacts:
     paths:
       - ansible-role-requirements_*.yml
