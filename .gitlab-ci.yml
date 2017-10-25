@@ -29,8 +29,6 @@ syntax_checking:
   tags:
     - sina
     - shell
-  only:
-    - master
   script:
     - cd vars
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
