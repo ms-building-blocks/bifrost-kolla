@@ -154,9 +154,9 @@ haproxy_keepalived_internal_vip_cidr: "{% raw %}{{internal_lb_vip_address}}{% en
 haproxy_keepalived_external_interface: br-mgmt
 haproxy_keepalived_internal_interface: br-mgmt
 {% if os_basic.own_certs | bool %}
-haproxy_user_ssl_cert: /etc/etc/openstack_deploy/certs/{{ ssl_cert_name }}
-haproxy_user_ssl_key: /etc/etc/openstack_deploy/certs/{{ ssl_key_name }}
-haproxy_user_ssl_ca_cert: /etc/etc/openstack_deploy/certs/{{ ssl_ca_cert }}
+haproxy_user_ssl_cert: /etc/openstack_deploy/certs/{{ ssl_cert_name }}
+haproxy_user_ssl_key: /etc/openstack_deploy/certs/{{ ssl_key_name }}
+haproxy_user_ssl_ca_cert: /Òetc/openstack_deploy/certs/{{ ssl_ca_cert }}
 {% endif %}
 
 # Defines the default VRRP id used for keepalived with haproxy.
