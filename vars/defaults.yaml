@@ -58,6 +58,11 @@ network_profiles:
     - br-vxlan
     - br-vlan
 
+# openstack platform domain
+# Optionnal
+# Only needed if own_certs is set to true
+dns_domain: opnfv.xyz
+
 # IP shift from network address to set ip
 # first used ip address of will be network + ip_shif + node_id
 ip_shift: 10
