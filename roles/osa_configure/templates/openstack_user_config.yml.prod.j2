@@ -18,11 +18,11 @@ global_overrides:
   # If using different protocols (https/http) for the public/internal
   # endpoints the two addresses must be different.
   #
-  {% if os_basic.own_certs %}
+  {%- if os_basic.own_certs %}
   external_lb_vip_address: {{ xci.pod_name}}.{{ dns_domain }}
-  {% else %}
+  {%- else %}
   external_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) }}
-  {% endif %}
+  {%- endif %}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
