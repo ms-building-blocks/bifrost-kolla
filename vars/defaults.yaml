@@ -164,6 +164,26 @@ os_flavors:
     disk: 160
     vcpu: 8
     name: 'm1.xlarge'
+  - ram: 2048
+    disk: 50
+    vcpu: 2
+    name: 'onap.small'
+  - ram: 4096
+    disk: 50
+    vcpu: 4
+    name: 'onap.medium'
+  - ram: 8192
+    disk: 50
+    vcpu: 8
+    name: 'onap.large'
+  - ram: 16384
+    disk: 50
+    vcpu: 16
+    name: 'onap.xlarge'
+  - ram: 32768
+    disk: 500
+    vcpu: 16
+    name: 'onap.xxlarge'
 
 ext_net:
   name: ext-net
