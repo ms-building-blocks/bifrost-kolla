@@ -94,8 +94,6 @@ echo "
 "
 CNT=$(ssh infra1 lxc-ls |grep utility)
 ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
-scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
-echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
 
 echo "
 #-------------------------------------------------------------------------------
