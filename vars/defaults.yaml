@@ -61,7 +61,7 @@ network_profiles:
 # openstack platform domain
 # Optionnal
 # Only needed if own_certs is set to true
-dns_domain: opnfv.xyz
+dns_domain: opnfv.fr
 
 # IP shift from network address to set ip
 # first used ip address of will be network + ip_shif + node_id
