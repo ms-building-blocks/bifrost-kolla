@@ -149,7 +149,7 @@ debug: false
 # HAProxy Keepalived configuration (cf. documentation)
 # Make sure that this is set correctly according to the CIDR used for your
 # internal and external addresses.
-haproxy_keepalived_external_vip_cidr: "{% raw %}{{external_lb_vip_address}}{% endraw %}/32"
+haproxy_keepalived_external_vip_cidr: "{% raw %}{{external_lb_vip_ip_address}}{% endraw %}/32"
 haproxy_keepalived_internal_vip_cidr: "{% raw %}{{internal_lb_vip_address}}{% endraw %}/32"
 haproxy_keepalived_external_interface: br-mgmt
 haproxy_keepalived_internal_interface: br-mgmt
