@@ -20,8 +20,11 @@ global_overrides:
   #
 {% if os_basic.own_certs %}
   external_lb_vip_address: {{ xci.pod_name}}.{{ dns_domain }}
+  external_lb_vip_ip_address: {{ net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) }}
 {% else %}
-  external_lb_vip_address: {{ net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) }}
+{% set external_lb_vip_ip_address = net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) %}
+  external_lb_vip_address: {{ external_lb_vip_ip_address }} 
+  external_lb_vip_ip_address: {{ external_lb_vip_ip_address }}
 {% endif %}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
