@@ -72,7 +72,7 @@ ip_shift: 10
 ##
 
 os_basic:
-  images: false
+  images: true
   flavors: true
   ext_net: true
   own_certs: true
