@@ -46,12 +46,12 @@ syntax_checking:
     - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
     - rm -f ansible-role-requirements* || true
     - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
-    - "curl -X POST \
+    - curl -X POST \
       -F token=${functest_token} \
       -F ref=${functest_ref_name} \
-      -F 'variables[pod]=${pod}' \
-      -F 'variables[scenario]=${scenario}' \
-      https://gitlab.forge.orange-labs.fr/api/v4/projects/1674/trigger/pipeline"
+      -F "variables[pod]=${pod}" \
+      -F "variables[scenario]=${scenario}" \
+      https://gitlab.forge.orange-labs.fr/api/v4/projects/1674/trigger/pipeline
   artifacts:
     paths:
       - ansible-role-requirements_*.yml
