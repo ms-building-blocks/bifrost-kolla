@@ -40,18 +40,13 @@ syntax_checking:
     - ln -s certificats-${pod}.yaml certificates.yaml
     - cd ..
     - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
-    - ssh ${pod}.opnfv.fr "echo ${ANSIBLE_VAULT_PASSWORD} > /opt/bosa/.vault_pass.txt"
-    - ssh ${pod}.opnfv.fr "cd /opt/bosa; sudo ./run.sh orange ${pod}"
+    #- ssh ${pod}.opnfv.fr "echo ${ANSIBLE_VAULT_PASSWORD} > /opt/bosa/.vault_pass.txt"
+    #- ssh ${pod}.opnfv.fr "cd /opt/bosa; sudo ./run.sh orange ${pod}"
     - date=$(date +%Y-%m-%d)
     - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
-    - rm -f ansible-role-requirements* || true
-    - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
-    - curl -X POST \
-      -F token=${functest_token} \
-      -F ref=${functest_ref_name} \
-      -F "variables[pod]=${pod}" \
-      -F "variables[scenario]=${scenario}" \
-      https://gitlab.forge.orange-labs.fr/api/v4/projects/1674/trigger/pipeline
+    #- rm -f ansible-role-requirements* || true
+    #- scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
+    - ./trigger_functest.sh
   artifacts:
     paths:
       - ansible-role-requirements_*.yml
