@@ -32,8 +32,8 @@ yaml_checking:
 ansible_linting:
   script:
     - apt-get update -qq
-    - apt-get install -y -qq python-setuptools
-    - easy_install pip
+    - apt-get install -y -qq python-pip
+    - pip install --upgrade pip
     - pip install ansible-lint
     - ansible-lint \
         *.y?ml \
