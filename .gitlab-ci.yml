@@ -9,19 +9,34 @@ variables:
   target_folder: /opt/bosa
   scenario: os-nosdn-nofeature-ha
 
-syntax_checking:
+.syntax_checking: &syntax_docker
   stage: test
   image: dockerproxy-iva.si.francetelecom.fr/debian:latest
   tags:
     - shared
     - docker
     - innovation
+  variables:
+    http_proxy: http://proxy.rd.francetelecom.fr:8080
+    https_proxy: http://proxy.rd.francetelecom.fr:8080
+
+yaml_checking:
   script:
     - apt-get update -qq
     - apt-get install -y -qq yamllint python3-pkg-resources
     - yamllint *.y?ml
     - yamllint vars/
     - yamllint roles/*/tasks/*.y?ml
+  <<: *syntax_docker
+
+ansible_linting:
+  script:
+    - apt-get update -qq
+    - apt-get install -y -qq python-pip
+    - pip install --upgrade pip
+    - pip install ansible-lint
+    - ansible-lint -x ANSIBLE0010,ANSIBLE0013 opnfv-*.yaml
+  <<: *syntax_docker
 
 # Deploy
 .deploy_pod: &deploy_pod
@@ -82,4 +97,3 @@ deploy_pod4:
     url: https://10.4.0.9/
   when: manual
   <<: *deploy_pod
-

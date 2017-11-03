@@ -1,5 +1,6 @@
 ---
-- set_fact:
+- name: set server_url task
+  set_fact:
     server_url:
       "{{ hostvars[groups['server'][0]].ansible_default_ipv4.address }}"
 
@@ -25,18 +26,11 @@
     url: "http://{{ server_url }}/v3/projects/{{ kube_project_id }}/stacks"
   register: kube_stacks
 
-- set_fact:
-    kube_dns_not_present: true
-  when: >
-    kube_stacks.json.data|selectattr('name', 'equalto',
-                                     'kube-dns')|list|length == 0
-
-- set_fact:
-    kube_dns_not_present: false
-  when: >
-    kube_stacks.json.data|selectattr('name', 'equalto',
-                                     'kube-dns')|list|length != 0
-
+- name: set kube_dns_not_present fact
+  set_fact:
+    kube_dns_not_present: >
+      kube_stacks.json.data|selectattr('name', 'equalto',
+                                       'kube-dns')|list|length == 0
 
 # Cannot uncompress an archive directly on /tmp as tar tries to change
 #   the ctime and it's weirdly not allowed
@@ -78,6 +72,7 @@
     rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
       catalog --format json
   register: catalog
+  when: "True"
 
 - name: retrieve kube-dns project id
   set_fact:
@@ -117,7 +112,8 @@
     body_format: json
   register: apikey_infos
 
-- set_fact:
+- name: set apikey_id, username, password facts
+  set_fact:
     apikey_id: "{{ apikey_infos.json.id}}"
     username: "{{ apikey_infos.json.publicValue}}"
     password: "{{ apikey_infos.json.secretValue}}"
@@ -132,7 +128,8 @@
   retries: 10
   delay: 1
 
-- set_fact:
+- name: set fact key_active
+  set_fact:
     key_active: "{{ apikey_infos.json.state}}"
 
 - name: install latest kubectl
@@ -155,15 +152,11 @@
     src: kube_config.j2
     dest: "{{ ansible_env.HOME }}/.kube/config"
 
-- set_fact:
-    helm_not_present: true
-  when:
-    kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length == 0
-
-- set_fact:
-    helm_not_present: false
-  when:
-    kube_stacks.json.data|selectattr('name', 'equalto', 'helm')|list|length != 0
+- name: set fact helm_not_present
+  set_fact:
+    helm_not_present: >
+      kube_stacks.json.data|selectattr('name',
+                                       'equalto', 'helm')|list|length != 0
 
 - name: retrieve helm project id
   set_fact:
@@ -190,3 +183,4 @@
 
 - name: install helm on jumphost
   command: "/tmp/get_helm.sh"
+  when: "True"

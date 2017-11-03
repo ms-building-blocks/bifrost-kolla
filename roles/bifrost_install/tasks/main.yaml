@@ -27,6 +27,7 @@
   shell: "./scripts/env-setup.sh"
   args:
     chdir: "{{ bifrost_path }}/"
+    creates: "{{ bifrost_venv_folder }}"
   environment:
     VENV: "{{ bifrost_venv_folder if bifrost_enable_venv else '' }}"
 - name: Set bifrost-ansible wrapper
@@ -57,17 +58,21 @@
 ##
 # install bifrost
 ##
+
 - name: Install bifrost
   shell: >
     bifrost-ansible -i inventory/target install.yaml
     -e staging_drivers_include=true;
   args:
     chdir: "{{ bifrost_path }}/playbooks/"
+    creates: /usr/local/bin/ironic
 # Upgrade pyasn1 as it make ironic conductor fail
 # "hardware type or interface pxe_ilo could not be loaded"
-- name: Install bifrost
+- name: Upgrade pyasn1 for bifrost
   shell: "bifrost-pip install pyasn1 --upgrade"
-- service:
+  when: "True"
+- name: restart ironic-conductor
+  service:
     name: ironic-conductor
     state: restarted
 - name: install libs needed outside the VENV
@@ -86,6 +91,7 @@
     path: /etc/dnsmasq.conf
     regexp: '^dhcp-option=3'
     line: "dhcp-option=3,{{ net_config['admin'].gateway }}"
-- service:
+- name: Restart dnsmasq
+  service:
     name: dnsmasq
     state: restarted
