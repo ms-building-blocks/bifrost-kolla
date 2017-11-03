@@ -83,6 +83,11 @@ echo "
 cd /opt/openstack-ansible/playbooks
 openstack-ansible setup-hosts.yml
 openstack-ansible setup-infrastructure.yml
+cd /opt/bosa
+ansible-playbook opnfv-osa-prepare-designate.yaml \
+    --inventory=/etc/openstack_deploy/openstack_inventory.json \
+    --vault-password-file .vault_pass.txt
+cd /opt/openstack-ansible/playbooks
 ansible galera_container -m shell -a \
     "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
 openstack-ansible setup-openstack.yml

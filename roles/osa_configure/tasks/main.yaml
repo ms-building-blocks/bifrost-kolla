@@ -22,7 +22,7 @@
 - name: get role nodes
   set_fact:
     role2nodes: "{{ xci.nodes_roles | role2nodes() }}"
-- name: set openstack_user_config.yml
+- name: set designate skeleton config
   template:
     src: "designate.yml.j2"
     dest: "{{ osa_etc_path }}/conf.d/designate.yml"

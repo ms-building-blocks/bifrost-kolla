@@ -1,0 +1,41 @@
+
+---
+- name: install needed packages
+  include: install_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: push needed files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/bind/
+  with_items:
+    - named.conf
+    - named.conf.options
+    - named.conf.default-zones
+    - db.0
+    - db.127
+    - db.255
+    - db.local
+  register: copy
+
+- set_fact:
+    restart: "{{ copy.changed }}"
+
+- name: push designate rdnc.key
+  template:
+    src: designate.key.j2
+    dest: /etc/bind/designate.rndc.key
+    owner: bind
+    group: bind
+    mode: "u=rw,g=r,o="
+  register: template
+
+- set_fact:
+    restart: "{{ restart or template.changed }}"
+
+- name: restart bind9 to take the configuration
+  systemd:
+    name: bind9
+    state: reloaded
+    enabled: yes
+  when: restart
