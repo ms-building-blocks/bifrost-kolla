@@ -5,4 +5,4 @@
     path: /var/lib/cinder
     owner: cinder
     group: cinder
-    recurse: yes
+    recurse: "yes"

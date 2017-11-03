@@ -69,7 +69,7 @@
     IRONIC_URL: 'http://localhost:6385/'
     OS_AUTH_TOKEN: 'fake-token'
   register: ironic_nodes
-  when: True
+  when: "True"
 - name: Enroll nodes
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py enroll-dynamic.yaml"
@@ -89,7 +89,7 @@
     IRONIC_URL: 'http://localhost:6385/'
     OS_AUTH_TOKEN: 'fake-token'
   register: ironic_nodes_ready
-  when: True
+  when: "True"
 - name: Deploy bifrost
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py deploy-dynamic.yaml"

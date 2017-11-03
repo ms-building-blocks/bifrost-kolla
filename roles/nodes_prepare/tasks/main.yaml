@@ -5,7 +5,7 @@
 - name: ensure the gateway is correct
   shell:
     "ip r d default && ip r a default via {{ net_config['admin'].gateway }}"
-  when: True
+  when: "True"
 
 ##
 # set correct resolv.conf
@@ -97,7 +97,7 @@
   when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
 - name: restart all interfaces
   shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a && sleep 5"
-  when: True
+  when: "True"
 
 ##
 # Mount nova instance disk

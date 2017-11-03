@@ -70,7 +70,7 @@
 # "hardware type or interface pxe_ilo could not be loaded"
 - name: Upgrade pyasn1 for bifrost
   shell: "bifrost-pip install pyasn1 --upgrade"
-  when: True
+  when: "True"
 - name: restart ironic-conductor
   service:
     name: ironic-conductor
