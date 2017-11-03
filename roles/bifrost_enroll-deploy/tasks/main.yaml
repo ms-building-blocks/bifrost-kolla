@@ -63,6 +63,13 @@
 ##
 # Enroll using prepared wrapper to ensure venv is used or not
 ##
+- name: check no node is already installed
+  shell: "ironic --json node-list 2>/dev/null | jq '. | length'"
+  environment:
+    IRONIC_URL: 'http://localhost:6385/'
+    OS_AUTH_TOKEN: 'fake-token'
+  register: ironic_nodes
+  when: "True"
 - name: Enroll nodes
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py enroll-dynamic.yaml"
@@ -70,9 +77,19 @@
     chdir: "{{ bifrost_path }}/playbooks/"
   environment:
     BIFROST_INVENTORY_SOURCE: "{{ bosa_config }}/bifrost_inventory.json"
+  when: ironic_nodes.stdout == "0"
 ##
 # Deploy using prepared wrapper to ensure venv is used or not
 ##
+- name: check no node is already installed
+  shell: >
+    ironic --json node-list 2>/dev/null |
+    jq '[ .[] | select(.provision_state | contains("ready"))] | length'
+  environment:
+    IRONIC_URL: 'http://localhost:6385/'
+    OS_AUTH_TOKEN: 'fake-token'
+  register: ironic_nodes_ready
+  when: "True"
 - name: Deploy bifrost
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py deploy-dynamic.yaml"
@@ -80,3 +97,4 @@
     chdir: "{{ bifrost_path }}/playbooks/"
   environment:
     BIFROST_INVENTORY_SOURCE: "{{ bosa_config }}/bifrost_inventory.json"
+  when: ironic_nodes_ready.stdout == "{{ nodes | length }}"

@@ -15,12 +15,14 @@
   shell: "cp -rf openstack_deploy/* {{ osa_etc_path }}"
   args:
     chdir: "{{ osa_path }}/etc/"
+    creates: "{{ osa_etc_path }}/user_variables.yml"
 - name: Generate pw-tokens
   shell: >
     /usr/bin/python pw-token-gen.py --file
     {{ osa_etc_path }}/user_secrets.yml
   args:
     chdir: "{{ osa_path }}/scripts/"
+    creates: "{{ osa_etc_path }}/user_secrets.yml"
 - name: push certificates
   copy:
     content: "{{ item.content }}"
@@ -45,19 +47,14 @@
   template:
     src: "designate.yml.j2"
     dest: "{{ osa_etc_path }}/conf.d/designate.yml"
-- name: set openstack_user_config.yml
-  template:
-    src: "openstack_user_config.yml.prod.j2"
-    dest: "{{ osa_etc_path }}/openstack_user_config.yml"
 - name: set user_variables.yml
   template:
     src: "user_variables.yml.j2"
     dest: "{{ osa_etc_path }}/user_variables.yml"
-
-##
-# Check syntax
-##
-- name: Check syntax
-  shell: "openstack-ansible setup-infrastructure.yml --syntax-check"
-  args:
-    chdir: "{{ osa_path }}/playbooks/"
+- name: set openstack_user_config.yml
+  template:
+    src: "openstack_user_config.yml.prod.j2"
+    dest: "{{ osa_etc_path }}/openstack_user_config.yml"
+    validate: >
+      cd {{ osa_path }}/playbooks/ &&
+      openstack-ansible setup-infrastructure.yml --syntax-check
