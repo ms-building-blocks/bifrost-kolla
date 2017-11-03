@@ -1,5 +1,6 @@
 ---
-- set_fact:
+- name: set fact server_url
+  set_fact:
     server_url:
       "{{ hostvars[groups['server'][0]].ansible_default_ipv4.address }}"
 
