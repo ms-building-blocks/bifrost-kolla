@@ -35,7 +35,10 @@ if test $(pip freeze|grep ansible); then
 fi
 # remove folders
 rm -rf /usr/local/bin/ansible*
+rm -rf /usr/local/bin/bifrost*
+rm -rf /usr/local/bin/ironic*
 rm -rf /etc/ansible/
+rm -rf /etc/ironic/
 # install ansible from package
 apt update
 apt install -y software-properties-common python-setuptools \

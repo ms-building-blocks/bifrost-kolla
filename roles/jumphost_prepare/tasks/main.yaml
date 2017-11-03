@@ -8,6 +8,7 @@
     state: absent
   with_items:
     - '/usr/local/bin/bifrost*'
+    - '/usr/local/bin/ironic*'
     - '/opt/ansible-runtime/'
     - '/opt/bifrost/'
     - '/opt/openstack-ansible/'
@@ -39,10 +40,12 @@
 ##
 # Create an OPNFV user
 ##
-- group:
+- name: create opnfv group
+  group:
     name: "{{ opnfv_user }}"
     state: present
-- user:
+- name: create opnfv user
+  user:
     name: "{{ opnfv_user }}"
     comment: "OPNFV ops"
     group: "{{ opnfv_user }}"

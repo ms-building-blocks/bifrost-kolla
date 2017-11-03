@@ -35,7 +35,7 @@ ansible_linting:
     - apt-get install -y -qq python-pip
     - pip install --upgrade pip
     - pip install ansible-lint
-    - ansible-lint opnfv-*.yaml
+    - ansible-lint -x ANSIBLE0010,ANSIBLE0013 opnfv-*.yaml
   <<: *syntax_docker
 
 # Deploy

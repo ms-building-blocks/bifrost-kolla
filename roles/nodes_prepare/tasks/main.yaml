@@ -5,12 +5,16 @@
 - name: ensure the gateway is correct
   shell:
     "ip r d default && ip r a default via {{ net_config['admin'].gateway }}"
+  when: True
 
 ##
 # set correct resolv.conf
 ##
-- name: ensure the resolv.conf is correct
-  shell: "echo nameserver {{ net_config['admin'].dns }} > /etc/resolv.conf"
+
+- name: set resolv.conf
+  copy:
+    content: "nameserver {{ net_config['admin'].dns }}"
+    dest: /etc/resolv.conf
 
 ##
 # install basic packages
@@ -72,7 +76,13 @@
 # Prepare network
 ##
 - name: ensure interfaces.d folder is empty
-  shell: "/bin/rm -rf /etc/network/interfaces.d/*"
+  file:
+    path: "/etc/network/interfaces.d"
+    state: "{{ item }}"
+    recurse: true
+  with_items:
+    - absent
+    - directory
 - name: ensure interfaces file is updated
   template:
     src: "templates/interfaces.j2"
@@ -87,6 +97,7 @@
   when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
 - name: restart all interfaces
   shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a && sleep 5"
+  when: True
 
 ##
 # Mount nova instance disk
@@ -112,7 +123,8 @@
 ##
 # Restart services
 ##
-- systemd:
+- name: restart NTP service
+  systemd:
     name: ntp
     state: restarted
     daemon_reload: 'yes'

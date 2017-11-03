@@ -10,3 +10,4 @@
   until: result.rc == 0
   retries: 60
   delay: 10
+  when: True
