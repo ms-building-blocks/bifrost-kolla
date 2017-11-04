@@ -18,7 +18,7 @@
     - db.local
   register: copy
 
-- name: save state of copy 
+- name: save state of copyÒ
   set_fact:
     restart: "{{ copy.changed }}"
 
