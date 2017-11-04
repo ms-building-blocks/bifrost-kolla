@@ -18,7 +18,8 @@
     - db.local
   register: copy
 
-- set_fact:
+- name: save state of copy 
+  set_fact:
     restart: "{{ copy.changed }}"
 
 - name: push designate rdnc.key
@@ -30,7 +31,8 @@
     mode: "u=rw,g=r,o="
   register: template
 
-- set_fact:
+- name: check if need of restart
+  set_fact:
     restart: "{{ restart or template.changed }}"
 
 - name: restart bind9 to take the configuration
