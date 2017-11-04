@@ -26,6 +26,7 @@
     state: present
     filename: "{{ images_folder }}/{{ item.file }}"
     min_disk: "{{ item.min_disk }}"
+    is_public: true
     properties:
       cpu_arch: x86_64
       distro: "{{ item.distro }}"
