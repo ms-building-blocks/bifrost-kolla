@@ -3,6 +3,14 @@
   file:
     path: "{{ osa_etc_path }}"
     state: directory
+- name: ensure openstack-ansible certificate directories exists
+  file:
+    path: "{{ osa_etc_path }}/certs"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,g=,o="
+  when: os_basic.own_certs | bool
 - name: Copy etc/openstack_deploy
   shell: "cp -rf openstack_deploy/* {{ osa_etc_path }}"
   args:
@@ -15,6 +23,17 @@
   args:
     chdir: "{{ osa_path }}/scripts/"
     creates: "{{ osa_etc_path }}/user_secrets.yml"
+- name: push certificates
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ osa_etc_path }}/certs/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o="
+  with_items:
+  # Certificates are stored encrypted in vars/certificates.yml
+    - "{{ certificates }}"
+  when: os_basic.own_certs | bool
 - name: get nodes ips
   set_fact:
     nodes_ip: >
@@ -29,8 +48,8 @@
     src: "designate.yml.j2"
     dest: "{{ osa_etc_path }}/conf.d/designate.yml"
 - name: set user_variables.yml
-  copy:
-    src: "user_variables.yml"
+  template:
+    src: "user_variables.yml.j2"
     dest: "{{ osa_etc_path }}/user_variables.yml"
 - name: set openstack_user_config.yml
   template:
