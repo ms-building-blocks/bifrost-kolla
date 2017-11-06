@@ -51,11 +51,13 @@ ansible_linting:
     - cd vars
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config idf-${pod}.yaml | tar -x
+    - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:rndc rndc-${pod}.yaml | tar -x
     - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:certificats certificats-${pod}.yaml | tar -x
     - perl -i -pe "s!stable/ocata!$os_version!" defaults.yaml
     - ln -s ${pod}.yaml pdf.yaml
     - ln -s idf-${pod}.yaml idf.yaml
     - ln -s certificats-${pod}.yaml certificates.yaml
+    - ln -s rndc-${pod}.yaml rndc.yaml
     - cd ..
     - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
     - ssh ${pod}.opnfv.fr "echo ${ANSIBLE_VAULT_PASSWORD} > /opt/bosa/.vault_pass.txt"

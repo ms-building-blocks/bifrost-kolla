@@ -43,7 +43,7 @@
 - name: get role nodes
   set_fact:
     role2nodes: "{{ xci.nodes_roles | role2nodes() }}"
-- name: add designate service
+- name: set designate skeleton config
   template:
     src: "designate.yml.j2"
     dest: "{{ osa_etc_path }}/conf.d/designate.yml"

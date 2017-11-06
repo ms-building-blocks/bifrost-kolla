@@ -1,0 +1,13 @@
+---
+- name: install needed packages
+  include: install_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: push designate rdnc.key
+  template:
+    src: designate.key.j2
+    dest: /etc/designate/rndc.key
+    owner: designate
+    group: designate
+    mode: "u=rw,g=r,o="
+  register: template
