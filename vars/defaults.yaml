@@ -58,6 +58,11 @@ network_profiles:
     - br-vxlan
     - br-vlan
 
+# openstack platform domain
+# Optionnal
+# Only needed if own_certs is set to true
+dns_domain: opnfv.fr
+
 # IP shift from network address to set ip
 # first used ip address of will be network + ip_shif + node_id
 ip_shift: 10
@@ -67,9 +72,10 @@ ip_shift: 10
 ##
 
 os_basic:
-  images: false
+  images: true
   flavors: true
   ext_net: true
+  own_certs: true
 
 # Default images folder on jumphost
 images_folder: /mnt/images
@@ -146,6 +152,26 @@ os_flavors:
     disk: 160
     vcpu: 8
     name: 'm1.xlarge'
+  - ram: 2048
+    disk: 50
+    vcpu: 2
+    name: 'onap.small'
+  - ram: 4096
+    disk: 50
+    vcpu: 4
+    name: 'onap.medium'
+  - ram: 8192
+    disk: 50
+    vcpu: 8
+    name: 'onap.large'
+  - ram: 16384
+    disk: 50
+    vcpu: 16
+    name: 'onap.xlarge'
+  - ram: 32768
+    disk: 500
+    vcpu: 16
+    name: 'onap.xxlarge'
 
 ext_net:
   name: ext-net
