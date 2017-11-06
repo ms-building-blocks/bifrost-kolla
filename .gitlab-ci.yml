@@ -11,31 +11,23 @@ variables:
 
 .syntax_checking: &syntax_docker
   stage: test
-  image: dockerproxy-iva.si.francetelecom.fr/debian:latest
   tags:
     - shared
     - docker
     - innovation
 
 yaml_checking:
+  image: dockerproxy-iva.si.francetelecom.fr/sdesbure/yamllint:latest
   script:
-    - apt-get update -qq
-    - apt-get install -y -qq yamllint python3-pkg-resources
+    - yamllint .gitlab-ci.yml
     - yamllint *.y?ml
-    - yamllint vars/
+    - yamllint vars/*.y?ml
     - yamllint roles/*/tasks/*.y?ml
   <<: *syntax_docker
 
 ansible_linting:
+  image: dockerproxy-iva.si.francetelecom.fr/sdesbure/ansible-lint:latest
   script:
-    - apt-get update -qq
-    - apt-get install -y -qq python-pip
-    # According to https://plazza.orange.com/thread/229929, proxy is behaving
-    # bad with gitlab so use it only for pip...
-    - export http_proxy=http://proxy.rd.francetelecom.fr:8080
-    - export https_proxy=http://proxy.rd.francetelecom.fr:8080
-    - pip install --upgrade pip
-    - pip install ansible-lint
     - ansible-lint -x ANSIBLE0010,ANSIBLE0013 opnfv-*.yaml
   <<: *syntax_docker
 
@@ -49,23 +41,44 @@ ansible_linting:
     - master
   script:
     - cd vars
-    - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config ${pod}.yaml | tar -x
-    - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:config idf-${pod}.yaml | tar -x
-    - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:rndc rndc-${pod}.yaml | tar -x
-    - git archive --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git HEAD:certificats certificats-${pod}.yaml | tar -x
+    - "git archive \
+       --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git \
+       HEAD:config \
+       ${pod}.yaml \
+       | tar -x"
+    - "git archive \
+       --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git \
+       HEAD:config \
+       idf-${pod}.yaml \
+       | tar -x"
+    - "git archive \
+       --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git \
+       HEAD:rndc \
+       rndc-${pod}.yaml \
+       | tar -x"
+    - "git archive \
+       --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git \
+       HEAD:certificats \
+       certificats-${pod}.yaml \
+       | tar -x"
     - perl -i -pe "s!stable/ocata!$os_version!" defaults.yaml
     - ln -s ${pod}.yaml pdf.yaml
     - ln -s idf-${pod}.yaml idf.yaml
     - ln -s certificats-${pod}.yaml certificates.yaml
     - ln -s rndc-${pod}.yaml rndc.yaml
     - cd ..
-    - rsync --cvs-exclude -e ssh -avz  --delete-after . ${pod}.opnfv.fr:${target_folder}
-    - ssh ${pod}.opnfv.fr "echo ${ANSIBLE_VAULT_PASSWORD} > /opt/bosa/.vault_pass.txt"
+    - "rsync --cvs-exclude -e ssh -avz  \
+      --delete-after . \
+      ${pod}.opnfv.fr:${target_folder}"
+    - ssh ${pod}.opnfv.fr \
+      "echo ${ANSIBLE_VAULT_PASSWORD} > /opt/bosa/.vault_pass.txt"
     - ssh ${pod}.opnfv.fr "cd /opt/bosa; sudo ./run.sh orange ${pod}"
     - date=$(date +%Y-%m-%d)
     - os_version=$(echo ${os_version} | perl -pe 's!/!_!')
     - rm -f ansible-role-requirements* || true
-    - scp ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml ansible-role-requirements_${os_version}_${date}.yml
+    - "scp \
+       ${pod}.opnfv.fr:/opt/openstack-ansible/ansible-role-requirements.yml \
+       ansible-role-requirements_${os_version}_${date}.yml"
     - ./trigger_functest.sh
   after_script:
     - ssh ${pod}.opnfv.fr "rm /opt/bosa/.vault_pass.txt || true"
