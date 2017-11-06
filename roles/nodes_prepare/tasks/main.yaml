@@ -79,7 +79,6 @@
   file:
     path: "/etc/network/interfaces.d"
     state: "{{ item }}"
-    recurse: true
   with_items:
     - absent
     - directory
