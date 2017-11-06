@@ -64,7 +64,7 @@
 # Enroll using prepared wrapper to ensure venv is used or not
 ##
 - name: check no node is already installed
-  shell: "ironic --json node-list 2>/dev/null | jq '. | length'"
+  shell: "bifrost-ironic --json node-list 2>/dev/null | jq '. | length'"
   environment:
     IRONIC_URL: 'http://localhost:6385/'
     OS_AUTH_TOKEN: 'fake-token'
@@ -83,7 +83,7 @@
 ##
 - name: check no node is already installed
   shell: >
-    ironic --json node-list 2>/dev/null |
+    bifrost-ironic --json node-list 2>/dev/null |
     jq '[ .[] | select(.provision_state | contains("ready"))] | length'
   environment:
     IRONIC_URL: 'http://localhost:6385/'
