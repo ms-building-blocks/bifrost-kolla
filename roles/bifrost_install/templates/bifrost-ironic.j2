@@ -1,7 +1,8 @@
 #!/bin/bash
 unset ANSIBLE_STDOUT_CALLBACK
+source /opt/bifrost/env-vars
 {% if bifrost_enable_venv %}
-echo "Enable virtualenv {{ bifrost_venv_folder }}"
+echo "Enable virtualenv {{ bifrost_venv_folder }}" 1>&2
 source {{ bifrost_venv_folder }}/bin/activate
 {{ bifrost_venv_folder }}/bin/ironic $@
 {% else %}
