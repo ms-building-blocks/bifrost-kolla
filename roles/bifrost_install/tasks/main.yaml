@@ -40,6 +40,11 @@
     dest: "/usr/local/bin/bifrost-pip"
     src: "templates/bifrost-pip.j2"
     mode: 0500
+- name: Set bifrost-ironic wrapper
+  template:
+    dest: "/usr/local/bin/bifrost-ironic"
+    src: "templates/bifrost-ironic.j2"
+    mode: 0500
 
 ##
 # remove old images and update image generation parameters
@@ -65,7 +70,7 @@
     -e staging_drivers_include=true;
   args:
     chdir: "{{ bifrost_path }}/playbooks/"
-    creates: /usr/local/bin/ironic
+  when: "True"
 # Upgrade pyasn1 as it make ironic conductor fail
 # "hardware type or interface pxe_ilo could not be loaded"
 - name: Upgrade pyasn1 for bifrost

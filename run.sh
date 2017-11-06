@@ -35,10 +35,7 @@ if test $(pip freeze|grep ansible); then
 fi
 # remove folders
 rm -rf /usr/local/bin/ansible*
-rm -rf /usr/local/bin/bifrost*
-rm -rf /usr/local/bin/ironic*
 rm -rf /etc/ansible/
-rm -rf /etc/ironic/
 # install ansible from package
 apt update
 apt install -y software-properties-common python-setuptools \
@@ -53,6 +50,8 @@ echo "
 # Cleanup previous install and prepare jumphost
 #-------------------------------------------------------------------------------
 "
+ssh log1 'for c in $(lxc-ls -1); do echo $c;\
+          lxc-stop -n $c; lxc-destroy -n $c; done'
 ansible-playbook opnfv-jumphost.yaml
 
 echo "
@@ -76,7 +75,7 @@ echo "
 "
 ansible-playbook opnfv-osa-prepare.yaml
 /opt/openstack-ansible/scripts/bootstrap-ansible.sh
-ansible-playbook opnfv-osa-configure.yaml --vault-password-file .vault_pass.txt
+ansible-playbook opnfv-osa-configure.yaml
 
 echo "
 #-------------------------------------------------------------------------------
@@ -86,11 +85,6 @@ echo "
 cd /opt/openstack-ansible/playbooks
 openstack-ansible setup-hosts.yml
 openstack-ansible setup-infrastructure.yml
-cd /opt/bosa
-ansible-playbook opnfv-osa-prepare-designate.yaml \
-    --inventory=/etc/openstack_deploy/openstack_inventory.json \
-    --vault-password-file .vault_pass.txt
-cd /opt/openstack-ansible/playbooks
 ansible galera_container -m shell -a \
     "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
 openstack-ansible setup-openstack.yml
@@ -102,6 +96,8 @@ echo "
 "
 CNT=$(ssh infra1 lxc-ls |grep utility)
 ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
+scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
+echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
 
 echo "
 #-------------------------------------------------------------------------------
@@ -110,10 +106,7 @@ echo "
 "
 cd /opt/bosa
 source /etc/bosa/openstack_openrc
-ansible-playbook \
-  -i /etc/bosa/ansible_inventory \
-  -i /etc/ansible/hosts \
-  opnfv-post-install.yaml
+ansible-playbook opnfv-post-install.yaml
 
 URL=$(grep AUTH_URL /etc/bosa/openstack_openrc | perl -pe 's!^.*//(.*):.*!$1!')
 PASS=$(grep PASSWORD /etc/bosa/openstack_openrc | perl -pe "s/^.*'(.*)'/\$1/")
