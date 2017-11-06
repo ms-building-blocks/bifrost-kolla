@@ -56,5 +56,6 @@
     src: "openstack_user_config.yml.prod.j2"
     dest: "{{ osa_etc_path }}/openstack_user_config.yml"
     validate: >
+      echo %s &&
       cd {{ osa_path }}/playbooks/ &&
       openstack-ansible setup-infrastructure.yml --syntax-check
