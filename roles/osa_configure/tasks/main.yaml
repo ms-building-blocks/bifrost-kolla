@@ -22,7 +22,7 @@
     {{ osa_etc_path }}/user_secrets.yml
   args:
     chdir: "{{ osa_path }}/scripts/"
-    creates: "{{ osa_etc_path }}/user_secrets.yml"
+  when: "True"
 - name: push certificates
   copy:
     content: "{{ item.content }}"
