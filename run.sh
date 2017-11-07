@@ -88,7 +88,7 @@ openstack-ansible setup-infrastructure.yml
 ansible galera_container -m shell -a \
     "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
 cd /opt/bosa
-ansible-playbook opnfv-osa-prepare-designate.yaml \
+openstack-ansible opnfv-osa-prepare-designate.yaml \
     --vault-password-file .vault_pass.txt 
 cd /opt/openstack-ansible/playbooks
 openstack-ansible setup-openstack.yml
