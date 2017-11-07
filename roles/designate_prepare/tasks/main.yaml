@@ -3,6 +3,11 @@
   include: install_DEBIAN.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
+- name: pre install designate
+  include_role:
+    name: os_designate
+    tasks_from: designate_pre_install
+
 - name: push designate rdnc.key
   template:
     src: designate.key.j2
