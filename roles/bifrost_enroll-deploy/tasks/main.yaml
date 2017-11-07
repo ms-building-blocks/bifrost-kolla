@@ -65,11 +65,10 @@
 ##
 - name: check no node is already installed
   shell: "bifrost-ironic --json node-list 2>/dev/null | jq '. | length'"
-  environment:
-    IRONIC_URL: 'http://localhost:6385/'
-    OS_AUTH_TOKEN: 'fake-token'
   register: ironic_nodes
   when: "True"
+- debug:
+  vars: ironic_nodes.stdout
 - name: Enroll nodes
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py enroll-dynamic.yaml"
@@ -84,12 +83,11 @@
 - name: check no node is already installed
   shell: >
     bifrost-ironic --json node-list 2>/dev/null |
-    jq '[ .[] | select(.provision_state | contains("ready"))] | length'
-  environment:
-    IRONIC_URL: 'http://localhost:6385/'
-    OS_AUTH_TOKEN: 'fake-token'
-  register: ironic_nodes_ready
+    jq '[ .[] | select(.provision_state | contains("available"))] | length'
+  register: ironic_nodes_available
   when: "True"
+- debug:
+  vars: ironic_nodes_available.stdout
 - name: Deploy bifrost
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py deploy-dynamic.yaml"
@@ -97,4 +95,4 @@
     chdir: "{{ bifrost_path }}/playbooks/"
   environment:
     BIFROST_INVENTORY_SOURCE: "{{ bosa_config }}/bifrost_inventory.json"
-  when: ironic_nodes_ready.stdout == "{{ nodes | length }}"
+  when: ironic_nodes_available.stdout == "{{ nodes | length }}"
