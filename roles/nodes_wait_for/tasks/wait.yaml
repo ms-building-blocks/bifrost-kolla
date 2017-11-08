@@ -1,0 +1,9 @@
+- name: wait for nodes to be reachable
+  local_action: >
+    shell ansible -i {{ bosa_config }}/ansible_inventory
+    -m ping {{ inventory_hostname }}
+  register: ping
+  until: ping.rc == 0
+  retries: 40
+  delay: 10
+  when: "True"
