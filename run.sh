@@ -30,7 +30,7 @@ echo "
 #-------------------------------------------------------------------------------
 "
 # remove old ansible
-if test $(pip freeze|grep ansible); then
+if pip freeze|grep ansible=; then
     pip uninstall -y ansible
 fi
 # remove folders
@@ -89,7 +89,7 @@ ansible galera_container -m shell -a \
     "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
 cd /opt/bosa
 ansible-playbook opnfv-osa-prepare-designate.yaml \
-    --vault-password-file .vault_pass.txt 
+    --vault-password-file .vault_pass.txt
 cd /opt/openstack-ansible/playbooks
 openstack-ansible setup-openstack.yml
 
