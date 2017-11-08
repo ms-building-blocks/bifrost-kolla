@@ -21,24 +21,24 @@ designate_pools_yaml:
     attributes: {}
     ns_records:
       - hostname: {{ xci.pod_name}}.{{ dns_domain }}.
-         priority: 1
-     nameservers:
+        priority: 1
+    nameservers:
 {% for dns_host in groups.haproxy_all %}
-       - host: {{ hostvars[dns_host].container_address }}
-         port: 53
+      - host: {{ hostvars[dns_host].container_address }}
+        port: 53
 {% endfor %}
-     targets:
+    targets:
 {% for dns_host in groups.haproxy_all %}
-       - type: bind9
-         description: BIND9 Server {{ dns_host }}
-         masters:
+      - type: bind9
+        description: BIND9 Server {{ dns_host }}
+        masters:
 {% for designate_container in groups.designate_all %}
-           - host: {{ hostvars[designate_container].container_address }}
-             port: 5354
+          - host: {{ hostvars[designate_container].container_address }}
+            port: 5354
 {% endfor %}
-         options:
-           host: {{ hostvars[dns_host].container_address }}
-           port: 53
-           rndc_host: {{ hostvars[dns_host].container_address }}
-           rndc_port: 953
+        options:
+          host: {{ hostvars[dns_host].container_address }}
+          port: 53
+          rndc_host: {{ hostvars[dns_host].container_address }}
+          rndc_port: 953
 {% endfor %}

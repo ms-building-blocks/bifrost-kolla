@@ -88,8 +88,8 @@ openstack-ansible setup-infrastructure.yml
 ansible galera_container -m shell -a \
     "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
 cd /opt/bosa
-ansible-playbook opnfv-osa-prepare-designate.yaml \
-    --vault-password-file .vault_pass.txt
+openstack-ansible opnfv-osa-prepare-designate.yaml \
+    --vault-password-file .vault_pass.txt 
 cd /opt/openstack-ansible/playbooks
 openstack-ansible setup-openstack.yml
 
@@ -100,8 +100,10 @@ echo "
 "
 CNT=$(ssh infra1 lxc-ls |grep utility)
 ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
-scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
-echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
+# TODO: put the variable OS_CACERT only when needed 
+# (in https://gitlab.forge.orange-labs.fr/opnfv/bifrost-osa/issues/15)
+#scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
+#echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
 
 echo "
 #-------------------------------------------------------------------------------
