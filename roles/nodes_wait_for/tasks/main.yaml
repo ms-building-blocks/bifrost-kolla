@@ -3,11 +3,10 @@
 # wait for nodes to be reachable after bifrost deploy reboot
 ##
 - name: wait for nodes to be reachable
-  local_action: >
-    shell ansible -i {{ bosa_config }}/ansible_inventory
-    -m ping {{ inventory_hostname }}
-  register: result
-  until: result.rc == 0
-  retries: 60
-  delay: 10
-  when: "True"
+  include_tasks: wait.yaml
+  ignore_errors: yes
+- name: restart node if it is unreachable
+  include_tasks: restart.yaml
+  when: ping.rc != 0
+- name: wait - again - for restarted node
+  include_tasks: wait.yaml
