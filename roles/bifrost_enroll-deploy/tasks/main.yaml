@@ -68,7 +68,7 @@
   register: ironic_nodes
   when: "True"
 - debug:
-  var: ironic_nodes.stdout
+    var: ironic_nodes.stdout
 - name: Enroll nodes
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py enroll-dynamic.yaml"
@@ -87,7 +87,7 @@
   register: ironic_nodes_available
   when: "True"
 - debug:
-  var: ironic_nodes_available.stdout
+    var: ironic_nodes_available.stdout
 - name: Deploy bifrost
   shell:
     "bifrost-ansible -i inventory/bifrost_inventory.py deploy-dynamic.yaml"
