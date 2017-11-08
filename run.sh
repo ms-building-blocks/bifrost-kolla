@@ -30,7 +30,7 @@ echo "
 #-------------------------------------------------------------------------------
 "
 # remove old ansible
-if test $(pip freeze|grep ansible); then
+if pip freeze|grep ansible=; then
     pip uninstall -y ansible
 fi
 # remove folders
