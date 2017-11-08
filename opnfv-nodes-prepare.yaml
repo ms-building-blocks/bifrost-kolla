@@ -4,7 +4,7 @@
     - "vars/defaults.yaml"
     - "vars/idf.yaml"
     - "vars/pdf.yaml"
-    - "{{ bifrost_path }}/playbooks/roles/
+    - "{{ bifrost_path }}/playbooks/roles/\
       bifrost-deploy-nodes-dynamic/defaults/main.yml"
   gather_facts: 'no'
   roles:
