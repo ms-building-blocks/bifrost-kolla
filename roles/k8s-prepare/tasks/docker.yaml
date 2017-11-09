@@ -6,10 +6,12 @@
 - name: add login user to docker group
   user: name={{ansible_user}} groups=docker append=yes
 
-- name: install pip
-  easy_install:
+- name: Upgrade pip
+  pip:
     name: pip
     state: latest
+  tags:
+    - skip_ansible_lint
 
 - name: install docker py
   pip:

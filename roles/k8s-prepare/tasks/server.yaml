@@ -3,7 +3,7 @@
   become: true
   docker_container:
     name: rancher_server
-    image: "rancher/server:preview"
+    image: "rancher/server:stable"
     state: started
     restart_policy: unless-stopped
     published_ports:

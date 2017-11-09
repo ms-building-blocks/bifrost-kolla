@@ -1,145 +1,194 @@
 ---
-- name: set server_url task
+- name: set fact server_url
   set_fact:
     server_url:
-      "{{ hostvars[groups['server'][0]].ansible_default_ipv4.address }}"
+      "{{ (groups['server']|map('extract', hostvars)|
+      selectattr('ip')|list|length > 0) |
+      ternary(groups['server']|map('extract', hostvars, 'ip')|list|first,
+      hostvars[groups.server[0]].ansible_default_ipv4.address )}}"
 
 - name: get projects list
   uri:
     method: GET
     status_code: 200
-    url: "http://{{ server_url }}/v3/projects/"
+    url: "http://{{ server_url }}/v2-beta/projects/"
   register: projects
 
-- debug: msg="{{projects.json}}"
-
-- name: register kube project id
+- name: register System project id
   set_fact:
-    kube_project_id: >
+    system_project_id:
       "{{ (projects.json.data|selectattr('name', 'equalto',
-                                         'kube-system')|first).id }}"
+                                         'Default')|first).id }}"
 
 - name: get all launched stacks on Kube project
   uri:
     method: GET
     status_code: 200
-    url: "http://{{ server_url }}/v3/projects/{{ kube_project_id }}/stacks"
-  register: kube_stacks
+    url: "http://{{ server_url }}/v2-beta/stacks"
+  register: stacks
 
-- name: set kube_dns_not_present fact
+- name: set kube_not_present fact
   set_fact:
-    kube_dns_not_present: >
-      kube_stacks.json.data|selectattr('name', 'equalto',
-                                       'kube-dns')|list|length == 0
+    kube_not_present:
+      "{{ stacks.json.data|selectattr('name', 'equalto',
+                                      'kubernetes')|list|length == 0 }}"
 
-# Cannot uncompress an archive directly on /tmp as tar tries to change
-#   the ctime and it's weirdly not allowed
-- name: create /tmp/rancher if needed
-  file:
-    path: /tmp/rancher
-    state: directory
-    mode: 0755
-
-- name: decompress rancher cli for Linux
-  unarchive:
-    src: >-
-      https://github.com/rancher/cli/releases/download/v1.0.0-alpha4/
-        rancher-linux-amd64-v1.0.0-alpha4.tar.gz
-    dest: /tmp/rancher
-    remote_src: 'yes'
-  when: (ansible_system == 'Linux') and
-        (ansible_userspace_architecture == 'x86_64')
-
-- name: decompress rancher cli for MacOs
-  unarchive:
-    src: >-
-      https://github.com/rancher/cli/releases/download/v1.0.0-alpha4/
-        rancher-linux-amd64-v1.0.0-alpha4.tar.gz
-    dest: /tmp/rancher
-    remote_src: 'yes'
-  when: ansible_system == "Darwin"
-
-- name: move executable
-  become: true
-  copy:
-    remote_src: 'yes'
-    src: /tmp/rancher/rancher-v1.0.0-alpha4/rancher
-    dest: /usr/local/bin/rancher
-    mode: 0755
-
-- name: retrieve catalog from rancher
-  command: >
-    rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
-      catalog --format json
-  register: catalog
-  when: "True"
-
-- name: retrieve kube-dns project id
-  set_fact:
-    kube_dns_catalog_id: >
-      "{{ (catalog.stdout_lines | select('match', '.*kube-dns.*') |
-        first | from_json).ID }}"
-  when: kube_dns_not_present
-
-- name: launch installation of kube-dns
-  command: >
-    rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
-      catalog install --name kube-dns {{ kube_dns_catalog_id }}
-  when: kube_dns_not_present
-
-- name: get clusters of project
+- name: retrieve kubernetes template info
   uri:
     method: GET
     status_code: 200
-    url: "http://{{ server_url }}/v3/projects/{{ system_project_id }}/clusters"
-  register: clusters
+    url: "http://{{ server_url }}/v1-catalog/templates/library:infra*k8s"
+  register: kube_template
+  when: kube_not_present
 
-- name: register k8s cluster id
+- name: launch installation of kubernetes
+  uri:
+    method: POST
+    status_code: 201
+    url:
+      "http://{{ server_url }}/v2-beta/projects/{{ system_project_id }}/stacks"
+    body: "{{ lookup('file','stack_body.json') }}"
+    body_format: json
+  register: kube_stack
+  when: kube_not_present
+
+# Tried to use ternary
+# (https://docs.ansible.com/ansible/devel/playbooks_filters.html#id27)
+# but ternary first resolve its parameter and then applies the rest so all
+# variables must be know and it's not he case here (kube_stack known only
+# when kube_not_present is false)
+
+- name: retrieve kubernetes stack id when kube was not present
   set_fact:
-    cluster_id: >
-      "{{ (clusters.json.data|selectattr('orchestration',
-                                         'equalto', 'kubernetes')|first).id }}"
+    kube_stack_id: "{{ kube_stack.json.id }}"
+  when: kube_not_present
+
+- name: retrieve kubernetes stack id when kube was present
+  set_fact:
+    kube_stack_id:
+      "{{ (stacks.json.data|selectattr('name',
+                                       'equalto', 'kubernetes')|first).id}}"
+  when: not kube_not_present
+
+- name: wait for stack to be active
+  uri:
+    method: GET
+    status_code: 200
+    url:
+      "http://{{ server_url }}/v2-beta/projects/\
+      {{ system_project_id }}/stacks/{{ kube_stack_id }}"
+  register: kube_stack
+  until: >
+    (kube_stack.status == 200) and (kube_stack.json.healthState == "healthy")
+  retries: 60
+  delay: 10
+
+- name: check if kubectl config exist
+  stat:
+    path: "{{ ansible_env.HOME }}/.kube/config"
+  register: kubectl_config
+
+- name: set fact kubectl config is present
+  set_fact:
+    kubectl_config_present: "{{ kubectl_config.stat.exists }}"
+
+- name: retrieve kubectl config
+  slurp:
+    src: "{{ ansible_env.HOME }}/.kube/config"
+  register: kubectl_config
+  when: kubectl_config_present
+
+- name: retrieve username in kubectl config
+  set_fact:
+    kubectl_username:
+      "{{ kubectl_config.content |
+      b64decode | regex_findall('# username: \"([0-9a-zA-Z]+)\"') | first }}"
+  when: kubectl_config_present
+
+- name: retrieve all keys from API
+  uri:
+    method: GET
+    status_code: 200
+    url:
+      "http://{{ server_url }}/v2-beta/projects/\
+      {{ system_project_id }}/apiKeys"
+  register: apikeys
+  when: kubectl_config_present
+
+- name: check if key already present
+  set_fact:
+    apikey_not_present:
+      "{{ apikeys.json.data |
+      selectattr('publicValue', 'equalto', kubectl_username) |
+      list | length == 0}}"
+  when: kubectl_config_present
 
 - name: create api key for kubectl
   uri:
     method: POST
     status_code: 201
-    url: "http://{{ server_url }}/v3/projects/1a5/apikey"
+    url:
+      "http://{{ server_url }}/v2-beta/projects/\
+      {{ system_project_id }}/apiKeys"
     body:
-      - type: "apiKey"
-      - name: "kubectl"
-      - description: "Provides workstation access to kubectl"
+      kind: "apiKey"
+      name: "kubectl"
+      description: "Provides workstation access to kubectl"
     body_format: json
   register: apikey_infos
+  when: (not kubectl_config_present) or apikey_not_present
 
 - name: set apikey_id, username, password facts
   set_fact:
     apikey_id: "{{ apikey_infos.json.id}}"
     username: "{{ apikey_infos.json.publicValue}}"
-    password: "{{ apikey_infos.json.secretValue}}"
+    token:
+      "{{ ('Basic ' + (apikey_infos.json.publicValue + ':' +
+      apikey_infos.json.secretValue | b64encode)) | b64encode }}"
+  when: (not kubectl_config_present) or apikey_not_present
 
 - name: check key is created
   uri:
     method: GET
     status_code: 200
-    url: "http://{{ server_url }}/v3/projects/1a5/apikey/{{ apikey_id }}"
+    url:
+      "http://{{ server_url }}/v2-beta/projects/{{ system_project_id }}\
+      /apiKeys/{{ apikey_id }}"
   register: apikey_infos
   until: apikey_infos.json.state == "active"
   retries: 10
   delay: 1
+  when: (not kubectl_config_present) or apikey_not_present
 
 - name: set fact key_active
   set_fact:
     key_active: "{{ apikey_infos.json.state}}"
+  when: (not kubectl_config_present) or apikey_not_present
+
+- name: create Kubernetes service proxy
+  uri:
+    method: POST
+    status_code: 201
+    url:
+      "http://{{ server_url }}/v2-beta/projects/{{ system_project_id }}\
+      /serviceProxies"
+    body:
+      scheme: "https"
+      port: 6443
+      service: "kubernetes"
+    body_format: json
+  when: (not kubectl_config_present) or apikey_not_present
 
 - name: install latest kubectl
   become: true
   get_url:
-    url: >-
-      https://storage.googleapis.com/kubernetes-release/release/v1.8.0/
-      bin/linux/amd64/kubectl
+    url:
+      "https://storage.googleapis.com/kubernetes-release/\
+      release/v1.8.0/bin/linux/amd64/kubectl"
     dest: /usr/local/bin/kubectl
     mode: 0777
+  when: (ansible_system == 'Linux') and
+        (ansible_userspace_architecture == 'x86_64')
 
 - name: create ~/.kube if needed
   file:
@@ -151,25 +200,13 @@
   template:
     src: kube_config.j2
     dest: "{{ ansible_env.HOME }}/.kube/config"
+  when: (not kubectl_config_present) or apikey_not_present
 
 - name: set fact helm_not_present
   set_fact:
     helm_not_present: >
       kube_stacks.json.data|selectattr('name',
                                        'equalto', 'helm')|list|length != 0
-
-- name: retrieve helm project id
-  set_fact:
-    helm_catalog_id: >
-      "{{ (catalog.stdout_lines | select('match', '.*helm.*') |
-      first | from_json).ID }}"
-  when: helm_not_present
-
-- name: launch installation of helm
-  command: >
-    rancher --url http://{{ server_url }}/v3 --env {{ kube_project_id }}
-      catalog install --name helm {{ helm_catalog_id }}
-  when: helm_not_present
 
 - name: get helm latest release
   get_url:
@@ -183,4 +220,8 @@
 
 - name: install helm on jumphost
   command: "/tmp/get_helm.sh"
+  when: "True"
+
+- name: init helm
+  command: "helm init"
   when: "True"
