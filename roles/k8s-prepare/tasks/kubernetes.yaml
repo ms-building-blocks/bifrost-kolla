@@ -223,5 +223,5 @@
   when: "True"
 
 - name: init helm
-  command: "helm init"
+  command: "helm init --upgrade"
   when: "True"
