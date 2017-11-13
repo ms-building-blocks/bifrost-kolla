@@ -23,7 +23,7 @@ global_overrides:
   external_lb_vip_ip_address: {{ net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) }}
 {% else %}
 {% set external_lb_vip_ip_address = net_config[nmap['br-mgmt']].network | ip_add( ip_shift ) %}
-  external_lb_vip_address: {{ external_lb_vip_ip_address }} 
+  external_lb_vip_address: {{ external_lb_vip_ip_address }}
   external_lb_vip_ip_address: {{ external_lb_vip_ip_address }}
 {% endif %}
   tunnel_bridge: "br-vxlan"
@@ -228,6 +228,9 @@ storage_hosts:
           volume_driver: cinder.volume.drivers.nfs.NfsDriver
           nfs_shares_config: /etc/cinder/nfs_shares_volume1
           nfs_mount_options: "rsize=65535,wsize=65535,timeo=1200,actimeo=120"
+          nfs_snapshot_support: "True"
+          nas_secure_file_operations: "False"
+          nas_option: "False"
           shares:
           - { ip: "{{ xci.cinder.nfs.server }}", share: "{{ xci.cinder.nfs.path }}" }
 {% endfor %}
@@ -241,7 +244,9 @@ storage_hosts:
           volume_driver: cinder.volume.drivers.nfs.NfsDriver
           nfs_shares_config: /etc/cinder/nfs_shares_volume1
           nfs_mount_options: "rsize=65535,wsize=65535,timeo=1200,actimeo=120"
-          nfs_snapshot_support: "False"
+          nfs_snapshot_support: "True"
+          nas_secure_file_operations: "False"
+          nas_option: "False"
           shares:
           - { ip: "{{ xci.cinder.nfs.server }}", share: "{{ xci.cinder.nfs.path }}" }
 {% endfor %}
