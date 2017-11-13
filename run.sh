@@ -44,6 +44,14 @@ pip install --upgrade pip cryptography ansible netaddr
 mkdir -p /etc/ansible
 echo "jumphost ansible_connection=local" > /etc/ansible/hosts
 
+# put default values for ansible
+cat > /etc/ansible/ansible.cfg <<EOF
+[defaults]
+forks=50
+[ssh_connection]
+pipelining=True
+EOF
+
 cd /opt/bosa
 echo "
 #-------------------------------------------------------------------------------
