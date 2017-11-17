@@ -1,4 +1,12 @@
 ---
+- name: add docker repository key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+- name: add docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+    state: present
 - name: Remove list of packages
   apt:
     name: "{{item}}"
@@ -16,3 +24,16 @@
     - libssl-dev
     - virtualenv
     - git
+    - docker-ce
+    - ntp
+- name: create docker.service.d directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+- name: add kolla specific configuration
+  copy:
+    content: |
+      [Service]
+      MountFlags=shared
+    dest: /etc/systemd/system/docker.service.d/kolla.conf
+  notify: restart docker via systemd

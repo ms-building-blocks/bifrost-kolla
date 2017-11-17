@@ -1,0 +1,12 @@
+---
+- name: add docker repository key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+- name: add docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+    state: present
+- name: Install docker-ce
+  apt:
+    name: docker-ce

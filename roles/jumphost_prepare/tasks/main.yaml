@@ -11,10 +11,13 @@
     - '/usr/local/bin/ironic*'
     - '/opt/ansible-runtime/'
     - '/opt/bifrost/'
-    - '/opt/openstack-ansible/'
+    - '/opt/kolla-ansible/'
+    - '/opt/kolla/'
     - '/opt/stack/'
     - '/etc/bosa/'
     - '/etc/openstack_deploy/'
+    - '/etc/kolla'
+
 - name: clean Bifrost DB
   mysql_db:
     name: ironic
@@ -36,6 +39,15 @@
 - name: install packages
   import_tasks: install_DEBIAN.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+##
+# Add registry host in inventory
+##
+
+- name: add registry host in inventory
+  add_host:
+    name: registryhost
+    ansible_ssh_host: "{{ xci.registry }}"
 
 ##
 # Create an OPNFV user
