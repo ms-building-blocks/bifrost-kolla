@@ -1,0 +1,5 @@
+---
+- name: Install parted
+  apt:
+    name: parted
+    state: installed

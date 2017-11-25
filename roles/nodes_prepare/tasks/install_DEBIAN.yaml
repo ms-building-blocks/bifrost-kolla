@@ -2,14 +2,69 @@
 - name: Install list of packages
   apt: name={{item}} state=installed
   with_items:
-    - bridge-utils
+    - ntp
+    - ntpdate
+    - sudo
+    - apt-transport-https
+    - python-pip
+    - python-setuptools
+  update_cache: "yes"
+- name: Install list of packages just for nodes
+  apt: name={{item}} state=installed
+  with_items:
     - debootstrap
     - ifenslave
     - ifenslave-2.6
     - lsof
     - lvm2
-    - ntp
-    - ntpdate
-    - sudo
     - tcpdump
     - vlan
+  when: "'nodes' in group_names"
+- name: add docker repository key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+- name: add docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+    state: present
+- name: Install docker-ce
+  apt:
+    name: docker-ce
+    state: installed
+    update_cache: "yes"
+- name: ensure docker conf file exists
+  file:
+    path: /etc/docker/daemon.json
+    state: file
+  register: file
+  ignore_errors: "yes"
+- name: create file if docker conf don't exists
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+      }
+  when: file.failed
+  notify: restart docker via systemd
+- name: configure docker conf file
+  lineinfile:
+    path: /etc/docker/daemon.json
+    line: "\"insecure-registries\" : [\"{{ xci.registry}}:5000\"]"
+    insertbefore: '^}$'
+  notify: restart docker via systemd
+- name: ensure /etc/systemd/system/docker.service.d is present
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  notify: restart docker via systemd
+- name: set systemd docker to listen to DOCKER_OPTS
+  copy:
+    dest: /etc/systemd/system/docker.service.d/kolla.conf
+    content: |
+      [Service]
+      MountFlags=shared
+
+      ExecStart=
+      ExecStart=/usr/bin/dockerd -H fd://
+  notify: restart docker via systemd

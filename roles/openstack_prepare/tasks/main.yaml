@@ -1,6 +1,7 @@
 ---
-# Push shade lib to latest stable version (the one installed with OSA
+# Push shade lib to latest stable version (the one installed with Kolla
 # crashes with following actions)
+# TODO: check if still needed
 - name: update shade with pip
   pip:
     name: shade

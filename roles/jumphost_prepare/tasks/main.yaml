@@ -14,7 +14,7 @@
     - '/opt/kolla-ansible/'
     - '/opt/kolla/'
     - '/opt/stack/'
-    - '/etc/bosa/'
+    - '/etc/bolla/'
     - '/etc/openstack_deploy/'
     - '/etc/kolla'
 

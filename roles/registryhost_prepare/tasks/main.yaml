@@ -6,6 +6,10 @@
   import_tasks: install_DEBIAN.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
+- name: ensure /opt/registry is present
+  file:
+    path: /opt/registry
+    state: directory
 ##
 # Start registry
 ##
@@ -15,7 +19,7 @@
     image: registry:2
     ports:
       - 5000:5000
+    volumes:
+      - /opt/registry:/var/lib/registry
     restart_policy: always
-    env:
-      REGISTRY_PROXY_REMOTEURL: https://registry-1.docker.io
     state: started

@@ -1,0 +1,116 @@
+---
+- name: ensure kolla global config directory exists
+  file:
+    path: "{{ kolla_etc_path }}"
+    state: directory
+- name: ensure kolla specific config directory exists
+  file:
+    path: "{{ kolla_etc_path }}/config"
+    state: directory
+- name: ensure kolla certificate directory exists
+  file:
+    path: "{{ kolla_etc_path }}/certificates"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,g=,o="
+  when: os_basic.own_certs | bool
+- name: "Copy etc/kolla to {{ kolla_etc_path }}"
+  shell: "cp -rf kolla/* {{ kolla_etc_path }}"
+  args:
+    chdir: "{{ kolla_ansible_path }}/etc/"
+    creates: "{{ kolla_etc_path }}/passwords.yml"
+- name: Generate pw-tokens
+  shell: >
+    /usr/bin/python genpwd.py --passwords
+    {{ kolla_etc_path }}/passwords.yml
+  args:
+    chdir: "{{ kolla_ansible_path }}/kolla_ansible/cmd/"
+  when: "True"
+- name: push certificates
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ kolla_etc_path }}/certificates/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o="
+  with_items:
+  # Certificates are stored encrypted in vars/certificates.yml
+    - "{{ certificates }}"
+  when: os_basic.own_certs | bool
+- name: generate pem for haproxy
+  shell: >
+    cat {{ kolla_etc_path }}/certificates/{{ ssl_cert_name }} {{ kolla_etc_path }}/certificates/{{ ssl_ca_cert }} {{ kolla_etc_path }}/certificates/{{ ssl_key_name }} > {{ kolla_etc_path }}/certificates/haproxy.pem
+  when: os_basic.own_certs | bool
+- name: get nodes ips
+  set_fact:
+    nodes_ip: >
+      {{ nodes |
+      node_ips(net_config[xci.network_mapping['br-mgmt']].network,
+               ip_shift) }}
+- name: get role nodes
+  set_fact:
+    role2nodes: "{{ xci.nodes_roles | role2nodes() }}"
+- name: set ceph nfs_share config
+  template:
+    src: "nfs_shares.j2"
+    dest: "{{ kolla_etc_path }}/config/nfs_shares"
+
+- name: set globals.yml
+  template:
+    src: "globals.yml.j2"
+    dest: "{{ kolla_etc_path }}/globals.yml"
+
+
+##
+# Get remote network data in order to generate inventory
+##
+- name: get nodes as a dict
+  set_fact:
+    nodes_dict: "{{ nodes | nodes_as_dict() }}"
+- name: get node names
+  set_fact:
+    node_names: "{{ nodes | map(attribute='name') | list }}"
+- name: debug ansible_hostname
+  debug: msg="{{ hostvars[item].ansible_hostname }}"
+  with_inventory_hostnames:
+    - nodes
+- name: debug inventory_hostname
+  debug: msg="{{ hostvars[item].inventory_hostname }}"
+  with_inventory_hostnames:
+    - nodes
+- name: match node names with their ansible inventory name
+  set_fact:
+    servers: "{{ servers|default([]) + [{'hostname': hostvars[item].ansible_hostname, 'inventory_name': hostvars[item].inventory_hostname}] }}"
+  with_inventory_hostnames:
+    - nodes
+- debug:
+    msg: "{{ servers }}"
+- name: get srv_macs
+  set_fact:
+    srv_macs:
+      "{{ srv_macs|default({}) | combine({ item.hostname: ( item.inventory_name | target_interfaces(hostvars, nodes_dict)) }) }}"
+  with_items: "{{ servers }}"
+- debug:
+    msg: "{{ srv_macs }}"
+- name: get mac2intf
+  set_fact:
+    macs: "{{ macs|default({}) | combine({ item.hostname: (item.inventory_name | mac2intf(hostvars, nodes_dict)) }) }}"
+  with_items: "{{ servers }}"
+- debug:
+    msg: "{{ macs }}"
+- name: get interfaces for nodes
+  include_tasks: interface_for_node.yaml
+  with_items:
+    - { interface: network, type: admin }
+    - { interface: storage, type: storage }
+    - { interface: tunnel, type: private }
+    - { interface: external, type: public }
+  loop_control:
+    loop_var: outer_item
+- debug: msg="{{ interfaces | to_nice_yaml }}"
+- name: set inventory
+  template:
+    src: "inventory.j2"
+    dest: "{{ kolla_etc_path }}/inventory"
+

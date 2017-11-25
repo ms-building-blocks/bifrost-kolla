@@ -3,10 +3,11 @@
 # Installation targets
 ##
 
-osa_etc_path: /etc/openstack_deploy
-bosa_config: /etc/bosa/
+kolla_etc_path: /etc/kolla
+bolla_config: /etc/bolla/
 bifrost_path: "/opt/bifrost"
-osa_path: /opt/openstack-ansible
+kolla_path: /opt/kolla
+kolla_ansible_path: /opt/kolla-ansible
 
 ##
 # Sources
@@ -16,9 +17,10 @@ osa_path: /opt/openstack-ansible
 bifrost_url: https://git.openstack.org/openstack/bifrost
 bifrost_branch: "stable/ocata"      # will be pushed in SDF
 
-# OSA git params
-osa_url: https://git.openstack.org/openstack/openstack-ansible
-osa_branch: "stable/ocata"          # will be pushed in SDF
+# Kolla git params
+kolla_url: https://git.openstack.org/openstack/kolla
+kolla_ansible_url: https://git.openstack.org/openstack/kolla-ansible
+kolla_branch: "stable/pike"          # will be pushed in SDF
 
 ##
 # Bifrost config
@@ -62,6 +64,7 @@ network_profiles:
 # Optionnal
 # Only needed if own_certs is set to true
 dns_domain: opnfv.fr
+physical_network_name: physnet1
 
 # IP shift from network address to set ip
 # first used ip address of will be network + ip_shif + node_id
@@ -76,6 +79,7 @@ os_basic:
   flavors: true
   ext_net: true
   own_certs: true
+  dnsaas: true
 
 # Default images folder on jumphost
 images_folder: /mnt/images
@@ -153,7 +157,7 @@ os_flavors:
     vcpu: 8
     name: 'm1.xlarge'
   - ram: 2048
-    disk: 50
+    disk: 80
     vcpu: 2
     name: 'onap.small'
   - ram: 4096
@@ -161,15 +165,15 @@ os_flavors:
     vcpu: 4
     name: 'onap.medium'
   - ram: 8192
-    disk: 50
+    disk: 60
     vcpu: 8
     name: 'onap.large'
   - ram: 16384
-    disk: 50
+    disk: 100
     vcpu: 16
     name: 'onap.xlarge'
   - ram: 32768
-    disk: 500
+    disk: 100
     vcpu: 16
     name: 'onap.xxlarge'
 

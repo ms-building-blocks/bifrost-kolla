@@ -1,0 +1,4 @@
+---
+- name: reconfigure designate
+  set_fact:
+    need_reconfigure_designate: "yes"

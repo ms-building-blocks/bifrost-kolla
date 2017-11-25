@@ -1,4 +1,4 @@
-# Openstack install on baremetal OPNFV pods with OSA and Bifrost
+# Openstack install on baremetal OPNFV pods with Kolla and Bifrost
 
 # About the jumphost
 
@@ -27,5 +27,5 @@ now in the config_sources/labs/lab/pod. __Please check carefully those files__
 
 The installation is done from the jumphost
 
-./run.sh <lab> <pod>
-ex: ./run.sh orange pod1
+./run.sh
+ex: ./run.sh

@@ -1,6 +1,6 @@
 - name: wait for nodes to be reachable
   local_action: >
-    shell ansible -i {{ bosa_config }}/ansible_inventory
+    shell ansible -i {{ bolla_config }}/ansible_inventory
     -m ping {{ inventory_hostname }}
   register: ping
   until: ping.rc == 0

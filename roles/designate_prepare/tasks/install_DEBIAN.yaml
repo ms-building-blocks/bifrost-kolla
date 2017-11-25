@@ -1,5 +1,0 @@
----
-- name: Install bind utils
-  apt:
-    name: bind9utils
-    state: installed
