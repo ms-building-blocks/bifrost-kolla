@@ -43,7 +43,7 @@ host_key_checking = False
 pipelining=True
 EOF
 
-cd /opt/bifrost-kolla
+cd /opt/bolla
 
 echo "
 #-------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ echo "
 # Post install
 #-------------------------------------------------------------------------------
 "
-cd /opt/bifrost-kolla
+cd /opt/bolla
 source /etc/bolla/openstack_openrc
 export ANSIBLE_LIBRARY="${ANSIBLE_LIBRARY:-/etc/ansible/library}:/opt/kolla-ansible/ansible/library"
 export ANSIBLE_ACTION_PLUGINS="${ANSIBLE_ACTION_PLUGINS:-/etc/ansible/roles/plugins/action}:/opt/kolla-ansible/ansible/action_plugins"
