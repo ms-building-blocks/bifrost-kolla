@@ -7,20 +7,33 @@
   pre_tasks:
     - name: retrieve inventory interface vars
       set_fact:
-        good_network_interfaces: "{{ (good_network_interfaces|default({})) | combine({item: hostvars[item].network_interface}) }}"
-        good_storage_interfaces: "{{ (good_storage_interfaces|default({})) | combine({item: hostvars[item].storage_interface}) }}"
-        good_tunnel_interfaces: "{{ (good_tunnel_interfaces|default({})) | combine({item: hostvars[item].tunnel_interface}) }}"
-        good_neutron_external_interfaces: "{{ (good_neutron_external_interfaces|default({})) | combine({item: hostvars[item].neutron_external_interface}) }}"
-        good_api_interfaces: "{{ (good_api_interfaces|default({})) | combine({item: hostvars[item].api_interface}) }}"
-        good_dns_interfaces: "{{ (good_dns_interfaces|default({})) | combine({item: hostvars[item].dns_interface}) }}"
-        good_kolla_external_vip_interfaces: "{{ (good_kolla_external_vip_interfaces|default({})) | combine({item: hostvars[item].kolla_external_vip_interface}) }}"
+        good_network_interfaces:
+          "{{ (good_network_interfaces|default({})) |
+              combine({item: hostvars[item].network_interface}) }}"
+        good_storage_interfaces:
+          "{{ (good_storage_interfaces|default({})) |
+              combine({item: hostvars[item].storage_interface}) }}"
+        good_tunnel_interfaces:
+          "{{ (good_tunnel_interfaces|default({})) |
+              combine({item: hostvars[item].tunnel_interface}) }}"
+        good_neutron_external_interfaces:
+          "{{ (good_neutron_external_interfaces|default({})) |
+              combine({item: hostvars[item].neutron_external_interface}) }}"
+        good_api_interfaces:
+          "{{ (good_api_interfaces|default({})) |
+              combine({item: hostvars[item].api_interface}) }}"
+        good_dns_interfaces:
+          "{{ (good_dns_interfaces|default({})) |
+              combine({item: hostvars[item].dns_interface}) }}"
+        good_kolla_external_vip_interfaces:
+          "{{ (good_kolla_external_vip_interfaces|default({})) |
+              combine({item: hostvars[item].kolla_external_vip_interface}) }}"
       with_inventory_hostnames:
         - designate-api
         - designate-central
         - designate-mdns
         - designate-worker
         - designate-sink
-    - debug: msg="{{ good_api_interfaces }}"
     - name: load default vars of kolla
       include_vars: "{{ kolla_ansible_path }}/ansible/group_vars/all.yml"
     - name: load global vars of kolla
@@ -60,8 +73,6 @@
   vars:
     action: reconfigure
   pre_tasks:
-    - debug: msg="{{ hostvars['localhost'].need_reconfigure_designate }}"
-    - debug: msg="{{ hostvars['localhost'].good_network_interfaces[inventory_hostname] }}"
     - name: load default vars of kolla
       include_vars: "{{ kolla_ansible_path }}/ansible/group_vars/all.yml"
     - name: load global passwords of kolla
@@ -69,7 +80,9 @@
     - name: load global vars of kolla
       include_vars: "{{ kolla_etc_path }}/globals.yml"
     - name: Get current kolla-ansible version number
-      local_action: command python -c "import pbr.version; print(pbr.version.VersionInfo('kolla-ansible'))"
+      local_action:
+        command python -c "import pbr.version;
+        print(pbr.version.VersionInfo('kolla-ansible'))"
       args:
         chdir: "{{ kolla_ansible_path }}/"
       register: kolla_ansible_version
@@ -81,13 +94,27 @@
       when: openstack_release == "auto"
     - name: put back inventory interface vars
       set_fact:
-        network_interface: "{{ hostvars['localhost'].good_network_interfaces[inventory_hostname] }}"
-        storage_interface: "{{ hostvars['localhost'].good_storage_interfaces[inventory_hostname] }}"
-        tunnel_interface: "{{ hostvars['localhost'].good_tunnel_interfaces[inventory_hostname] }}"
-        neutron_external_interface: "{{ hostvars['localhost'].good_neutron_external_interfaces[inventory_hostname] }}"
-        api_interface: "{{ hostvars['localhost'].good_api_interfaces[inventory_hostname] }}"
-        dns_interface: "{{ hostvars['localhost'].good_dns_interfaces[inventory_hostname] }}"
-        kolla_external_vip_interface: "{{ hostvars['localhost'].good_kolla_external_vip_interfaces[inventory_hostname] }}"
+        network_interface:
+          "{{ hostvars['localhost'].
+              good_network_interfaces[inventory_hostname] }}"
+        storage_interface:
+          "{{ hostvars['localhost'].
+              good_storage_interfaces[inventory_hostname] }}"
+        tunnel_interface:
+          "{{ hostvars['localhost'].
+              good_tunnel_interfaces[inventory_hostname] }}"
+        neutron_external_interface:
+          "{{ hostvars['localhost'].
+              good_neutron_external_interfaces[inventory_hostname] }}"
+        api_interface:
+          "{{ hostvars['localhost'].
+              good_api_interfaces[inventory_hostname] }}"
+        dns_interface:
+          "{{ hostvars['localhost'].
+              good_dns_interfaces[inventory_hostname] }}"
+        kolla_external_vip_interface:
+          "{{ hostvars['localhost'].
+              good_kolla_external_vip_interfaces[inventory_hostname] }}"
   roles:
     - role: "{{ kolla_ansible_path }}/ansible/roles/designate"
       when:
