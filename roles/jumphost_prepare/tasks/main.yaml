@@ -12,7 +12,6 @@
     - '/opt/ansible-runtime/'
     - '/opt/bifrost/'
     - '/opt/kolla-ansible/'
-    - '/opt/bolla/'
     - '/opt/kolla/'
     - '/opt/stack/'
     - '/etc/bolla/'
