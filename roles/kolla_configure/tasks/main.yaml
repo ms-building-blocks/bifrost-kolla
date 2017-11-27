@@ -39,11 +39,11 @@
     - "{{ certificates }}"
   when: os_basic.own_certs | bool
 - name: generate pem for haproxy
-  shell: >
-    cat {{ kolla_etc_path }}/certificates/{{ ssl_cert_name }}
-        {{ kolla_etc_path }}/certificates/{{ ssl_ca_cert }}
-        {{ kolla_etc_path }}/certificates/{{ ssl_key_name }} >
-        {{ kolla_etc_path }}/certificates/haproxy.pem
+  shell:
+    "cat {{ kolla_etc_path }}/certificates/{{ ssl_cert_name }} \
+        {{ kolla_etc_path }}/certificates/{{ ssl_ca_cert }} \
+        {{ kolla_etc_path }}/certificates/{{ ssl_key_name }} > \
+        {{ kolla_etc_path }}/certificates/haproxy.pem"
   when: os_basic.own_certs | bool
 - name: get nodes ips
   set_fact:
