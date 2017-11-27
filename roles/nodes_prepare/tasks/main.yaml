@@ -75,22 +75,13 @@
     srv_macs:
       "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"
   when: "'nodes' in group_names"
-- debug:
-    var: srv_macs
-  when: "'nodes' in group_names"
 - name: get mac2intf
   set_fact:
     macs: "{{ inventory_hostname | mac2intf(hostvars, nodes_dict) }}"
   when: "'nodes' in group_names"
-- debug:
-    var: macs
-  when: "'nodes' in group_names"
 - name: get mgmt interface
   set_fact:
     mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
-  when: "'nodes' in group_names"
-- debug:
-    var: mgmt_intf
   when: "'nodes' in group_names"
 - name: shortcut for network mapping
   set_fact:

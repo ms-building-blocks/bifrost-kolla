@@ -10,11 +10,6 @@
       node_ips(net_config[xci.network_mapping['br-mgmt']].network,
                ip_shift) }}
 
-- debug: msg="{{ groups['designate-backend-bind9'] }}"
-
-- debug: msg="{{ nodes_ip[item]['ip'] }}"
-  with_items: "{{ groups['designate-backend-bind9'] }}"
-
 - name: generate bind_servers list
   set_fact:
     bind_servers: "{{ bind_servers|default([]) +[{'name': item, 'ip': nodes_ip[item]['ip'] }]}}"
@@ -24,9 +19,6 @@
   set_fact:
     mdns_servers_ip: "{{ mdns_servers_ip|default([]) +[ nodes_ip[item]['ip'] ]}}"
   with_items: "{{ groups['designate-mdns'] }}"
-
-- debug: msg="bind_servers"
-- debug: msg="{{ bind_servers }}"
 
 - name: generate specific named conf per server
   include_tasks: generate_named_conf.yaml

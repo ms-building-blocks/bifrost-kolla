@@ -108,7 +108,6 @@
     - { interface: external, type: public }
   loop_control:
     loop_var: outer_item
-- debug: msg="{{ interfaces | to_nice_yaml }}"
 - name: set inventory
   template:
     src: "inventory.j2"
