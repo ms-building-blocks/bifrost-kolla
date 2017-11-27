@@ -4,7 +4,7 @@
 ##
 - name: wait for nodes to be reachable
   include_tasks: wait.yaml
-  ignore_errors: yes
+  ignore_errors: "yes"
 - name: restart node if it is unreachable
   include_tasks: restart.yaml
   when: ping.rc != 0

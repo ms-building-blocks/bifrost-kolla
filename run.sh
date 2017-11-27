@@ -15,20 +15,10 @@ fi
 
 echo "
 #-------------------------------------------------------------------------------
-# cleanup local vars
-#-------------------------------------------------------------------------------
-"
-# Clean OS envvars
-for var in $(export |cut -d\  -f3| cut -d= -f1| grep '^OS_'); do
-    unset var;
-    export ${var}=''
-done
-
-echo "
-#-------------------------------------------------------------------------------
 # install ansible
 #-------------------------------------------------------------------------------
 "
+
 # remove old ansible
 if pip freeze|grep ansible=; then
     pip uninstall -y ansible
@@ -45,22 +35,22 @@ mkdir -p /etc/ansible
 echo "jumphost ansible_connection=local" > /etc/ansible/hosts
 
 # put default values for ansible
-# https://docs.openstack.org/openstack-ansible/pike/admin/advanced-config.html#ansible-forks
 cat > /etc/ansible/ansible.cfg <<EOF
 [defaults]
-forks=10
+forks=50
+host_key_checking = False
 [ssh_connection]
 pipelining=True
 EOF
 
-cd /opt/bosa
+cd /opt/bifrost-kolla
+
 echo "
 #-------------------------------------------------------------------------------
 # Cleanup previous install and prepare jumphost
 #-------------------------------------------------------------------------------
 "
-ssh log1 'for c in $(lxc-ls -1); do echo $c;\
-          lxc-stop -n $c; lxc-destroy -n $c; done'
+
 ansible-playbook opnfv-jumphost.yaml
 
 echo "
@@ -68,69 +58,47 @@ echo "
 # Setup and run Bifrost
 #-------------------------------------------------------------------------------
 "
+
 ansible-playbook opnfv-bifrost.yaml
 
 echo "
 #-------------------------------------------------------------------------------
-# Prepare nodes
+# Prepare nodes and kolla
 #-------------------------------------------------------------------------------
 "
-ansible-playbook -i /etc/bosa/ansible_inventory opnfv-nodes-prepare.yaml
+
+ansible-playbook -i /etc/bolla/ansible_inventory opnfv-prepare.yaml --vault-password-file .vault_pass.txt
 
 echo "
 #-------------------------------------------------------------------------------
-# Prepare OSA
+# Precheck before launching
 #-------------------------------------------------------------------------------
 "
-ansible-playbook opnfv-osa-prepare.yaml
-/opt/openstack-ansible/scripts/bootstrap-ansible.sh
-ansible-playbook opnfv-osa-configure.yaml --vault-password-file .vault_pass.txt
-
+cd /opt/kolla-ansible
+tools/kolla-ansible prechecks -i /etc/kolla/inventory
 echo "
 #-------------------------------------------------------------------------------
-# Run OSA
+# Run Kolla
 #-------------------------------------------------------------------------------
 "
-cd /opt/openstack-ansible/playbooks
-openstack-ansible setup-hosts.yml
-openstack-ansible setup-infrastructure.yml
-ansible galera_container -m shell -a \
-    "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
-cd /opt/bosa
-openstack-ansible opnfv-osa-prepare-designate.yaml \
-    --vault-password-file .vault_pass.txt
-cd /opt/openstack-ansible/playbooks
-openstack-ansible setup-openstack.yml
-
-echo "
-#-------------------------------------------------------------------------------
-# Fetch openrc and cert
-#-------------------------------------------------------------------------------
-"
-CNT=$(ssh infra1 lxc-ls |grep utility)
-ssh infra1 lxc-attach -n $CNT -- cat /root/openrc > /etc/bosa/openstack_openrc
-# TODO: put the variable OS_CACERT only when needed
-# (in https://gitlab.forge.orange-labs.fr/opnfv/bifrost-osa/issues/15)
-#scp infra1:/etc/ssl/certs/haproxy.cert  /etc/bosa/ca.cert
-#echo 'export OS_CACERT=/etc/bosa/ca.cert' >>  /etc/bosa/openstack_openrc
+tools/kolla-ansible deploy -i /etc/kolla/inventory
+tools/kolla-ansible post-deploy -i /etc/kolla/inventory
+tools/kolla-ansible check -i /etc/kolla/inventory
+sed '/OS_CACERT/d' /etc/kolla/admin-openrc.sh > /etc/bolla/openstack_openrc
 
 echo "
 #-------------------------------------------------------------------------------
 # Post install
 #-------------------------------------------------------------------------------
 "
-cd /opt/bosa
-source /etc/bosa/openstack_openrc
-ansible-playbook opnfv-post-install.yaml
-
-URL=$(grep AUTH_URL /etc/bosa/openstack_openrc | perl -pe 's!^.*//(.*):.*!$1!')
-PASS=$(grep PASSWORD /etc/bosa/openstack_openrc | perl -pe "s/^.*'(.*)'/\$1/")
+cd /opt/bifrost-kolla
+source /etc/bolla/openstack_openrc
+export ANSIBLE_LIBRARY="${ANSIBLE_LIBRARY:-/etc/ansible/library}:/opt/kolla-ansible/ansible/library"
+export ANSIBLE_ACTION_PLUGINS="${ANSIBLE_ACTION_PLUGINS:-/etc/ansible/roles/plugins/action}:/opt/kolla-ansible/ansible/action_plugins"
+ansible-playbook opnfv-post-install.yaml -i /etc/kolla/inventory
 
 echo "
 #-------------------------------------------------------------------------------
 # End
 #-------------------------------------------------------------------------------
-You can now connect to https://${URL}
-with login: admin
-and password: ${PASS}
 "

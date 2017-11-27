@@ -6,14 +6,14 @@
   when: noauth_mode is defined and noauth_mode | bool == true
 - name: "Execute os_client_config to collect facts"
   os_client_config:
-  no_log: yes
+  no_log: "Ò"
   when: noauth_mode is defined and noauth_mode | bool == false
 - name: "Set os_client_config's auth parameters if not already set."
   set_fact:
     auth: "{{ openstack.clouds[0].auth }}"
     auth_type: "{{ openstack.clouds[0].auth_type }}"
   when: auth is undefined
-  no_log: yes
+  no_log: "yes"
 - name: "server power"
   os_ironic_node:
     cloud: "{{ cloud_name | default(omit) }}"
@@ -23,8 +23,19 @@
     uuid: "00000000-0000-0000-0000-000000000{{ '%03d'|format(node_id|int) }}"
     state: present
     deploy: "False"
-    power: "{{ item }}"
+    power: "absent"
   delegate_to: localhost
-  with_items:
-    - absent
-    - present
+- name: "well let's wait a little bit"
+  pause:
+    seconds: 15
+- name: "server power"
+  os_ironic_node:
+    cloud: "{{ cloud_name | default(omit) }}"
+    auth_type: "{{ auth_type | default(omit) }}"
+    auth: "{{ auth | default(omit) }}"
+    ironic_url: "{{ ironic_url | default(omit) }}"
+    uuid: "00000000-0000-0000-0000-000000000{{ '%03d'|format(node_id|int) }}"
+    state: present
+    deploy: "False"
+    power: "present"
+  delegate_to: localhost

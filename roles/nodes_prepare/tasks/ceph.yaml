@@ -1,0 +1,30 @@
+---
+- name: install packages
+  import_tasks: ceph_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+# 42 because 42 is the answer...
+- name: partition OSD drive
+  shell: >
+    parted /dev/{{ xci.ceph_mapping[ansible_hostname].disk }} -s -- \
+    mklabel gpt mkpart KOLLA_CEPH_OSD_BOOTSTRAP_42 1 -1
+  when:
+    xci.ceph_mapping[ansible_hostname] is defined and
+    xci.ceph_mapping[ansible_hostname].journal.type == "disk"
+
+- name: partition OSD drive
+  shell: >
+    parted /dev/{{ xci.ceph_mapping[ansible_hostname].disk }} -s -- \
+    mklabel gpt mkpart KOLLA_CEPH_OSD_BOOTSTRAP 1 -1
+  when:
+    xci.ceph_mapping[ansible_hostname] is defined and
+    xci.ceph_mapping[ansible_hostname].journal.type == "file"
+
+
+- name: partition journal drive
+  shell: >
+    parted /dev/{{ xci.ceph_mapping[ansible_hostname].journal.location }} -s \
+    -- mklabel gpt mkpart KOLLA_CEPH_OSD_BOOTSTRAP_42_J 1 -1
+  when:
+    xci.ceph_mapping[ansible_hostname] is defined and
+    xci.ceph_mapping[ansible_hostname].journal.type == "disk"

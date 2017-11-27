@@ -1,6 +1,0 @@
-# The infra nodes that will be running the dnsaas services
-dnsaas_hosts:
-{% for node in role2nodes['controller'] %}
-  infra{{ loop.index }}:
-    ip: {{ nodes_ip[node]['ip'] }}
-{% endfor %}

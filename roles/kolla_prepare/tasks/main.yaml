@@ -1,0 +1,20 @@
+---
+- name: remove kolla directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ kolla_path }}"
+    - "{{ kolla_ansible_path }}"
+    - "{{ kolla_etc_path }}"
+- name: "clone kolla {{kolla_branch}}"
+  git:
+    repo: "{{ kolla_url }}"
+    dest: "{{ kolla_path }}"
+    version: "{{ kolla_branch }}"
+
+- name: "clone kolla-ansible {{kolla_branch}}"
+  git:
+    repo: "{{ kolla_ansible_url }}"
+    dest: "{{ kolla_ansible_path }}"
+    version: "{{ kolla_branch }}"

@@ -4,20 +4,20 @@
 ##
 - name: clean bifrost detailled inventory folder
   file:
-    path: "{{ bosa_config }}/bifrost_inventory/"
+    path: "{{ bolla_config }}/bifrost_inventory/"
     state: absent
 - name: set bifrost detailled inventory folder
   file:
-    path: "{{ bosa_config }}/bifrost_inventory/"
+    path: "{{ bolla_config }}/bifrost_inventory/"
     state: directory
 - name: set bifrost inventory
   template:
     src: "templates/bifrost_inventory.json.j2"
-    dest: "{{ bosa_config }}/bifrost_inventory.json"
+    dest: "{{ bolla_config }}/bifrost_inventory.json"
 - name: set bifrost {{ item.name }} inventory
   template:
     src: "templates/bifrost_inventory.json.j2"
-    dest: "{{ bosa_config }}/bifrost_inventory/{{ item.name }}.json"
+    dest: "{{ bolla_config }}/bifrost_inventory/{{ item.name }}.json"
   with_items: "{{ nodes }}"
 ##
 # Get facts related to nodes (ips, role)
@@ -45,7 +45,7 @@
 - name: set ansible nodes inventory
   template:
     src: "templates/ansible_inventory.j2"
-    dest: "{{ bosa_config }}/ansible_inventory"
+    dest: "{{ bolla_config }}/ansible_inventory"
 ##
 # Set .bash_aliases for a better ops life
 ##
@@ -75,7 +75,7 @@
   args:
     chdir: "{{ bifrost_path }}/playbooks/"
   environment:
-    BIFROST_INVENTORY_SOURCE: "{{ bosa_config }}/bifrost_inventory.json"
+    BIFROST_INVENTORY_SOURCE: "{{ bolla_config }}/bifrost_inventory.json"
   when: ironic_nodes.stdout == "0"
 ##
 # Deploy using prepared wrapper to ensure venv is used or not
@@ -94,5 +94,11 @@
   args:
     chdir: "{{ bifrost_path }}/playbooks/"
   environment:
-    BIFROST_INVENTORY_SOURCE: "{{ bosa_config }}/bifrost_inventory.json"
+    BIFROST_INVENTORY_SOURCE: "{{ bolla_config }}/bifrost_inventory.json"
   when: ironic_nodes_available.stdout == "{{ nodes | length }}"
+
+- name: add jumphost to inventory
+  lineinfile:
+    path: "{{ bolla_config }}/ansible_inventory"
+    line: jumphost ansible_connection=local
+    insertbefore: BOF

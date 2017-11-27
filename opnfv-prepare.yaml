@@ -1,0 +1,45 @@
+---
+##
+# Wait for all nodes to be up
+##
+- hosts: jumphost
+  vars_files:
+    - "vars/idf.yaml"
+  tasks:
+    - name: add log host in inventory
+      add_host:
+        name: log1
+        ansible_ssh_host: "{{ xci.rsyslog }}"
+- hosts: nodes
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
+    - "{{ bifrost_path }}/playbooks/roles/\
+      bifrost-deploy-nodes-dynamic/defaults/main.yml"
+  gather_facts: 'no'
+  roles:
+    - nodes_wait_for
+##
+# prepare nodes (network and packages)
+##
+- hosts: nodes:log1
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
+  roles:
+    - nodes_prepare
+##
+# retrieve and configure kolla
+#
+- hosts: jumphost
+  become: true
+  vars_files:
+    - "vars/defaults.yaml"
+    - "vars/idf.yaml"
+    - "vars/pdf.yaml"
+    - "vars/certificates.yaml"
+  roles:
+    - kolla_prepare
+    - kolla_configure

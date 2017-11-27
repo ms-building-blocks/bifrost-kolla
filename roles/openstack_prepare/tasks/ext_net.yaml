@@ -5,7 +5,7 @@
     name: "{{ ext_net.name }}"
     external: true
     provider_network_type: flat
-    provider_physical_network: flat
+    provider_physical_network: "{{ physical_network_name }}"
 - name: 'get ext_subnet info'
   set_fact:
     ext_subnet: "{{ net_config[xci.network_mapping['br-vlan']] }}"

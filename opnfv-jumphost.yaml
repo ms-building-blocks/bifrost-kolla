@@ -3,5 +3,13 @@
   become: true
   vars_files:
     - "vars/defaults.yaml"
+    - "vars/idf.yaml"
   roles:
     - jumphost_prepare
+
+- hosts: registryhost
+  become: true
+  vars_files:
+    - "vars/defaults.yaml"
+  roles:
+    - registryhost_prepare

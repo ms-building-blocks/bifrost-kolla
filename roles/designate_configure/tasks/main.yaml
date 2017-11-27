@@ -1,5 +1,0 @@
----
-- name: set designate final config
-  template:
-    src: "designate.yml.j2"
-    dest: "{{ osa_etc_path }}/conf.d/designate.yml"

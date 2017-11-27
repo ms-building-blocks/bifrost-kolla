@@ -1,0 +1,22 @@
+---
+##
+# Mount nova instance disk
+##
+- name: prepare nova instances folder
+  file:
+    path: /var/lib/nova/instances
+    state: directory
+    recurse: true
+  when: "'computes' in group_names"
+- name: make block device
+  filesystem:
+    fstype: ext4
+    dev: "/dev/{{ xci.nova_physical_device }}"
+  when: "'computes' in group_names"
+- name: mount nova instances folder on secondary disk
+  mount:
+    path: /var/lib/nova/instances
+    src: "/dev/{{ xci.nova_physical_device }}"
+    state: mounted
+    fstype: ext4
+  when: "'computes' in group_names"

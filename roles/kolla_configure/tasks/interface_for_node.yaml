@@ -1,0 +1,37 @@
+---
+- name: create interface fact if needed and clear temporary dictionnaries
+  set_fact:
+    interfaces: "{{ interfaces |  default({}) }}"
+    interface_info: {}
+    interfaces_mac: {}
+    interfaces_name: {}
+- name: "get vlan for network {{ outer_item.interface }}"
+  set_fact:
+    vlan: "{{ net_config[outer_item.type].vlan}}"
+- name: "get interface number for network {{ outer_item.interface }}"
+  set_fact:
+    interface_number: "{{ net_config[outer_item.type].interface }}"
+- name: "get interfaces mac for network {{ outer_item.interface }}"
+  set_fact:
+    interfaces_mac:
+      "{{ interfaces_mac |
+          combine({ item: srv_macs[item][( interface_number | int)]}) }}"
+  with_items: "{{ node_names }}"
+- name: "get interfaces name for network {{ outer_item.interface }}"
+  set_fact:
+    interfaces_name:
+      "{{ interfaces_name |
+          combine({ item: macs[item][interfaces_mac[item]] }) }}"
+  with_items: "{{ node_names }}"
+- name: "get {{ outer_item.interface }} interface for nodes"
+  set_fact:
+    interface_info: "{{ interface_info |
+      combine({ item: (((vlan | int) > 0) |
+                ternary(interfaces_name[item] + '.' +  (vlan | string),
+                        interfaces_name[item])) }) }}"
+  with_items: "{{ node_names }}"
+- name: "add {{ outer_item.interface }} infos to interface fact"
+  set_fact:
+    interfaces:
+      "{{ interfaces |
+          combine({ outer_item.interface: interface_info }) }}"

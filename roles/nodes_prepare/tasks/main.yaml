@@ -5,7 +5,7 @@
 - name: ensure the gateway is correct
   shell:
     "ip r d default && ip r a default via {{ net_config['admin'].gateway }}"
-  when: "True"
+  when: "'nodes' in group_names"
 
 ##
 # set correct resolv.conf
@@ -15,7 +15,6 @@
   copy:
     content: "nameserver {{ net_config['admin'].dns }}"
     dest: /etc/resolv.conf
-
 ##
 # install basic packages
 ##
@@ -28,6 +27,15 @@
   import_tasks: install_DEBIAN.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
+- name: Upgrade pip
+  pip:
+    name: pip
+    state: latest
+
+- name: Install docker pip packages
+  pip:
+    name: docker
+    state: latest
 ##
 # Prepare modules
 ##
@@ -37,14 +45,17 @@
     state: present
     create: 'yes'
     line: "8021q"
+  when: "'nodes' in group_names"
 - name: add modules
   modprobe:
     name: 8021q
     state: present
+  when: "'nodes' in group_names"
 - name: ensure glean rules are removed
   file:
     path: "/etc/udev/rules.d/99-glean.rules"
     state: absent
+  when: "'nodes' in group_names"
 
 ##
 # Get remote network data
@@ -52,30 +63,30 @@
 - name: get nodes as a dict
   set_fact:
     nodes_dict: "{{ nodes | nodes_as_dict() }}"
+  when: "'nodes' in group_names"
 - name: get bridges to configure
   set_fact:
     node_netw: >
       {{ inventory_hostname |
       get_networks(hostvars, network_profiles, xci.nodes_roles) }}
+  when: "'nodes' in group_names"
 - name: get srv_macs
   set_fact:
     srv_macs:
       "{{ inventory_hostname | target_interfaces(hostvars, nodes_dict) }}"
-- debug:
-    var: srv_macs
+  when: "'nodes' in group_names"
 - name: get mac2intf
   set_fact:
     macs: "{{ inventory_hostname | mac2intf(hostvars, nodes_dict) }}"
-- debug:
-    var: macs
+  when: "'nodes' in group_names"
 - name: get mgmt interface
   set_fact:
     mgmt_intf: "{{ macs[srv_macs[net_config['admin'].interface]] }}"
-- debug:
-    var: mgmt_intf
+  when: "'nodes' in group_names"
 - name: shortcut for network mapping
   set_fact:
     nmap: "{{ xci.network_mapping }}"
+  when: "'nodes' in group_names"
 
 ##
 # Prepare network
@@ -87,43 +98,26 @@
   with_items:
     - absent
     - directory
+  when: "'nodes' in group_names"
 - name: ensure interfaces file is updated
   template:
     src: "templates/interfaces.j2"
     dest: "/etc/network/interfaces"
-- name: restart mgmt interface
-  shell: >-
-    ip a d {{
-    net_config[nmap['br-mgmt']].network | ip_add(
-    ip_shift+node_id) }}/{{ net_config[nmap['br-mgmt']].mask }}
-    dev {{ mgmt_intf }} &&
-    ip l set dev {{ mgmt_intf }} down && ifup br-mgmt
-  when: hostvars[inventory_hostname]["ansible_"+mgmt_intf].ipv4 is defined
+  when: "'nodes' in group_names"
 - name: restart all interfaces
   shell: "ifdown --exclude=lo -a && ifup --exclude=lo -a && sleep 5"
-  when: "True"
+  when: "'nodes' in group_names"
+
 
 ##
-# Mount nova instance disk
+# Decide to use ceph as backend or not
 ##
-- name: prepare nova instances folder
-  file:
-    path: /var/lib/nova/instances
-    state: directory
-    recurse: true
-  when: inventory_hostname in groups['computes']
-- name: make block device
-  filesystem:
-    fstype: ext4
-    dev: "/dev/{{ xci.nova_physical_device }}"
-  when: inventory_hostname in groups['computes']
-- name: mount nova instances folder on secondary disk
-  mount:
-    path: /var/lib/nova/instances
-    src: "/dev/{{ xci.nova_physical_device }}"
-    state: mounted
-    fstype: ext4
-  when: inventory_hostname in groups['computes']
+- include_tasks: ceph.yaml
+  when: xci.ceph_mapping is defined
+
+- include_tasks: no_ceph.yaml
+  when: xci.ceph_mapping is not defined
+
 ##
 # Restart services
 ##
@@ -135,9 +129,32 @@
     no_block: true
 
 ##
-# Purge setuptools for a better OSA install
+# Purge setuptools for a better Kolla install
+# TODO: check if needed
 ##
 - name: remove setuptools
   pip:
     name: setuptools
     state: absent
+
+
+##
+#
+##
+- name: add infra domain in resolv.conf
+  lineinfile:
+    regexp: '^search'
+    line: "search {{ xci.infra_domain }}"
+    path: /etc/resolv.conf
+
+- name: add host and fqdn in resolv.conf
+  lineinfile:
+    regexp: ' {{ ansible_hostname }}'
+    line: >
+      {{ ansible_default_ipv4.address }}
+      {{ ansible_hostname }}.{{ xci.infra_domain }}
+      {{ ansible_hostname }}
+    path: /etc/hosts
+
+- include_tasks: ceph.yaml
+  when: xci.ceph_mapping is defined

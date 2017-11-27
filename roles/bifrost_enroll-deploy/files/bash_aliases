@@ -1,5 +1,5 @@
 # default inventory source
-export BIFROST_INVENTORY_SOURCE=/etc/bosa/bifrost_inventory.json
+export BIFROST_INVENTORY_SOURCE=/etc/bolla/bifrost_inventory.json
 
 # functions
 bifrost_check_ssh_server(){

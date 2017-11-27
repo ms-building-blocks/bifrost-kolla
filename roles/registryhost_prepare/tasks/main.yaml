@@ -1,0 +1,25 @@
+---
+##
+# Clean and install packages get Bifrost sources
+##
+- name: install packages
+  import_tasks: install_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: ensure /opt/registry is present
+  file:
+    path: /opt/registry
+    state: directory
+##
+# Start registry
+##
+- name: start registry
+  docker_container:
+    name: registry
+    image: registry:2
+    ports:
+      - 5000:5000
+    volumes:
+      - /opt/registry:/var/lib/registry
+    restart_policy: always
+    state: started
