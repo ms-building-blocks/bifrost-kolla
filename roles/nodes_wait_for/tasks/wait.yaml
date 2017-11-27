@@ -1,3 +1,4 @@
+---
 - name: wait for nodes to be reachable
   local_action: >
     shell ansible -i {{ bolla_config }}/ansible_inventory

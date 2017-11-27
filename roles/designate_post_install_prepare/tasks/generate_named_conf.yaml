@@ -1,11 +1,15 @@
 ---
-- name: "ensure specific directory for designate on {{ item.name }} is present"
+- name: "ensure specific dir for designate on {{ item.name }} is present"
   file:
-    path: "{{ kolla_etc_path }}/config/designate/designate-backend-bind9/{{ item.name }}"
+    path:
+      "{{ kolla_etc_path }}/config/designate/designate-backend-bind9/\
+      {{ item.name }}"
     state: directory
 
 - name: "generate specific named.conf for {{ item.name }}"
   template:
     src: named.conf.j2
-    dest: "{{ kolla_etc_path }}/config/designate/designate-backend-bind9/{{ item.name }}/named.conf"
+    dest:
+      "{{ kolla_etc_path }}/config/designate/designate-backend-bind9/\
+      {{ item.name }}/named.conf"
   notify: reconfigure designate

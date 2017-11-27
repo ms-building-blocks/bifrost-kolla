@@ -12,12 +12,15 @@
 
 - name: generate bind_servers list
   set_fact:
-    bind_servers: "{{ bind_servers|default([]) +[{'name': item, 'ip': nodes_ip[item]['ip'] }]}}"
+    bind_servers: >
+      {{ bind_servers|default([]) +
+        [{'name': item, 'ip': nodes_ip[item]['ip'] }]}}
   with_items: "{{ groups['designate-backend-bind9'] }}"
 
 - name: generate mdns_servers list
   set_fact:
-    mdns_servers_ip: "{{ mdns_servers_ip|default([]) +[ nodes_ip[item]['ip'] ]}}"
+    mdns_servers_ip:
+      "{{ mdns_servers_ip|default([]) +[ nodes_ip[item]['ip'] ]}}"
   with_items: "{{ groups['designate-mdns'] }}"
 
 - name: generate specific named conf per server
