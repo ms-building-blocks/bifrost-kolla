@@ -1,6 +1,0 @@
----
-- name: restart docker via systemd
-  systemd:
-    name: docker.service
-    state: restarted
-    daemon-reload: "yes"
