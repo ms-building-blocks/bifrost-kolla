@@ -40,7 +40,8 @@ ansible_linting:
   only:
     - master
   script:
-    - ssh ${pod}.opnfv.fr "sudo mkdir -p /opt/bolla ; sudo chown -R ubuntu.ubuntu /opt/bolla"
+    - ssh ${pod}.opnfv.fr "sudo mkdir -p /opt/bolla \
+                           sudo chown -R ubuntu.ubuntu /opt/bolla"
     - cd vars
     - "git archive \
        --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git \
