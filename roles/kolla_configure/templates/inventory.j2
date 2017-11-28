@@ -22,7 +22,7 @@
 {% endfor %}
 
 [monitoring]
-monitoring1 ansible_ssh_host={{ xci.rsyslog }} network_interface=ens3 api_interface=ens3 dns_interface=ens3
+monitoring1 ansible_ssh_host={{ xci.rsyslog }} network_interface={{ xci.monitoring_network_interface }} api_interface={{ xci.monitoring_network_interface }} dns_interface={{ xci.monitoring_network_interface }}
 
 # When compute nodes and control nodes use different interfaces,
 # you can specify "api_interface" and other interfaces like below:
