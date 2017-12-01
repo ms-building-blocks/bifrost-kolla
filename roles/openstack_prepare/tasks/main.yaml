@@ -39,3 +39,9 @@
     state: present
     name: jumphost
     public_key_file: "{{ ansible_env.HOME}}/.ssh/id_rsa.pub"
+
+- name: update admin project quotas
+  os_quota:
+    name: admin
+    cores: 48
+    ram: 81920
