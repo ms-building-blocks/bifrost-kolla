@@ -74,14 +74,6 @@
 - name: get node names
   set_fact:
     node_names: "{{ nodes | map(attribute='name') | list }}"
-- name: debug ansible_hostname
-  debug: msg="{{ hostvars[item].ansible_hostname }}"
-  with_inventory_hostnames:
-    - nodes
-- name: debug inventory_hostname
-  debug: msg="{{ hostvars[item].inventory_hostname }}"
-  with_inventory_hostnames:
-    - nodes
 - name: match node names with their ansible inventory name
   set_fact:
     servers: >
