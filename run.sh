@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 
 export ANSIBLE_STDOUT_CALLBACK=debug
-export target_folder=$(PWD)
+export target_folder=${PWD}
 
 #-------------------------------------------------------------------------------
 # Check run as root
