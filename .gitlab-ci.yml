@@ -68,9 +68,7 @@ ansible_linting:
       ${pod}.opnfv.fr:${target_folder}"
     - ssh ${pod}.opnfv.fr \
       "echo ${ANSIBLE_VAULT_PASSWORD} > ${target_folder}/.vault_pass.txt"
-    - ssh ${pod}.opnfv.fr "cd ${target_folder}; \
-      setenv target_folder ${target_folder} \
-      sudo -E ./run.sh"
+    - ssh ${pod}.opnfv.fr "cd ${target_folder}; sudo -E ./run.sh"
     - ./trigger_functest.sh
     - ./trigger_rancher.sh
   after_script:

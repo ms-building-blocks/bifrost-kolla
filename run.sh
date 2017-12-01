@@ -4,6 +4,7 @@ set -o nounset
 set -o pipefail
 
 export ANSIBLE_STDOUT_CALLBACK=debug
+export target_folder=$(PWD)
 
 #-------------------------------------------------------------------------------
 # Check run as root
@@ -43,7 +44,7 @@ host_key_checking = False
 pipelining=True
 EOF
 
-cd /opt/bolla
+cd ${target_folder}
 
 echo "
 #-------------------------------------------------------------------------------
@@ -83,7 +84,7 @@ echo "
 "
 tools/kolla-ansible deploy -i /etc/kolla/inventory
 tools/kolla-ansible post-deploy -i /etc/kolla/inventory
-# tools/kolla-ansible check -i /etc/kolla/inventory
+tools/kolla-ansible check -i /etc/kolla/inventory
 sed '/OS_CACERT/d' /etc/kolla/admin-openrc.sh > /etc/bolla/openstack_openrc
 
 echo "
@@ -91,7 +92,7 @@ echo "
 # Post install
 #-------------------------------------------------------------------------------
 "
-cd /opt/bolla
+cd ${target_folder}
 source /etc/bolla/openstack_openrc
 export ANSIBLE_LIBRARY="${ANSIBLE_LIBRARY:-/etc/ansible/library}:/opt/kolla-ansible/ansible/library"
 export ANSIBLE_ACTION_PLUGINS="${ANSIBLE_ACTION_PLUGINS:-/etc/ansible/roles/plugins/action}:/opt/kolla-ansible/ansible/action_plugins"
