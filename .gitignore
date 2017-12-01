@@ -1,5 +1,10 @@
 *.retry
 
+## OPNFV ##
+vars/pdf.yaml
+vars/idf.yaml
+.vault_pass.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
