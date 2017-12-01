@@ -30,6 +30,12 @@
 ##
 # Push Ext-net if asked
 ##
-- name: push external networkk
+- name: push external network
   include: ext_net.yaml   # include shall move to import_tasks with 2.4 version
   when: os_basic.ext_net
+
+- name: create jumphost key
+  os_keypair:
+    state: present
+    name: jumphost
+    public_key_file: "{{ ansible_env.HOME}}/.ssh/id_rsa.pub"
