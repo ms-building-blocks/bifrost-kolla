@@ -1,5 +1,0 @@
----
-- name: Install bind
-  apt:
-    name: bind9
-    state: installed
