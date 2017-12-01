@@ -40,8 +40,8 @@ ansible_linting:
   only:
     - master
   script:
-    - ssh ${pod}.opnfv.fr "sudo mkdir -p /opt/bolla ;
-                           sudo chown -R ubuntu.ubuntu /opt/bolla"
+    - ssh ${pod}.opnfv.fr "sudo mkdir -p ${target_folder} ;
+                           sudo chown -R ubuntu.ubuntu ${target_folder}"
     - cd vars
     - "git archive \
        --remote=git@gitlab.forge.orange-labs.fr:opnfv/TerraHouat.git \
@@ -67,11 +67,13 @@ ansible_linting:
       --delete-after . \
       ${pod}.opnfv.fr:${target_folder}"
     - ssh ${pod}.opnfv.fr \
-      "echo ${ANSIBLE_VAULT_PASSWORD} > /opt/bolla/.vault_pass.txt"
-    - ssh ${pod}.opnfv.fr "cd /opt/bolla; sudo ./run.sh"
+      "echo ${ANSIBLE_VAULT_PASSWORD} > ${target_folder}/.vault_pass.txt"
+    - ssh ${pod}.opnfv.fr "cd ${target_folder}; \
+      target_folder=${target_folder} sudo -E ./run.sh"
     - ./trigger_functest.sh
+    - ./trigger_rancher.sh
   after_script:
-    - ssh ${pod}.opnfv.fr "rm /opt/bolla/.vault_pass.txt || true"
+    - ssh ${pod}.opnfv.fr "rm ${target_folder}/.vault_pass.txt || true"
   artifacts:
     paths:
       - ansible-role-requirements_*.yml
@@ -81,7 +83,7 @@ deploy_pod1:
     pod: pod1
   environment:
     name: pod1
-    url: https://10.1.0.9/
+    url: https://osa.pod1.opnfv.fr/
   when: manual
   <<: *deploy_pod
 
@@ -91,7 +93,7 @@ deploy_pod2:
     scenario: os-nosdn-nofeature-noha
   environment:
     name: pod2
-    url: https://10.2.0.9/
+    url: https://osa.pod2.opnfv.fr/
   when: manual
   <<: *deploy_pod
 
@@ -101,6 +103,6 @@ deploy_pod4:
     scenario: os-nosdn-nofeature-ha
   environment:
     name: pod4
-    url: https://10.4.0.9/
+    url: https://osa.pod4.opnfv.fr/
   when: manual
   <<: *deploy_pod
